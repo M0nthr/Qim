@@ -36,6 +36,19 @@
             --hdr: 90px;
             --ftr: 75px;
             --safe-b: env(safe-area-inset-bottom, 0px);
+
+            /* Icon Variables */
+            --icon-success: #10B981;
+            --icon-danger: #EF4444;
+            --icon-base: #94A3B8;
+            --icon-fill: rgba(148, 163, 184, 0.1);
+            --text-accent: #D4AF37;
+            --text-primary: #0f172a;
+            --bg-card: #ffffff;
+            --border-color: rgba(0,0,0,0.1);
+            --glass-hover: rgba(255,255,255,0.9);
+            --anim-time: 1000ms;
+            --ease-apple: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         body {
@@ -89,11 +102,11 @@
 
         .node-layer { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
         .node-wrapper { position: absolute; width: 30px; height: 30px; transform: translate3d(50%, -50%, 0); transition: all var(--fibo-time) var(--ease-bounce); will-change: transform; }
-        .node-1 { top: 0; right: 15%; } .node-2 { top: 0; right: 40%; } .node-3 { top: 0; right: 65%; }
+        .node-1 { top: 0; right: 12%; } .node-2 { top: 0; right: 38%; } .node-3 { top: 0; right: 64%; }
         .node-4 { top: 50%; left: 0; transform: translate3d(-50%, -50%, 0); }
-        .node-5 { bottom: 0; left: 25%; transform: translate3d(-50%, 50%, 0); }
-        .node-6 { bottom: 0; left: 55%; transform: translate3d(-50%, 50%, 0); }
-        .node-7 { bottom: 0; left: 85%; transform: translate3d(-50%, 50%, 0); }
+        .node-5 { bottom: 0; left: 18%; transform: translate3d(-50%, 50%, 0); }
+        .node-6 { bottom: 0; left: 48%; transform: translate3d(-50%, 50%, 0); }
+        .node-7 { bottom: 0; left: 78%; transform: translate3d(-50%, 50%, 0); }
 
         .node-circle { width: 100%; height: 100%; border-radius: 50%; background: #0A142B; border: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; color: #64748B; transition: all var(--fibo-time) var(--ease-bounce); position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .node-circle svg { width: 16px; height: 16px; position: relative; z-index: 1; transform: translateZ(0); }
@@ -133,44 +146,109 @@
         .squish:active { transform: scale(0.96) translateZ(0); }
 
         /* ICON SVGS CSS */
-        .icon-card-svg { width: 100%; height: 100%; overflow: visible; stroke-linecap: round; stroke-linejoin: round; --icon-base: #94A3B8; --icon-fill: rgba(148, 163, 184, 0.1); }
-        g, path, rect, circle, line, text { transform-box: fill-box; transform-origin: center; will-change: transform, opacity; }
-        .tf-check-mark { stroke: #10B981; stroke-width: 3.5; fill: none; }
-        .tf-cross-mark { stroke: #EF4444; stroke-width: 3.5; fill: none; }
-        .is-animating .tf-g-check { animation: tfPopCheck 1000ms var(--ease-bounce) forwards; }
-        .is-animating .tf-g-cross { animation: tfPopCross 1000ms var(--ease-bounce) forwards; }
-        @keyframes tfPopCheck { 0%, 100% { transform: scale(1) translateX(0); opacity: 1; } 20%, 40% { transform: scale(1.2) translateX(8px); } 60%, 80% { transform: scale(0.8) translateX(-10px); opacity: 0.3; } }
-        @keyframes tfPopCross { 0%, 100% { transform: scale(1) translateX(0); opacity: 1; } 20%, 40% { transform: scale(0.8) translateX(10px); opacity: 0.3; } 60%, 80% { transform: scale(1.2) translateX(-8px); } }
-        .mc-dot { fill: #D4AF37; transform: scale(0); opacity: 0; }
+        .icon-card-svg { width: 100%; height: 100%; overflow: visible; stroke-linecap: round; stroke-linejoin: round; }
+        g, path, rect, circle, line, text { transform-box: fill-box; transform-origin: center; will-change: transform, opacity, stroke, fill, filter; }
+
+        /* --- 1. True/False --- */
+        .tf-check-bg { fill: rgba(16, 185, 129, 0.1); stroke: rgba(16, 185, 129, 0.3); stroke-width: 2; }
+        .tf-cross-bg { fill: rgba(239, 68, 68, 0.1); stroke: rgba(239, 68, 68, 0.3); stroke-width: 2; }
+        .tf-check-mark { stroke: var(--icon-success); stroke-width: 3.5; fill: none; }
+        .tf-cross-mark { stroke: var(--icon-danger); stroke-width: 3.5; fill: none; }
+        .is-animating .tf-g-check { animation: tfPopCheck var(--anim-time) var(--ease-bounce) forwards; }
+        .is-animating .tf-g-cross { animation: tfPopCross var(--anim-time) var(--ease-bounce) forwards; }
+        @keyframes tfPopCheck {
+            0%, 100% { transform: scale(1) translateX(0); opacity: 1; filter: none; }
+            20%, 40% { transform: scale(1.2) translateX(8px); opacity: 1; filter: drop-shadow(0 0 10px rgba(16,185,129,0.4)); z-index: 10; }
+            60%, 80% { transform: scale(0.8) translateX(-10px); opacity: 0.3; filter: none; }
+        }
+        @keyframes tfPopCross {
+            0%, 100% { transform: scale(1) translateX(0); opacity: 1; filter: none; }
+            20%, 40% { transform: scale(0.8) translateX(10px); opacity: 0.3; filter: none; }
+            60%, 80% { transform: scale(1.2) translateX(-8px); opacity: 1; filter: drop-shadow(0 0 10px rgba(239,68,68,0.4)); z-index: 10; }
+        }
+
+        /* --- 2. Multiple Choice --- */
+        .mc-ring { stroke: var(--icon-base); stroke-width: 2.5; fill: var(--icon-fill); }
+        .mc-dot { fill: var(--text-accent); transform: scale(0); opacity: 0; }
         .is-animating .mc-1 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 0ms forwards; }
         .is-animating .mc-2 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 150ms forwards; }
         .is-animating .mc-3 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 300ms forwards; }
-        .is-animating .mc-4 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 450ms forwards; }
+        .is-animating .mc-4 { animation: mcHaptic 600ms var(--ease-bounce) 450ms forwards; }
+        .is-animating .mc-4 .mc-dot { animation: mcFillHold 600ms var(--ease-bounce) 450ms forwards; }
+        .is-animating .mc-4 .mc-ring { animation: mcRingGlow 600ms var(--ease-bounce) 450ms forwards; }
         @keyframes mcFill { 0%, 100% { transform: scale(0); opacity: 0; } 50% { transform: scale(1); opacity: 1; } }
-        .is-animating .or-row-1 { animation: orSlideDown 1000ms var(--ease-silk) forwards; }
-        .is-animating .or-row-2 { animation: orSlideUp 1000ms var(--ease-silk) forwards; }
+        @keyframes mcFillHold { 0%, 100% { transform: scale(0); opacity: 0; } 20%, 80% { transform: scale(1); opacity: 1; } }
+        @keyframes mcHaptic { 0%, 100% { transform: scale(1); } 20% { transform: scale(0.8); } 40%, 80% { transform: scale(1.1); } }
+        @keyframes mcRingGlow { 40%, 80% { stroke: var(--text-accent); filter: drop-shadow(0 0 8px rgba(212,175,55,0.4)); } }
+
+        /* --- 3. Order Steps --- */
+        .or-pill { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2; rx: 10; }
+        .or-num { fill: var(--text-primary); font-family: 'Almarai', sans-serif; font-weight: 900; font-size: 14px; }
+        .is-animating .or-row-1 { animation: orSlideDown var(--anim-time) var(--ease-apple) forwards; }
+        .is-animating .or-row-2 { animation: orSlideUp var(--anim-time) var(--ease-apple) forwards; }
+        .is-animating .or-row-1 .or-pill, .is-animating .or-row-2 .or-pill { animation: orGlow var(--anim-time) var(--ease-apple) forwards; }
         @keyframes orSlideDown { 0%, 100% { transform: translateY(0); } 40%, 70% { transform: translateY(28px); } }
         @keyframes orSlideUp { 0%, 100% { transform: translateY(0); } 40%, 70% { transform: translateY(-28px); } }
-        .fb-word { fill: #D4AF37; rx: 6; transform: translateY(25px); opacity: 0; }
-        .is-animating .fb-word { animation: fbSnap 1000ms var(--ease-bounce) forwards; }
-        @keyframes fbSnap { 0%, 100% { transform: translateY(25px); opacity: 0; } 30%, 70% { transform: translateY(0); opacity: 1; } }
-        .is-animating .ma-r1, .is-animating .ma-l2 { animation: maPair1 1000ms var(--ease-bounce) forwards; }
-        .is-animating .ma-r3, .is-animating .ma-l1 { animation: maPair2 1000ms var(--ease-bounce) 200ms forwards; }
-        @keyframes maPair1 { 20%, 60% { transform: scale(1.15); stroke: #3B82F6; } }
-        @keyframes maPair2 { 20%, 60% { transform: scale(1.15); stroke: #D4AF37; } }
-        .is-animating .br-path { animation: brDraw 800ms var(--ease-silk) 100ms forwards; }
-        .is-animating .br-n1, .is-animating .br-n2, .is-animating .br-n3 { animation: brPop 800ms var(--ease-bounce) 200ms forwards; }
-        @keyframes brDraw { 30%, 70% { stroke-dashoffset: 0; opacity: 1; stroke: #D4AF37; } }
+        @keyframes orGlow { 40%, 70% { stroke: var(--text-accent); fill: rgba(212,175,55,0.15); } }
+
+        /* --- 4. Fill in the Blank --- */
+        .fb-text-line { stroke: var(--icon-base); stroke-width: 3; stroke-linecap: round; }
+        .fb-blank { fill: rgba(0,0,0,0.05); stroke: var(--icon-base); stroke-width: 2; stroke-dasharray: 4 4; rx: 8; }
+        .fb-word { fill: var(--text-accent); rx: 6; opacity: 0.8; transform: translateY(25px); }
+        .is-animating .fb-word { animation: fbSnap var(--anim-time) var(--ease-bounce) forwards; }
+        .is-animating .fb-blank { animation: fbAbsorb var(--anim-time) var(--ease-bounce) forwards; }
+        @keyframes fbSnap {
+            0%, 100% { transform: translateY(25px) scale(0.9); opacity: 0.8; }
+            30%, 70% { transform: translateY(0) scale(1); opacity: 1; filter: drop-shadow(0 0 10px rgba(212,175,55,0.5)); }
+        }
+        @keyframes fbAbsorb {
+            30%, 70% { stroke: var(--text-accent); stroke-dasharray: 0; transform: scaleX(1.1); fill: rgba(212,175,55,0.1); }
+        }
+
+        /* --- 5. Matching --- */
+        .ma-card { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2; rx: 6; }
+        .is-animating .ma-r1, .is-animating .ma-l2 { animation: maPair1 var(--anim-time) var(--ease-bounce) forwards; }
+        .is-animating .ma-r3, .is-animating .ma-l1 { animation: maPair2 var(--anim-time) var(--ease-bounce) 200ms forwards; }
+        @keyframes maPair1 {
+            20%, 60% { transform: scale(1.15); stroke: #3B82F6; fill: rgba(59,130,246,0.2); filter: drop-shadow(0 0 8px rgba(59,130,246,0.4)); z-index: 10; }
+        }
+        @keyframes maPair2 {
+            20%, 60% { transform: scale(1.15); stroke: var(--text-accent); fill: rgba(212,175,55,0.2); filter: drop-shadow(0 0 8px rgba(212,175,55,0.4)); z-index: 10; }
+        }
+
+        /* --- 6. Branching --- */
+        .br-node { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2.5; rx: 8; }
+        .br-line { stroke: var(--icon-base); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+        .br-hidden { stroke-dasharray: 50; stroke-dashoffset: 50; opacity: 0; }
+        .br-scale { transform: scale(0); opacity: 0; }
+        .is-animating .br-main { animation: brGlow var(--anim-time) var(--ease-apple) forwards; }
+        .is-animating .br-path { animation: brDraw 800ms var(--ease-apple) 100ms forwards; }
+        .is-animating .br-n1 { animation: brPop 800ms var(--ease-bounce) 200ms forwards; }
+        .is-animating .br-n2 { animation: brPop 800ms var(--ease-bounce) 300ms forwards; }
+        .is-animating .br-n3 { animation: brPop 800ms var(--ease-bounce) 400ms forwards; }
+        .is-animating .br-n2-glow { animation: brGlow 800ms var(--ease-apple) 400ms forwards; }
+        @keyframes brGlow { 20%, 80% { stroke: var(--text-accent); fill: rgba(212,175,55,0.2); filter: drop-shadow(0 0 8px rgba(212,175,55,0.3)); } }
+        @keyframes brDraw { 30%, 70% { stroke-dashoffset: 0; opacity: 1; stroke: var(--text-accent); } }
         @keyframes brPop { 20%, 80% { transform: scale(1); opacity: 1; } }
-        .is-animating .im-t1 { animation: imAim 600ms var(--ease-bounce) 0ms forwards; }
-        .is-animating .im-t2 { animation: imAim 600ms var(--ease-bounce) 150ms forwards; }
-        .is-animating .im-t3 { animation: imAim 600ms var(--ease-bounce) 300ms forwards; }
-        @keyframes imAim { 0%, 100% { transform: scale(0) rotate(-45deg); opacity: 0; } 30%, 70% { transform: scale(1) rotate(0deg); opacity: 1; } }
+
+        /* --- 7. Image Targets --- */
+        .im-frame { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2.5; rx: 10; }
+        .im-sun { fill: var(--text-accent); opacity: 0.9; }
+        .im-mount { stroke: var(--icon-base); stroke-width: 2.5; fill: none; stroke-linejoin: round; }
+        .im-target { stroke: var(--icon-danger); stroke-width: 3; stroke-linecap: round; transform: scale(0); opacity: 0; }
+        .is-animating .im-t1 { animation: imAim 600ms var(--ease-bounce) 50ms forwards; }
+        .is-animating .im-t2 { animation: imAim 600ms var(--ease-bounce) 200ms forwards; }
+        .is-animating .im-t3 { animation: imAim 600ms var(--ease-bounce) 350ms forwards; }
+        .is-animating .im-t4 { animation: imAim 600ms var(--ease-bounce) 500ms forwards; }
+        @keyframes imAim {
+            0%, 100% { transform: scale(0) rotate(-45deg); opacity: 0; }
+            30%, 70% { transform: scale(1) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 6px rgba(239,68,68,0.5)); }
+        }
 
         /* ICONS BURST */
         .large-burst-overlay { position: fixed; top: 110px; left: 0; right: 0; height: 120px; display: flex; align-items: center; justify-content: center; z-index: 100; pointer-events: none; opacity: 0; transition: opacity 0.4s ease; background: transparent; }
         .large-burst-overlay.active { opacity: 1; }
-        .large-burst-box { width: 110px; height: 110px; background: white; border-radius: 30px; padding: 20px; box-shadow: 0 25px 60px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(0,0,0,0.05); transform: scale(0.4) translateY(-30px); transition: transform 0.7s var(--ease-bounce); }
+        .large-burst-box { width: 110px; height: 110px; background: var(--bg-card); border-radius: 30px; padding: 20px; border: 1px solid var(--border-color); box-shadow: 0 25px 60px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.05); transform: scale(0.4) translateY(-30px); transition: transform 0.7s var(--ease-bounce); }
         .large-burst-overlay.active .large-burst-box { transform: scale(1) translateY(0); }
 
         /* FOOTER & NAVIGATION */
@@ -197,6 +275,16 @@
         .sortable-ghost { opacity: 0 !important; }
         .sortable-drag { opacity: 1 !important; background: white !important; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .sortable-fallback { opacity: 1 !important; background: white !important; box-shadow: 0 15px 35px rgba(15, 23, 42, 0.15) !important; z-index: 9999 !important; }
+
+        .step-drag-handle { cursor: grab; }
+        .step-drag-handle:active { cursor: grabbing; }
+
+        /* Tutorial Pulse */
+        @keyframes pulse-accent {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+        }
+        .tutorial-pulse { animation: pulse-accent 1.5s infinite; }
     </style>
 </head>
 <body x-data="qimamEngine()" :class="isLongQuestionDesktop ? 'is-desktop-long' : ''" @resize.window="windowWidth = window.innerWidth" x-cloak>
@@ -417,13 +505,46 @@
 
     <script>
     const sectionIcons = {
-        tf: `<svg class="icon-card-svg" viewBox="0 0 100 100"><g class="tf-g-check"><circle class="tf-check-bg" cx="32" cy="50" r="20" fill="rgba(16,185,129,0.1)" stroke="rgba(16,185,129,0.3)" stroke-width="2"/><path class="tf-check-mark" d="M 24 52 L 30 58 L 42 42" stroke="#10B981" stroke-width="3.5" fill="none"/></g><g class="tf-g-cross"><circle class="tf-cross-bg" cx="68" cy="50" r="20" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.3)" stroke-width="2"/><path class="tf-cross-mark" d="M 62 44 L 74 56 M 74 44 L 62 56" stroke="#EF4444" stroke-width="3.5" fill="none"/></g></svg>`,
-        mcq: `<svg class="icon-card-svg" viewBox="0 0 100 100"><g class="mc-1"><circle cx="30" cy="30" r="14" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2.5"/><circle class="mc-dot" cx="30" cy="30" r="6" fill="#D4AF37"/></g><g class="mc-2"><circle cx="70" cy="30" r="14" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2.5"/><circle class="mc-dot" cx="70" cy="30" r="6" fill="#D4AF37"/></g><g class="mc-3"><circle cx="70" cy="70" r="14" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2.5"/><circle class="mc-dot" cx="70" cy="70" r="6" fill="#D4AF37"/></g><g class="mc-4"><circle cx="30" cy="70" r="14" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2.5"/><circle class="mc-dot" cx="30" cy="70" r="6" fill="#D4AF37"/></g></svg>`,
-        order: `<svg class="icon-card-svg" viewBox="0 0 100 100"><g class="or-row-1"><rect x="15" y="18" width="70" height="20" rx="10" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2"/><text x="25" y="33" fill="#0f172a" font-weight="900" font-size="14">1</text></g><g class="or-row-2"><rect x="15" y="46" width="55" height="20" rx="10" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2"/><text x="25" y="61" fill="#0f172a" font-weight="900" font-size="14">2</text></g><g class="or-row-3"><rect x="15" y="74" width="40" height="20" rx="10" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2"/><text x="25" y="89" fill="#0f172a" font-weight="900" font-size="14">3</text></g></svg>`,
-        fill: `<svg class="icon-card-svg" viewBox="0 0 100 100"><line x1="10" y1="40" x2="25" y2="40" stroke="#94A3B8" stroke-width="3"/><line x1="75" y1="40" x2="90" y2="40" stroke="#94A3B8" stroke-width="3"/><rect x="30" y="28" width="40" height="24" rx="8" fill="rgba(0,0,0,0.05)" stroke="#94A3B8" stroke-width="2" stroke-dasharray="4 4"/><rect class="fb-word" x="34" y="32" width="32" height="16" rx="6" fill="#D4AF37"/></svg>`,
-        match: `<svg class="icon-card-svg" viewBox="0 0 100 100"><rect class="ma-l1" x="15" y="12" width="28" height="18" rx="6" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2"/><rect class="ma-l2" x="15" y="41" width="28" height="18" rx="6" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2"/><rect class="ma-l3" x="15" y="70" width="28" height="18" rx="6" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2"/><rect class="ma-r1" x="57" y="12" width="28" height="18" rx="6" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2"/><rect class="ma-r2" x="57" y="41" width="28" height="18" rx="6" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2"/><rect class="ma-r3" x="57" y="70" width="28" height="18" rx="6" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2"/></svg>`,
-        step: `<svg class="icon-card-svg" viewBox="0 0 100 100"><rect x="30" y="15" width="40" height="18" rx="8" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2.5"/><path class="br-path" d="M 50 33 L 50 45 M 50 45 L 25 60 M 50 45 L 50 60 M 50 45 L 75 60" stroke="#94A3B8" stroke-width="2" fill="none" stroke-dasharray="50" stroke-dashoffset="50"/><rect class="br-n1" x="10" y="60" width="30" height="16" rx="8" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2.5"/><rect class="br-n2" x="35" y="60" width="30" height="16" rx="8" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2.5"/><rect class="br-n3" x="60" y="60" width="30" height="16" rx="8" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2.5"/></svg>`,
-        image: `<svg class="icon-card-svg" viewBox="0 0 100 100"><rect x="10" y="15" width="80" height="70" rx="10" fill="rgba(148,163,184,0.1)" stroke="#94A3B8" stroke-width="2.5"/><circle cx="30" cy="35" r="8" fill="#D4AF37"/><path d="M 10 85 L 40 45 L 55 65 L 70 50 L 90 85" stroke="#94A3B8" stroke-width="2.5" fill="none"/><g class="im-t1"><line x1="25" y1="30" x2="35" y2="40" stroke="#EF4444" stroke-width="3"/><line x1="35" y1="30" x2="25" y2="40" stroke="#EF4444" stroke-width="3"/></g></svg>`
+        tf: `<svg class="icon-card-svg" viewBox="0 0 100 100">
+                <g class="tf-g-check"><circle class="tf-check-bg" cx="32" cy="50" r="20" /><path class="tf-check-mark" d="M 24 52 L 30 58 L 42 42" /></g>
+                <g class="tf-g-cross"><circle class="tf-cross-bg" cx="68" cy="50" r="20" /><path class="tf-cross-mark" d="M 62 44 L 74 56 M 74 44 L 62 56" /></g>
+            </svg>`,
+        mcq: `<svg class="icon-card-svg" viewBox="0 0 100 100">
+                <g class="mc-1"><circle class="mc-ring" cx="30" cy="30" r="14"/><circle class="mc-dot" cx="30" cy="30" r="6"/></g>
+                <g class="mc-2"><circle class="mc-ring" cx="70" cy="30" r="14"/><circle class="mc-dot" cx="70" cy="30" r="6"/></g>
+                <g class="mc-3"><circle class="mc-ring" cx="70" cy="70" r="14"/><circle class="mc-dot" cx="70" cy="70" r="6"/></g>
+                <g class="mc-4"><circle class="mc-ring" cx="30" cy="70" r="14"/><circle class="mc-dot" cx="30" cy="70" r="6"/></g>
+            </svg>`,
+        order: `<svg class="icon-card-svg" viewBox="0 0 100 100">
+                <g class="or-row-1"><rect class="or-pill" x="15" y="18" width="70" height="20" /><text class="or-num" x="25" y="33">1</text><line x1="45" y1="28" x2="75" y2="28" stroke="var(--icon-base)" stroke-width="2" stroke-linecap="round" opacity="0.5"/></g>
+                <g class="or-row-2"><rect class="or-pill" x="15" y="46" width="55" height="20" /><text class="or-num" x="25" y="61">2</text><line x1="45" y1="56" x2="60" y2="56" stroke="var(--icon-base)" stroke-width="2" stroke-linecap="round" opacity="0.5"/></g>
+                <g class="or-row-3"><rect class="or-pill" x="15" y="74" width="40" height="20" /><text class="or-num" x="25" y="89">3</text><line x1="45" y1="84" x2="45" y2="84" stroke="var(--icon-base)" stroke-width="2" stroke-linecap="round" opacity="0.5"/></g>
+            </svg>`,
+        fill: `<svg class="icon-card-svg" viewBox="0 0 100 100">
+                <line class="fb-text-line" x1="10" y1="40" x2="25" y2="40" /><line class="fb-text-line" x1="75" y1="40" x2="90" y2="40" />
+                <rect class="fb-blank" x="30" y="28" width="40" height="24" />
+                <rect class="fb-word" x="34" y="32" width="32" height="16" />
+            </svg>`,
+        match: `<svg class="icon-card-svg" viewBox="0 0 100 100">
+                <rect class="ma-card ma-l1" x="15" y="12" width="28" height="18" /><rect class="ma-card ma-l2" x="15" y="41" width="28" height="18" /><rect class="ma-card ma-l3" x="15" y="70" width="28" height="18" />
+                <rect class="ma-card ma-r1" x="57" y="12" width="28" height="18" /><rect class="ma-card ma-r2" x="57" y="41" width="28" height="18" /><rect class="ma-card ma-r3" x="57" y="70" width="28" height="18" />
+            </svg>`,
+        step: `<svg class="icon-card-svg" viewBox="0 0 100 100">
+                <rect class="br-node br-main" x="30" y="15" width="40" height="18" />
+                <path class="br-line br-hidden br-path" d="M 50 33 L 50 45 M 50 45 L 25 60 M 50 45 L 50 60 M 50 45 L 75 60" />
+                <rect class="br-node br-scale br-n1" x="10" y="60" width="30" height="16" />
+                <rect class="br-node br-scale br-n2 br-n2-glow" x="35" y="60" width="30" height="16" />
+                <rect class="br-node br-scale br-n3" x="60" y="60" width="30" height="16" />
+            </svg>`,
+        image: `<svg class="icon-card-svg" viewBox="0 0 100 100">
+                <rect class="im-frame" x="10" y="15" width="80" height="70" />
+                <circle class="im-sun" cx="30" cy="35" r="8" />
+                <path class="im-mount" d="M 10 85 L 40 45 L 55 65 L 70 50 L 90 85" />
+                <g class="im-target im-t1"><line x1="25" y1="30" x2="35" y2="40"/><line x1="35" y1="30" x2="25" y2="40"/></g>
+                <g class="im-target im-t2"><line x1="65" y1="45" x2="75" y2="55"/><line x1="75" y1="45" x2="65" y2="55"/></g>
+                <g class="im-target im-t3"><line x1="35" y1="65" x2="45" y2="75"/><line x1="45" y1="65" x2="35" y2="75"/></g>
+                <g class="im-target im-t4"><line x1="75" y1="70" x2="85" y2="80"/><line x1="85" y1="70" x2="75" y2="80"/></g>
+            </svg>`
     };
 
     const palettes = {
@@ -482,7 +603,28 @@
                     }
                 }, 1000);
             },
-            checkNewSection() { if(!this.visitedSections.has(this.currentType)) { this.visitedSections.add(this.currentType); this.showLargeAnim = true; this.animTrigger = false; setTimeout(() => { this.animTrigger = true; }, 100); setTimeout(() => { this.showLargeAnim = false; this.animTrigger = false; }, 2500); } },
+            checkNewSection() {
+                if(!this.visitedSections.has(this.currentType)) {
+                    this.visitedSections.add(this.currentType);
+                    // 1. Wait for progress track to reach node (approx 600ms)
+                    setTimeout(() => {
+                        this.showLargeAnim = true;
+                        this.animTrigger = false;
+                        // 2. Static pop-up stabilizes (300ms)
+                        setTimeout(() => {
+                            this.animTrigger = true;
+                            // 3. Animation runs (1100ms)
+                            setTimeout(() => {
+                                // 4. Wait (200ms) then hide
+                                setTimeout(() => {
+                                    this.showLargeAnim = false;
+                                    this.animTrigger = false;
+                                }, 200);
+                            }, 1100);
+                        }, 300);
+                    }, 600);
+                }
+            },
             nextQ() { if(this.currentQ < this.totalQ) { this.currentQ++; this.haptic(15); } },
             prevQ() { if(this.currentQ > 1) { this.currentQ--; this.haptic(10); } },
             handleMainAction() { this.nextQ(); },
@@ -490,43 +632,136 @@
             haptic(ms) { if(navigator.vibrate) navigator.vibrate(ms); },
 
             tfAnswer: null, mcqOptions:['navigator.vibrate()','window.shake()','device.haptic()','document.vibrate()'], mcqAnswer:null,
-            orderItems: [{id:1,text:'الطور التمهيدي'},{id:2,text:'الطور الاستوائي'},{id:3,text:'الطور الانفصالي'},{id:4,text:'الطور النهائي'}],
+            orderItems: [
+                {id:1,text:'الطور التمهيدي (Prophase)'},
+                {id:2,text:'الطور الاستوائي (Metaphase)'},
+                {id:3,text:'الطور الانفصالي (Anaphase)'},
+                {id:4,text:'الطور النهائي (Telophase)'},
+            ],
+            orderSortable: null,
             renderOrderList() {
                 const c = document.getElementById('order-list'); if(!c) return; c.innerHTML='';
-                this.orderItems.forEach((it, i) => { const d=document.createElement('div'); d.className='bg-white border-2 border-slate-200 shadow-sm rounded-2xl p-4 flex items-center gap-3'; d.innerHTML=`<div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 font-black text-sm flex items-center justify-center shrink-0 border border-slate-200">${i+1}</div><div class="flex-1 font-bold text-base text-slate-700">${it.text}</div><div class="step-drag-handle material-symbols-rounded text-slate-300 cursor-grab p-2">drag_indicator</div>`; c.appendChild(d); });
-                Sortable.create(c, { handle:'.step-drag-handle', animation:150, forceFallback:true, onEnd: (e) => { const el=this.orderItems.splice(e.oldIndex, 1)[0]; this.orderItems.splice(e.newIndex, 0, el); this.haptic(10); this.renderOrderList(); } });
+                this.orderItems.forEach((it, i) => {
+                    const d=document.createElement('div'); d.dataset.id=it.id;
+                    d.className='bg-white border-2 border-slate-200 shadow-sm rounded-2xl p-4 flex items-center gap-3';
+                    d.innerHTML=`
+                        <div class="flex flex-col gap-1 shrink-0">
+                            <button data-action="up" data-idx="${i}" class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-qNavy hover:bg-slate-100 transition ${i===0?'opacity-30 pointer-events-none':''}"><span class="material-symbols-rounded text-lg">expand_less</span></button>
+                            <button data-action="down" data-idx="${i}" class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-qNavy hover:bg-slate-100 transition ${i===this.orderItems.length-1?'opacity-30 pointer-events-none':''}"><span class="material-symbols-rounded text-lg">expand_more</span></button>
+                        </div>
+                        <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 font-black text-sm flex items-center justify-center shrink-0 border border-slate-200">${i+1}</div>
+                        <div class="flex-1 font-bold text-base text-slate-700">${it.text}</div>
+                        <div class="step-drag-handle shrink-0 text-slate-300 hover:text-slate-500 transition-colors p-2 cursor-grab active:cursor-grabbing"><span class="material-symbols-rounded">drag_indicator</span></div>`;
+                    d.querySelectorAll('button[data-action]').forEach(btn => {
+                        btn.onclick=(e)=>{
+                            e.stopPropagation(); const action=btn.dataset.action; const idx=parseInt(btn.dataset.idx);
+                            if(action==='up'&&idx>0){const el=this.orderItems.splice(idx,1)[0];this.orderItems.splice(idx-1,0,el);this.haptic(10);this.renderOrderList();}
+                            else if(action==='down'&&idx<this.orderItems.length-1){const el=this.orderItems.splice(idx,1)[0];this.orderItems.splice(idx+1,0,el);this.haptic(10);this.renderOrderList();}
+                        };
+                    });
+                    c.appendChild(d);
+                });
+                if(this.orderSortable) this.orderSortable.destroy();
+                this.orderSortable = Sortable.create(c, {
+                    animation:150, handle:'.step-drag-handle', forceFallback:true, fallbackClass:"sortable-fallback", fallbackOnBody:true, swapThreshold:0.65,
+                    onEnd:(e)=>{this.haptic(15); const el=this.orderItems.splice(e.oldIndex, 1)[0]; this.orderItems.splice(e.newIndex, 0, el); this.renderOrderList();}
+                });
             },
-            stepItems: [{id:1,title:'احسب طاقة الوضع',isOpen:true,isSolved:false,options:['1000 جول','2000 جول','500 جول'],tempAnswer:null},{id:2,title:'استنتج السرعة',isOpen:false,isSolved:false,options:['10 م/ث','20 م/ث'],tempAnswer:null}],
+            stepItems: [
+                {id:1,title:'احسب طاقة الوضع',isOpen:false,isSolved:false,tempAnswer:null,confirmedAnswer:null,options:['1000 جول','2000 جول','500 جول']},
+                {id:2,title:'استنتج السرعة',isOpen:false,isSolved:false,tempAnswer:null,confirmedAnswer:null,options:['10 م/ث','20 م/ث','5 م/ث']},
+                {id:3,title:'احسب الزمن اللازم',isOpen:false,isSolved:false,tempAnswer:null,confirmedAnswer:null,options:['3 ثوانٍ','5 ثوانٍ','8 ثوانٍ']}
+            ],
+            stepSortable: null,
+            stepOrderConfirmed: false,
             renderStepList() {
                 const c = document.getElementById('step-list'); if(!c) return; c.innerHTML='';
+
+                // Show Confirmation Button if not confirmed yet
+                if(!this.stepOrderConfirmed) {
+                    const info = document.createElement('div');
+                    info.className = 'p-4 bg-amber-50 border border-amber-200 rounded-2xl mb-4 text-amber-800 text-sm font-bold text-center';
+                    info.innerHTML = 'يرجى ترتيب الخطوات أولاً، ثم الضغط على تأكيد الترتيب للبدء في الحل.';
+                    c.appendChild(info);
+                }
+
                 this.stepItems.forEach((st, i) => {
-                    const d=document.createElement('div'); d.className='bg-white border-2 rounded-2xl shadow-sm silk overflow-hidden transition-all';
-                    if(st.isSolved) d.style.borderColor='#D4AF37';
-                    d.innerHTML=`<div class="p-4 flex items-center justify-between cursor-pointer"><div class="flex items-center gap-3"><span class="w-8 h-8 rounded-xl ${st.isSolved?'bg-amber-100 text-amber-600 border-amber-300':'bg-slate-100 text-slate-500 border-slate-200'} flex items-center justify-center font-black text-sm border">${i+1}</span><span class="font-bold text-slate-700 text-sm md:text-base truncate">${st.title}</span></div><span class="material-symbols-rounded transition-transform ${st.isOpen?'rotate-180':''}">expand_more</span></div>`;
-                    d.onclick = () => { this.stepItems.forEach((s,j)=>{if(i!==j)s.isOpen=false;}); st.isOpen=!st.isOpen; this.renderStepList(); };
-                    if(st.isOpen) {
-                        const bd = document.createElement('div'); bd.className='p-4 pt-0 border-t border-slate-50 bg-slate-50/50';
-                        const opts = document.createElement('div'); opts.className='flex flex-col gap-2 mt-4';
-                        st.options.forEach((o,oi)=>{ const b=document.createElement('button'); b.className='p-4 border-2 rounded-xl text-right font-bold bg-white silk transition-all flex items-center justify-between'; b.innerHTML=`<span>${o}</span>`; b.onclick=(e)=>{e.stopPropagation(); st.tempAnswer=oi; this.renderStepList();}; if(st.tempAnswer===oi) { b.className+=' border-qNavy bg-qNavy text-white shadow-md'; b.innerHTML+=`<span class="material-symbols-rounded text-lg">check_circle</span>`; } opts.appendChild(b); });
-                        const cb = document.createElement('button'); cb.className=`squish w-full py-4 mt-4 rounded-xl font-black silk ${st.tempAnswer!==null?'bg-qGold text-qNavy shadow-lg':'bg-slate-200 text-slate-400'}`; cb.innerText='تأكيد الخطوة'; cb.onclick=(e)=>{e.stopPropagation(); if(st.tempAnswer!==null){st.isSolved=true; st.isOpen=false; this.renderStepList(); this.haptic(20); }};
-                        bd.appendChild(opts); bd.appendChild(cb); d.appendChild(bd);
+                    const d=document.createElement('div'); d.dataset.id=st.id;
+                    d.className='step-card rounded-2xl overflow-hidden border-2 bg-white shadow-sm cursor-auto';
+                    if(st.isSolved){ d.style.borderColor='#D4AF37'; d.style.backgroundColor='rgba(212,175,55,0.02)'; }
+                    else if(st.isOpen){ d.style.borderColor='#D4AF37'; }
+                    else { d.style.borderColor='#e2e8f0'; }
+                    const hd=document.createElement('div'); hd.className='p-4 flex items-center gap-3';
+                    const num=document.createElement('div'); num.className='w-8 h-8 rounded-xl font-black text-sm flex items-center justify-center shrink-0 border';
+                    num.style.cssText=st.isSolved?'background:rgba(212,175,55,0.12); border-color:#D4AF37; color:#D4AF37;':'background:#f1f5f9; border-color:#e2e8f0; color:#64748b;';
+                    num.textContent=i+1;
+                    const ttl=document.createElement('div'); ttl.className='flex-1 font-bold text-sm md:text-base text-slate-700 truncate';
+                    ttl.textContent=st.title;
+                    const dh=document.createElement('div'); dh.className=`step-drag-handle shrink-0 p-2 cursor-grab active:cursor-grabbing ${!this.stepOrderConfirmed?'tutorial-pulse text-qGold':'text-slate-300'}`;
+                    dh.innerHTML='<span class="material-symbols-rounded">drag_indicator</span>';
+                    hd.append(num, ttl, dh);
+                    if(this.stepOrderConfirmed) {
+                        if(st.isSolved){
+                            const eb=document.createElement('button'); eb.className='w-10 h-10 rounded-full flex items-center justify-center bg-amber-50 text-amber-600 border border-amber-100 shrink-0';
+                            eb.innerHTML='<span class="material-symbols-rounded text-sm">edit</span>';
+                            eb.onclick=(e)=>{e.stopPropagation(); st.isSolved=false; st.isOpen=true; this.renderStepList();}; hd.appendChild(eb);
+                        } else {
+                            const tb=document.createElement('button'); tb.className=`w-10 h-10 rounded-full flex items-center justify-center bg-slate-50 text-slate-400 border border-slate-200 shrink-0 ${!st.isSolved?'tutorial-pulse text-qNavy':''}`;
+                            tb.innerHTML=`<span class="material-symbols-rounded" style="transition:transform 300ms; transform:rotate(${st.isOpen?180:0}deg)">expand_more</span>`;
+                            tb.onclick=(e)=>{e.stopPropagation(); this.stepItems.forEach((s,j)=>{if(i!==j)s.isOpen=false;}); st.isOpen=!st.isOpen; this.renderStepList();}; hd.appendChild(tb);
+                        }
+                    }
+                    d.appendChild(hd);
+                    if(st.isOpen){
+                        const bd=document.createElement('div'); bd.className='p-4 pt-0 border-t border-slate-50 bg-slate-50/50';
+                        const opts=document.createElement('div'); opts.className='flex flex-col gap-2 my-3';
+                        st.options.forEach((opt, oi)=>{
+                            const b=document.createElement('button'); const sel=st.tempAnswer===oi;
+                            b.className='squish w-full p-4 rounded-xl font-bold text-sm text-right border-2 flex items-center justify-between bg-white silk';
+                            b.style.cssText=sel?'background:#0f172a; border-color:#0f172a; color:white;':'border-color:#e2e8f0; color:#475569;';
+                            b.innerHTML=`<span>${opt}</span>${sel?'<span class="material-symbols-rounded text-base opacity-60">check_circle</span>':''}`;
+                            b.onclick=()=>{st.tempAnswer=oi; this.haptic(10); this.renderStepList();}; opts.appendChild(b);
+                        });
+                        const cb=document.createElement('button'); const can=st.tempAnswer!==null;
+                        cb.className=`squish w-full py-4 rounded-xl font-black text-sm silk ${can?'bg-qGold text-qNavy shadow-lg':'bg-slate-200 text-slate-400'}`;
+                        cb.textContent='تأكيد الخطوة';
+                        cb.onclick=()=>{if(can){st.isSolved=true; st.isOpen=false; st.confirmedAnswer=st.tempAnswer; this.haptic(20); this.renderStepList();}};
+                        bd.append(opts, cb); d.appendChild(bd);
                     }
                     c.appendChild(d);
                 });
+                if(this.stepSortable) this.stepSortable.destroy();
+                this.stepSortable = Sortable.create(c, {
+                    animation:150, handle:'.step-drag-handle', forceFallback:true, fallbackClass:"sortable-fallback", fallbackOnBody:true,
+                    onEnd:(e)=>{this.haptic(15); const el=this.stepItems.splice(e.oldIndex, 1)[0]; this.stepItems.splice(e.newIndex, 0, el); this.renderStepList();}
+                });
+
+                if(!this.stepOrderConfirmed) {
+                    const conf = document.createElement('button');
+                    conf.className = 'w-full py-5 mt-6 bg-qNavy text-white rounded-2xl font-black text-lg shadow-xl silk tutorial-pulse';
+                    conf.textContent = 'تأكيد الترتيب والبدء بالحل';
+                    conf.onclick = () => { this.stepOrderConfirmed = true; this.haptic(30); this.renderStepList(); };
+                    c.appendChild(conf);
+                }
             },
             fillBank: ['HTML','JavaScript','CSS','Python'], fillAnswers: [null, null], fillActiveIdx: 0,
             _measureWord(word, ref) { const r=document.getElementById('blank-ruler'); if(!r||!word) return 68; if(ref) r.style.fontSize = window.getComputedStyle(ref.parentElement).fontSize; r.innerText=word; return Math.max(r.offsetWidth+24, 68); },
             _setBlankWidth(i, w) { const b=document.getElementById(`blank-${i}`); if(b) b.style.minWidth = this._measureWord(w, b)+'px'; },
             setActiveBlank(i) { if(this.fillAnswers[i]) { this.fillAnswers[i]=null; this._setBlankWidth(i,null); } this.fillActiveIdx=i; },
             fillBlank(w) { if(this.fillActiveIdx!==null && !this.fillAnswers.includes(w)) { this.fillAnswers[this.fillActiveIdx]=w; this._setBlankWidth(this.fillActiveIdx, w); this.fillActiveIdx = this.fillAnswers.findIndex(a=>a===null); if(this.fillActiveIdx===-1) this.fillActiveIdx=null; this.haptic(10); } },
+            colorPool: ['#3B82F6','#8B5CF6','#F59E0B','#06B6D4','#EC4899','#6366F1','#14B8A6','#F97316','#D946EF','#0EA5E9','#A855F7','#0284C7','#C026D3','#D97706','#2563EB','#9333EA','#0D9488','#EA580C','#EAB308','#4F46E5'],
             matchRight:[{id:'r1',text:'HTML'},{id:'r2',text:'CSS'},{id:'r3',text:'JavaScript'},{id:'r4',text:'Python'}], matchLeft:[{id:'l1',text:'الهيكل الأساسي'},{id:'l2',text:'التنسيق والألوان'},{id:'l3',text:'المنطق والتفاعل'},{id:'l4',text:'تحليل البيانات'}], connections:[], pendingRight:null, pendingLeft:null,
+            getRandomSafeColor() { let h; do{h=Math.floor(Math.random()*360);} while((h>=340||h<=20)||(h>=90&&h<=150)); return `hsl(${h},80%,55%)`; },
             touchNode(s,id) {
-                const ci=this.connections.findIndex(c=>c.rightId===id||c.leftId===id); if(ci!==-1){this.connections.splice(ci,1); return;}
-                if(s==='right') this.pendingRight=this.pendingRight===id?null:id; else this.pendingLeft=this.pendingLeft===id?null:id;
-                if(this.pendingRight&&this.pendingLeft) {
-                    this.connections.push({rightId:this.pendingRight, leftId:this.pendingLeft, color:'#3B82F6'});
-                    this.pendingRight=this.pendingLeft=null; this.haptic(15);
-                }
+                const ci=this.connections.findIndex(c=>c.rightId===id||c.leftId===id); if(ci!==-1){const c=this.connections.splice(ci,1)[0]; this.colorPool.push(c.color); this.pendingRight=this.pendingLeft=null; return;}
+                if(s==='right'){this.pendingRight=this.pendingRight===id?null:id; if(this.pendingRight&&this.pendingLeft)this.makeMatch();}
+                else{this.pendingLeft=this.pendingLeft===id?null:id; if(this.pendingLeft&&this.pendingRight)this.makeMatch();}
+            },
+            makeMatch(){
+                let col; if(this.colorPool.length>0){const ri=Math.floor(Math.random()*this.colorPool.length); col=this.colorPool.splice(ri,1)[0];}
+                else col=this.getRandomSafeColor();
+                this.connections.push({rightId:this.pendingRight, leftId:this.pendingLeft, color:col});
+                this.pendingRight=this.pendingLeft=null; this.haptic(15);
             },
             getNodeStyle(s,id) { const cn=this.connections.find(c=>c[s+'Id']===id); return cn ? `background:${cn.color}; border-color:${cn.color}; color:white;` : ''; },
             getNodeClass(s,id) { return (s==='right'?this.pendingRight:this.pendingLeft)===id ? 'border-qNavy bg-slate-100 shadow-md' : 'border-slate-200 bg-white'; },
