@@ -17,10 +17,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Almarai', 'sans-serif'],
-                        mono: ['Share Tech Mono', 'monospace']
-                    },
+                    fontFamily: { sans: ['Almarai', 'sans-serif'] },
                     colors: { qNavy: '#0f172a', qGold: '#D4AF37', qBg: '#F8FAFC' }
                 }
             }
@@ -31,402 +28,435 @@
         [x-cloak] { display: none !important; }
         :root {
             --bg-body: #F8FAFC;
-            --qNavy: #0f172a;
-            --qGold: #D4AF37;
-            --ease-silk: cubic-bezier(0.22, 1, 0.36, 1);
+            --text-main: #FFFFFF;
+            --fibo-time: 618ms;
             --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-            --hdr: 110px;
-            --ftr: 85px;
-            --safe-b: env(safe-area-inset-bottom, 0px);
+            --ease-silk: cubic-bezier(0.22, 1, 0.36, 1);
             --progress-color: #D4AF37;
-            --track-color: rgba(15, 23, 42, 0.08);
-            --icon-base: #94A3B8;
-            --icon-fill: rgba(148, 163, 184, 0.1);
-            --icon-success: #10B981;
-            --icon-danger: #EF4444;
-            --anim-time: 1200ms;
+            --track-color: rgba(255, 255, 255, 0.12);
+            --hdr: 90px;
+            --ftr: 75px;
+            --safe-b: env(safe-area-inset-bottom, 0px);
         }
 
         body {
             background-color: var(--bg-body);
-            color: var(--qNavy);
+            color: #0f172a;
             font-family: 'Almarai', sans-serif;
-            overflow: hidden; overscroll-behavior: none; touch-action: manipulation;
-            user-select: none; -webkit-tap-highlight-color: transparent;
-            padding-top: max(10px, env(safe-area-inset-top));
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            padding-top: 0;
             -webkit-font-smoothing: antialiased;
         }
 
         .gpu-accelerate { transform: translateZ(0); backface-visibility: hidden; perspective: 1000px; }
-        .silk { transition: all 480ms var(--ease-silk); will-change: transform, opacity, background-color, border-color, padding; }
-        .squish { transition: transform 280ms var(--ease-silk), box-shadow 280ms var(--ease-silk); will-change: transform; transform: translateZ(0); }
-        .squish:active { transform: scale(0.96) translateZ(0); }
 
-        /* HEADER GLASS */
         .header-section {
             width: 100%; max-width: 1050px; margin: 0 auto; padding: 0 16px;
-            position: fixed; top: max(10px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 50;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+            height: var(--hdr); z-index: 50;
         }
+
         .glass-capsule {
             position: relative; width: 100%; height: 72px; border-radius: 24px;
-            background: rgba(255, 255, 255, 0.5); border: 1px solid rgba(15, 23, 42, 0.08);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8);
-            z-index: 10;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+            z-index: 10; overflow: visible;
         }
-        .liquid-layer { position: absolute; inset: 0; border-radius: 23px; overflow: hidden; z-index: 0; }
-        .blob { position: absolute; border-radius: 50%; filter: blur(40px); opacity: 0.6; transition: background-color 2s ease; will-change: transform; }
+
+        .liquid-layer { position: absolute; inset: 0; border-radius: 23px; overflow: hidden; background: transparent; z-index: 0; transform: translateZ(0); }
+        .blob { position: absolute; border-radius: 50%; filter: blur(40px); opacity: 0.85; will-change: transform; transition: background-color 2s ease; }
         .b-1 { width: 85%; height: 190%; top: -45%; left: -10%; animation: f1 8s infinite alternate ease-in-out; }
         .b-2 { width: 80%; height: 180%; top: -35%; right: -15%; animation: f2 10s infinite alternate ease-in-out; }
         .b-3 { width: 90%; height: 200%; bottom: -45%; left: -20%; animation: f3 9s infinite alternate ease-in-out; }
         .b-4 { width: 85%; height: 190%; bottom: -35%; right: -10%; animation: f4 12s infinite alternate ease-in-out; }
+        .b-5 { width: 75%; height: 160%; top: -25%; left: 20%; animation: f5 11s infinite alternate ease-in-out; }
+        .b-6 { width: 70%; height: 170%; bottom: -25%; right: 15%; animation: f6 7s infinite alternate ease-in-out; }
         @keyframes f1 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(20%, 10%) scale(1.1); } }
         @keyframes f2 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-20%, 15%) scale(1.05); } }
         @keyframes f3 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(15%, -20%) scale(1.15); } }
         @keyframes f4 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-15%, -10%) scale(1.1); } }
+        @keyframes f5 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-10%, 20%) scale(1.2); } }
+        @keyframes f6 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(20%, -15%) scale(1.05); } }
 
         .glass-frost { position: absolute; inset: 0; border-radius: 23px; backdrop-filter: blur(25px) saturate(110%); -webkit-backdrop-filter: blur(25px) saturate(110%); z-index: 1; }
 
-        .perimeter-svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 5; transform: scaleX(-1); }
+        .party-layer { position: absolute; inset: 0; border-radius: 23px; z-index: 2; opacity: 0; background: linear-gradient(90deg, rgba(212,175,55,0.8), rgba(255,255,255,0.4), rgba(212,175,55,0.8)); background-size: 200% 100%; transition: opacity 0.8s ease; backdrop-filter: blur(5px); }
+        .is-partying .party-layer { opacity: 1; animation: elegantParty 2s linear infinite; }
+        @keyframes elegantParty { 0% { background-position: 200% center; } 100% { background-position: 0% center; } }
+        .party-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9) translateZ(0); z-index: 30; opacity: 0; pointer-events: none; width: 100%; text-align: center; font-size: clamp(16px, 4vw, 20px); font-weight: 900; color: #FFF; text-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 20px rgba(212,175,55,0.8); transition: all 0.5s var(--ease-bounce); }
+        .is-partying .party-text { opacity: 1; transform: translate(-50%, -50%) scale(1) translateZ(0); }
+
+        .perimeter-svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; transform: scaleX(-1) translateZ(0); }
         .track-bg { fill: none; stroke: var(--track-color); stroke-width: 4; rx: 22px; }
-        .track-progress { fill: none; stroke: var(--progress-color); stroke-width: 4; stroke-linecap: round; rx: 22px; stroke-dasharray: 100; transition: stroke-dashoffset 618ms var(--ease-bounce); }
+        .track-progress { fill: none; stroke: var(--progress-color); stroke-width: 4; stroke-linecap: round; rx: 22px; stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset var(--fibo-time) var(--ease-bounce); will-change: stroke-dashoffset; }
 
         .node-layer { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
-        .node-wrapper { position: absolute; width: 32px; height: 32px; transition: all 618ms var(--ease-bounce); }
-        .node-circle { width: 100%; height: 100%; border-radius: 50%; background: #FFF; border: 2px solid rgba(15,23,42,0.1); display: flex; align-items: center; justify-content: center; color: #94A3B8; box-shadow: 0 4px 10px rgba(0,0,0,0.05); overflow: hidden; position: relative; }
-        .node-circle svg { width: 18px; height: 18px; position: relative; z-index: 1; }
-        .node-wrapper.is-active { z-index: 30; }
-        .node-wrapper.is-active .node-circle { border-color: var(--progress-color); color: var(--progress-color); transform: scale(1.3); box-shadow: 0 0 15px rgba(212, 175, 55, 0.2); }
-        .node-wrapper.is-completed .node-circle { border-color: #10B981; color: #10B981; transform: scale(0.9); }
-        .node-wrapper.is-completed .node-circle::after { content: ''; position: absolute; inset: 0; background: rgba(16, 185, 129, 0.1); backdrop-filter: blur(1px); z-index: 0; }
+        .node-wrapper { position: absolute; width: 30px; height: 30px; transform: translate3d(50%, -50%, 0); transition: all var(--fibo-time) var(--ease-bounce); will-change: transform; }
+        /* Nodes mapping (Approx mapping for 25 questions on a 100% path) */
+        .node-1 { top: 0; right: 35%; } /* Q4: 16% */
+        .node-2 { top: 0; right: 75%; } /* Q8: 32% */
+        .node-3 { top: 75%; left: 0; transform: translate3d(-50%, -50%, 0); } /* Q12: 48% */
+        .node-4 { bottom: 0; left: 30%; transform: translate3d(-50%, 50%, 0); } /* Q16: 64% */
+        .node-5 { bottom: 0; left: 70%; transform: translate3d(-50%, 50%, 0); } /* Q20: 80% */
+        .node-6 { bottom: 25%; right: 0; transform: translate3d(50%, 50%, 0); } /* Q23: 92% */
+        .node-7 { top: 0; right: 0; transform: translate3d(50%, -50%, 0); } /* Q25: 100% */
 
-        /* Node manual positions */
-        .node-1 { top: 0; right: 15%; transform: translate3d(50%, -50%, 0); }
-        .node-2 { top: 0; right: 40%; transform: translate3d(50%, -50%, 0); }
-        .node-3 { top: 0; right: 65%; transform: translate3d(50%, -50%, 0); }
-        .node-4 { top: 50%; left: 0; transform: translate3d(-50%, -50%, 0); }
-        .node-5 { bottom: 0; left: 25%; transform: translate3d(-50%, 50%, 0); }
-        .node-6 { bottom: 0; left: 55%; transform: translate3d(-50%, 50%, 0); }
-        .node-7 { bottom: 0; left: 85%; transform: translate3d(-50%, 50%, 0); }
+        .node-circle { width: 100%; height: 100%; border-radius: 50%; background: #0A142B; border: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; color: #64748B; transition: all var(--fibo-time) var(--ease-bounce); position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .node-circle svg { width: 16px; height: 16px; position: relative; z-index: 1; transform: translateZ(0); }
+        .node-wrapper.is-active { transform: translate3d(var(--tx, 50%), var(--ty, -50%), 0) scale(1.3); z-index: 30; }
+        .node-wrapper.is-active .node-circle { border-color: var(--progress-color); color: var(--progress-color); background: #0F172A; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+        .node-wrapper.is-completed { transform: translate3d(var(--tx, 50%), var(--ty, -50%), 0) scale(0.9); }
+        .node-wrapper.is-completed .node-circle { border-color: rgba(16, 185, 129, 0.5); color: rgba(255, 255, 255, 0.8); }
+        .node-wrapper.is-completed .node-circle::after { content: ''; position: absolute; inset: 0; background: rgba(16, 185, 129, 0.3); backdrop-filter: blur(2px); z-index: 5; }
+        .node-4.is-active, .node-4.is-completed { --tx: -50%; --ty: -50%; }
+        .node-5.is-active, .node-6.is-active, .node-7.is-active, .node-5.is-completed, .node-6.is-completed, .node-7.is-completed { --tx: -50%; --ty: 50%; }
 
-        .capsule-content { position: absolute; inset: 0; z-index: 25; display: flex; justify-content: space-between; align-items: center; padding: 0 clamp(16px, 4vw, 36px); pointer-events: none; transition: opacity 0.4s; }
-        .is-partying .capsule-content { opacity: 0; }
-        .timer-box { font-family: 'Share Tech Mono', monospace; font-size: clamp(24px, 6vw, 34px); letter-spacing: 1px; transition: color 0.5s; direction: ltr; position: relative; }
-        .subject-box { font-size: clamp(14px, 4vw, 18px); font-weight: 900; color: var(--qNavy); }
+        .capsule-content { position: absolute; inset: 0; z-index: 25; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; pointer-events: none; transition: opacity 0.3s; }
+        .is-partying .capsule-content { opacity: 0 !important; }
 
-        .phantom-echo { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; opacity: 0; z-index: -1; color: #FFB3B3; -webkit-text-stroke: 1.2px #FFB3B3; }
-        .timer-danger { color: #EF4444 !important; }
-        .timer-danger .phantom-echo { animation: coreClone 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
-        @keyframes coreClone { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.6); opacity: 0; } }
+        .identity-info { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; opacity: 0.9; }
+        .id-top { display: flex; align-items: center; gap: 6px; color: var(--progress-color); font-size: 10px; font-weight: 800; margin-bottom: 2px; }
+        .id-top svg { width: 12px; height: 12px; }
+        .id-bottom { font-size: 13px; font-weight: 900; font-family: monospace; letter-spacing: 1px; }
 
-        /* ARENA */
+        .timer-box { position: relative; font-family: 'Share Tech Mono', monospace; font-size: clamp(24px, 6vw, 34px); letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); transition: color 0.5s ease; direction: ltr; }
+        .timer-danger { color: #FF3B30 !important; -webkit-text-stroke: 1.2px #FFFFFF; text-shadow: 0 4px 15px rgba(0,0,0,0.6); z-index: 10; }
+        .phantom-echo { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; opacity: 0; z-index: -1; color: #FFB3B3; -webkit-text-stroke: 1.2px #FFB3B3; will-change: transform, opacity; }
+        .timer-danger .phantom-echo { display: block; animation: coreClone 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+        @keyframes coreClone { 0% { transform: translateZ(0) scale(1); opacity: 0.6; color: #FFB3B3; -webkit-text-stroke: 1.2px #FFB3B3; filter: blur(0px) drop-shadow(0 0 5px rgba(255, 59, 48, 0.4)); } 100% { transform: translateZ(0) scale(1.618) scaleY(1); opacity: 0; filter: blur(2px); } }
+        .subject-box { font-size: clamp(16px, 4.5vw, 22px); font-weight: 900; text-shadow: 0 2px 10px rgba(0,0,0,0.5); color: #FFFFFF; }
+
         #arena-main {
-            position: fixed; z-index: 10; overflow-y: auto; overflow-x: hidden; background: transparent !important;
+            position: fixed; top: var(--hdr);
+            bottom: calc(var(--ftr) + var(--safe-b) + 8px); left: 0; right: 0;
+            z-index: 10; overflow-y: auto; overflow-x: hidden; background: transparent !important;
         }
+        .is-desktop-long #arena-main { left: clamp(44px, 4vw, 52px); right: 15px; bottom: 15px; top: calc(var(--hdr) + 10px); }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        *::-webkit-scrollbar { display: none !important; }
 
-        /* FOOTER */
-        .footer-hub {
-            position: fixed; bottom: 0; left: 0; right: 0; height: calc(var(--ftr) + var(--safe-b));
-            padding: 0 16px var(--safe-b); background: white; border-top: 1px solid rgba(0,0,0,0.05);
-            display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 50;
-        }
-        .identity-label {
-            position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-12px);
-            background: var(--qNavy); color: white; padding: 6px 16px; border-radius: 20px;
-            font-size: 12px; font-weight: 800; transition: all 420ms var(--ease-silk); box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            pointer-events: auto; cursor: pointer;
-        }
-        .hidden-label { opacity: 0; transform: translateX(-50%) translateY(0); pointer-events: none; }
+        .silk { transition: all 480ms var(--ease-silk); will-change: transform, opacity, background-color, border-color, padding; }
+        .squish { transition: transform 280ms var(--ease-silk), box-shadow 280ms var(--ease-silk); will-change: transform; transform: translateZ(0); }
+        .squish:active { transform: scale(0.96) translateZ(0); }
 
-        /* LARGE ANIMATION - POPUP UNDER CAPSULE */
-        .large-anim-overlay {
-            position: fixed; top: calc(max(10px, env(safe-area-inset-top)) + 16px); left: 50%; transform: translateX(-50%); z-index: 100;
-            width: 100%; max-width: 1050px; height: 72px;
-            display: flex; align-items: center; justify-content: center;
-            pointer-events: none; opacity: 0; transition: opacity 0.4s ease;
-        }
-        .large-anim-overlay.active { opacity: 1; }
-        .large-anim-box {
-            width: 100px; height: 100px; background: white; border-radius: 24px; padding: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
-            transform: scale(0.2) translateY(0); transition: transform 0.6s var(--ease-bounce);
-        }
-        .large-anim-overlay.active .large-anim-box { transform: scale(1) translateY(0); }
-
-        /* SIDE NAV (Desktop Left) */
-        .side-next-btn {
-            position: fixed; left: 0; top: var(--hdr); bottom: calc(var(--ftr) + var(--safe-b) + 10px);
-            width: 52px; background: var(--qNavy); color: white;
-            display: flex; align-items: center; justify-content: center; z-index: 40; border-radius: 0 14px 14px 0;
-            transition: all 280ms var(--ease-silk);
-        }
-        .side-next-btn:active { transform: scaleX(0.93); background-color: var(--qGold); }
-
-        /* ICON ANIMATIONS */
-        .icon-card-svg { width: 100%; height: 100%; overflow: visible; stroke-linecap: round; stroke-linejoin: round; }
-        g, path, rect, circle, line, text { transform-box: fill-box; transform-origin: center; }
-
-        .tf-check-bg { fill: rgba(16, 185, 129, 0.1); stroke: rgba(16, 185, 129, 0.3); stroke-width: 2; }
-        .tf-cross-bg { fill: rgba(239, 68, 68, 0.1); stroke: rgba(239, 68, 68, 0.3); stroke-width: 2; }
-        .tf-check-mark { stroke: var(--icon-success); stroke-width: 3.5; fill: none; }
-        .tf-cross-mark { stroke: var(--icon-danger); stroke-width: 3.5; fill: none; }
-        .is-animating .tf-g-check { animation: tfPopCheck 1200ms var(--ease-bounce) forwards; }
-        .is-animating .tf-g-cross { animation: tfPopCross 1200ms var(--ease-bounce) forwards; }
-        @keyframes tfPopCheck { 0%, 100% { transform: scale(1) translateX(0); opacity: 1; } 20%, 40% { transform: scale(1.2) translateX(8px); filter: drop-shadow(0 0 10px rgba(16,185,129,0.4)); } 60%, 80% { transform: scale(0.8) translateX(-10px); opacity: 0.3; } }
-        @keyframes tfPopCross { 0%, 100% { transform: scale(1) translateX(0); opacity: 1; } 20%, 40% { transform: scale(0.8) translateX(10px); opacity: 0.3; } 60%, 80% { transform: scale(1.2) translateX(-8px); filter: drop-shadow(0 0 10px rgba(239,68,68,0.4)); } }
-
-        .mc-ring { stroke: var(--icon-base); stroke-width: 2.5; fill: var(--icon-fill); }
-        .mc-dot { fill: var(--qGold); transform: scale(0); opacity: 0; }
-        .is-animating .mc-1 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 0ms forwards; }
-        .is-animating .mc-2 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 150ms forwards; }
-        .is-animating .mc-3 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 300ms forwards; }
-        .is-animating .mc-4 .mc-dot { animation: mcFillHold 600ms var(--ease-bounce) 450ms forwards; }
-        @keyframes mcFill { 0%, 100% { transform: scale(0); opacity: 0; } 50% { transform: scale(1); opacity: 1; } }
-        @keyframes mcFillHold { 0%, 100% { transform: scale(0); opacity: 0; } 20%, 80% { transform: scale(1); opacity: 1; } }
-
-        .or-pill { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2; rx: 10; }
-        .or-num { fill: var(--qNavy); font-weight: 900; font-size: 14px; }
-        .is-animating .or-row-1 { animation: orSlideDown 1200ms var(--ease-silk) forwards; }
-        .is-animating .or-row-2 { animation: orSlideUp 1200ms var(--ease-silk) forwards; }
-        @keyframes orSlideDown { 0%, 100% { transform: translateY(0); } 40%, 70% { transform: translateY(28px); } }
-        @keyframes orSlideUp { 0%, 100% { transform: translateY(0); } 40%, 70% { transform: translateY(-28px); } }
-
-        .fb-text-line { stroke: var(--icon-base); stroke-width: 3; stroke-linecap: round; }
-        .fb-blank { fill: rgba(0,0,0,0.1); stroke: var(--icon-base); stroke-width: 2; stroke-dasharray: 4 4; rx: 8; }
-        .fb-word { fill: var(--qGold); rx: 6; opacity: 0.8; transform: translateY(25px); }
-        .is-animating .fb-word { animation: fbSnap 1200ms var(--ease-bounce) forwards; }
-        @keyframes fbSnap { 0%, 100% { transform: translateY(25px); opacity: 0.8; } 30%, 70% { transform: translateY(0); opacity: 1; } }
-
-        .ma-card { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2; rx: 6; }
-        .is-animating .ma-card { animation: maPop 1200ms var(--ease-bounce) forwards; }
-        @keyframes maPop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); stroke: #3B82F6; } }
-
-        .br-node { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2.5; rx: 8; }
-        .br-line { stroke: var(--icon-base); stroke-width: 2; fill: none; }
-        .is-animating .br-node { animation: brPop 1200ms var(--ease-bounce) forwards; }
-        @keyframes brPop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); stroke: var(--qGold); } }
-
-        .im-frame { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2.5; rx: 10; }
-        .im-sun { fill: var(--qGold); }
-        .im-mount { stroke: var(--icon-base); stroke-width: 2.5; fill: none; }
-        .im-target { stroke: var(--icon-danger); stroke-width: 3; opacity: 0; }
-        .is-animating .im-target { animation: imAim 1200ms var(--ease-bounce) forwards; }
-        @keyframes imAim { 0%, 100% { transform: scale(0); opacity: 0; } 30%, 70% { transform: scale(1); opacity: 1; } }
-
-        .fluid-blank { display: inline-flex; align-items: center; justify-content: center; position: relative; height: 38px; border-bottom: 3px solid var(--qGold); background: rgba(212, 175, 55, 0.06); border-radius: 6px 6px 0 0; font-weight: 900; color: #007AFF; cursor: pointer; padding: 2px 12px; white-space: nowrap; vertical-align: middle; margin: 0 3px; min-width: 68px; transition: all 420ms var(--ease-silk); }
-        .blank-word { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateY(6px); transition: all 280ms var(--ease-silk) 160ms; }
+        /* QUESTION STYLES */
+        .fluid-blank { display: inline-flex; align-items: center; justify-content: center; position: relative; height: 38px; border-bottom: 3px solid #D4AF37; background: rgba(212, 175, 55, 0.06); border-radius: 6px 6px 0 0; font-weight: 900; color: #007AFF; cursor: pointer; padding: 2px 12px; white-space: nowrap; vertical-align: middle; margin: 0 3px; min-width: 68px; transition: min-width 420ms cubic-bezier(0.34, 1.2, 0.64, 1); overflow: hidden; }
+        .fluid-blank.active-target { border-color: #007AFF; background: rgba(0, 122, 255, 0.1); box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.12); }
+        .blank-word { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateY(6px); transition: opacity 280ms var(--ease-silk) 160ms, transform 280ms var(--ease-silk) 160ms; }
         .blank-word.visible { opacity: 1; transform: translateY(0); }
-        .active-target { border-color: #007AFF; background: rgba(0, 122, 255, 0.1); }
-        .sortable-ghost { opacity: 0 !important; }
-        .sortable-drag { opacity: 1 !important; background: white !important; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .map-pin { position: absolute; transform: translate(-50%, -50%); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.4); cursor: pointer; z-index: 10; color: white; border: 2px solid white; transition: all 280ms var(--ease-silk); }
         .map-pin::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.6); animation: pulse-pin 2.5s infinite var(--ease-silk); }
         @keyframes pulse-pin { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.8); opacity: 0; } }
-        .art-frame-container { background: white; padding: 5px; border-radius: 10px; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.2); display: inline-block; transition: all 600ms var(--ease-silk); }
+        .art-frame-container { background: white; padding: 5px; border-radius: 10px; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.2); display: inline-block; vertical-align: middle; transition: all 600ms var(--ease-silk); will-change: transform; max-width: 95%; }
         .art-frame-inner { position: relative; overflow: hidden; border-radius: 6px; line-height: 0; }
         .art-frame-inner img { display: block; width: auto; height: auto; border-radius: inherit; }
+        #blank-ruler { position: fixed; top: -9999px; left: -9999px; visibility: hidden; font-family: 'Almarai', sans-serif; font-weight: 900; white-space: nowrap; padding: 0 12px; pointer-events: none; }
 
-        /* PARTY MODE */
-        .party-layer { position: absolute; inset: 0; border-radius: 23px; z-index: 2; opacity: 0; background: linear-gradient(90deg, rgba(212,175,55,0.6), rgba(255,255,255,0.9), rgba(212,175,55,0.6)); background-size: 200% 100%; transition: opacity 0.8s; }
-        .is-partying .party-layer { opacity: 1; animation: elegantParty 2s linear infinite; }
-        @keyframes elegantParty { 0% { background-position: 200% center; } 100% { background-position: 0% center; } }
-        .party-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 30; opacity: 0; pointer-events: none; width: 100%; text-align: center; font-size: 18px; font-weight: 900; color: var(--qNavy); transition: all 0.5s var(--ease-bounce); }
-        .is-partying .party-text { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        /* ICON SVGS CSS */
+        .icon-card-svg { width: 100%; height: 100%; overflow: visible; stroke-linecap: round; stroke-linejoin: round; --icon-base: #94A3B8; --icon-fill: rgba(148, 163, 184, 0.1); }
+        g, path, rect, circle, line, text { transform-box: fill-box; transform-origin: center; will-change: transform, opacity; }
+        .tf-check-bg { fill: rgba(16, 185, 129, 0.1); stroke: rgba(16, 185, 129, 0.3); stroke-width: 2; }
+        .tf-cross-bg { fill: rgba(239, 68, 68, 0.1); stroke: rgba(239, 68, 68, 0.3); stroke-width: 2; }
+        .tf-check-mark { stroke: #10B981; stroke-width: 3.5; fill: none; }
+        .tf-cross-mark { stroke: #EF4444; stroke-width: 3.5; fill: none; }
+        .is-animating .tf-g-check { animation: tfPopCheck 1000ms var(--ease-bounce) forwards; }
+        .is-animating .tf-g-cross { animation: tfPopCross 1000ms var(--ease-bounce) forwards; }
+        @keyframes tfPopCheck { 0%, 100% { transform: scale(1) translateX(0); opacity: 1; } 20%, 40% { transform: scale(1.2) translateX(8px); filter: drop-shadow(0 0 10px rgba(16,185,129,0.4)); } 60%, 80% { transform: scale(0.8) translateX(-10px); opacity: 0.3; } }
+        @keyframes tfPopCross { 0%, 100% { transform: scale(1) translateX(0); opacity: 1; } 20%, 40% { transform: scale(0.8) translateX(10px); opacity: 0.3; } 60%, 80% { transform: scale(1.2) translateX(-8px); filter: drop-shadow(0 0 10px rgba(239,68,68,0.4)); } }
+        .mc-ring { stroke: var(--icon-base); stroke-width: 2.5; fill: var(--icon-fill); }
+        .mc-dot { fill: #D4AF37; transform: scale(0); opacity: 0; }
+        .is-animating .mc-1 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 0ms forwards; }
+        .is-animating .mc-2 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 150ms forwards; }
+        .is-animating .mc-3 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 300ms forwards; }
+        .is-animating .mc-4 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 450ms forwards; }
+        @keyframes mcFill { 0%, 100% { transform: scale(0); opacity: 0; } 50% { transform: scale(1); opacity: 1; } }
+        .or-pill { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2; rx: 10; }
+        .or-num { fill: #0f172a; font-weight: 900; font-size: 14px; }
+        .is-animating .or-row-1 { animation: orSlideDown 1000ms var(--ease-silk) forwards; }
+        .is-animating .or-row-2 { animation: orSlideUp 1000ms var(--ease-silk) forwards; }
+        @keyframes orSlideDown { 0%, 100% { transform: translateY(0); } 40%, 70% { transform: translateY(28px); } }
+        @keyframes orSlideUp { 0%, 100% { transform: translateY(0); } 40%, 70% { transform: translateY(-28px); } }
+        .fb-text-line { stroke: var(--icon-base); stroke-width: 3; stroke-linecap: round; }
+        .fb-blank { fill: rgba(0,0,0,0.05); stroke: var(--icon-base); stroke-width: 2; stroke-dasharray: 4 4; rx: 8; }
+        .fb-word { fill: #D4AF37; rx: 6; transform: translateY(25px); opacity: 0; }
+        .is-animating .fb-word { animation: fbSnap 1000ms var(--ease-bounce) forwards; }
+        @keyframes fbSnap { 0%, 100% { transform: translateY(25px); opacity: 0; } 30%, 70% { transform: translateY(0); opacity: 1; } }
+        .ma-card { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2; rx: 6; }
+        .is-animating .ma-r1, .is-animating .ma-l2 { animation: maPair1 1000ms var(--ease-bounce) forwards; }
+        .is-animating .ma-r3, .is-animating .ma-l1 { animation: maPair2 1000ms var(--ease-bounce) 200ms forwards; }
+        @keyframes maPair1 { 20%, 60% { transform: scale(1.15); stroke: #3B82F6; fill: rgba(59,130,246,0.1); } }
+        @keyframes maPair2 { 20%, 60% { transform: scale(1.15); stroke: #D4AF37; fill: rgba(212,175,55,0.1); } }
+        .br-node { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2.5; rx: 8; }
+        .br-line { stroke: var(--icon-base); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+        .br-hidden { stroke-dasharray: 50; stroke-dashoffset: 50; opacity: 0; }
+        .br-scale { transform: scale(0); opacity: 0; }
+        .is-animating .br-path { animation: brDraw 800ms var(--ease-silk) 100ms forwards; }
+        .is-animating .br-n1, .is-animating .br-n2, .is-animating .br-n3 { animation: brPop 800ms var(--ease-bounce) 200ms forwards; }
+        @keyframes brDraw { 30%, 70% { stroke-dashoffset: 0; opacity: 1; stroke: #D4AF37; } }
+        @keyframes brPop { 20%, 80% { transform: scale(1); opacity: 1; } }
+        .im-frame { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2.5; rx: 10; }
+        .im-sun { fill: #D4AF37; }
+        .im-mount { stroke: var(--icon-base); stroke-width: 2.5; fill: none; }
+        .im-target { stroke: #EF4444; stroke-width: 3; stroke-linecap: round; transform: scale(0); opacity: 0; }
+        .is-animating .im-t1 { animation: imAim 600ms var(--ease-bounce) 0ms forwards; }
+        .is-animating .im-t2 { animation: imAim 600ms var(--ease-bounce) 150ms forwards; }
+        .is-animating .im-t3 { animation: imAim 600ms var(--ease-bounce) 300ms forwards; }
+        @keyframes imAim { 0%, 100% { transform: scale(0) rotate(-45deg); opacity: 0; } 30%, 70% { transform: scale(1) rotate(0deg); opacity: 1; } }
+
+        /* ICONS BURST */
+        .large-burst-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 100; pointer-events: none; opacity: 0; transition: opacity 0.4s ease; background: rgba(248, 250, 252, 0.4); backdrop-filter: blur(4px); }
+        .large-burst-overlay.active { opacity: 1; }
+        .large-burst-box { width: 180px; height: 180px; background: white; border-radius: 40px; padding: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(0,0,0,0.05); transform: scale(0.6) translateY(20px); transition: transform 0.6s var(--ease-bounce); }
+        .large-burst-overlay.active .large-burst-box { transform: scale(1) translateY(0); }
+
+        /* FOOTER & SIDE NAV */
+        .footer-hub { position: fixed; bottom: 0; left: 0; right: 0; height: calc(var(--ftr) + var(--safe-b)); padding: 0 16px var(--safe-b); background: white; border-top: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 50; }
+        .is-desktop-long .footer-hub { background: transparent !important; border: none !important; pointer-events: none; height: auto; bottom: 24px; padding-bottom: 0; }
+        .is-desktop-long .footer-hub > div { pointer-events: auto; }
+
+        .side-nav-btn { position: fixed; left: 0; top: 0; bottom: 0; width: clamp(44px, 4vw, 52px); background-color: #0f172a; display: none; align-items: center; justify-content: center; z-index: 60; border-radius: 0 14px 14px 0; transition: background-color 280ms var(--ease-silk); border: none; cursor: pointer; }
+        .is-desktop-long .side-nav-btn { display: flex; }
+        .side-nav-btn:active { transform: scaleX(0.93); background-color: #D4AF37; }
+
+        .sortable-ghost { opacity: 0 !important; }
+        .sortable-drag { opacity: 1 !important; background: white !important; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .sortable-fallback { opacity: 1 !important; background: white !important; box-shadow: 0 15px 35px rgba(15, 23, 42, 0.15) !important; z-index: 9999 !important; }
     </style>
 </head>
-<body x-data="qimamEngine()" @resize.window="windowWidth = window.innerWidth" x-cloak>
+<body x-data="qimamEngine()" :class="isLongQuestionDesktop ? 'is-desktop-long' : ''" @resize.window="windowWidth = window.innerWidth" x-cloak>
 
-    <!-- 1. LARGE ANIMATION OVERLAY -->
-    <div class="large-anim-overlay" :class="showLargeAnim ? 'active' : ''">
-        <div class="large-anim-box is-animating" x-html="currentSectionIcon"></div>
+    <div id="blank-ruler"></div>
+
+    <div class="large-burst-overlay" :class="showLargeAnim ? 'active' : ''">
+        <div class="large-burst-box" :class="animTrigger ? 'is-animating' : ''" x-html="currentSectionIcon"></div>
     </div>
 
-    <!-- 2. HEADER SECTION -->
     <header class="header-section">
         <div class="glass-capsule gpu-accelerate" :class="isPartying ? 'is-partying' : ''">
-            <div class="liquid-layer">
-                <div class="blob b-1" :style="`background-color: ${colors.c1}` "></div>
-                <div class="blob b-2" :style="`background-color: ${colors.c2}` "></div>
-                <div class="blob b-3" :style="`background-color: ${colors.c3}` "></div>
-                <div class="blob b-4" :style="`background-color: ${colors.c4}` "></div>
+            <div class="liquid-layer gpu-accelerate">
+                <div class="blob b-1" :style="`background-color: ${colors.c1}`"></div>
+                <div class="blob b-2" :style="`background-color: ${colors.c2}`"></div>
+                <div class="blob b-3" :style="`background-color: ${colors.c3}`"></div>
+                <div class="blob b-4" :style="`background-color: ${colors.c4}`"></div>
+                <div class="blob b-5" :style="`background-color: ${colors.c5}`"></div>
+                <div class="blob b-6" :style="`background-color: ${colors.c6}`"></div>
             </div>
             <div class="glass-frost"></div>
             <div class="party-layer"></div>
             <div class="party-text gpu-accelerate">اقتربت من القمة! واصل التحدي</div>
 
-            <svg class="perimeter-svg" preserveAspectRatio="none">
+            <svg class="perimeter-svg gpu-accelerate" preserveAspectRatio="none">
                 <rect class="track-bg" x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" pathLength="100"></rect>
-                <rect class="track-progress" x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" pathLength="100" :style="`stroke-dashoffset: ${100 - progress}` "></rect>
+                <rect class="track-progress" x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" pathLength="100" :style="`stroke-dashoffset: ${100 - progress}`"></rect>
             </svg>
 
             <div class="node-layer">
                 <template x-for="(sec, idx) in sections" :key="sec.id">
-                    <div class="node-wrapper" :class="[ 'node-' + (idx + 1), currentSecIdx === idx ? 'is-active' : '', currentSecIdx > idx ? 'is-completed' : '' ]">
-                        <div class="node-circle" x-html="sec.iconSvg"></div>
+                    <div class="node-wrapper gpu-accelerate" :class="[ 'node-' + (idx + 1), currentSecIdx === idx ? 'is-active' : '', currentSecIdx > idx ? 'is-completed' : '' ]">
+                        <div class="node-circle gpu-accelerate" x-html="sec.iconSvg"></div>
                     </div>
                 </template>
             </div>
 
-            <div class="capsule-content">
-                <div class="timer-box" :class="timeLeft <= 9 ? 'timer-danger' : ''" :style="`color: ${timeColor}` ">
+            <div class="capsule-content gpu-accelerate">
+                <div class="timer-box gpu-accelerate" :class="timeState === 'danger' ? 'timer-danger' : 'text-white'">
                     <span x-text="timerDisplay"></span>
-                    <span class="phantom-echo" x-text="timerDisplay"></span>
+                    <span class="phantom-echo" x-text="timerDisplay" x-show="timeState === 'danger'"></span>
                 </div>
-                <div class="subject-box" x-text="subjectName"></div>
+                <div class="identity-info">
+                    <div class="id-top" x-html="currentSection.iconSvg + '<span>' + currentSection.name + '</span>'"></div>
+                    <div class="id-bottom" x-text="`${currentQ} / ${totalQ}`"></div>
+                </div>
+                <div class="subject-box gpu-accelerate" x-text="subjectName"></div>
             </div>
         </div>
     </header>
 
-    <!-- 3. ARENA MAIN -->
-    <main id="arena-main" class="no-scrollbar silk"
-        :style="activePinModal ? 'position:fixed; top:0; bottom:0; left:0; right:0; z-index:100; background:white;' :
-                (currentType === 'image' ? 'position:fixed; top:var(--hdr); bottom:calc(var(--ftr) + var(--safe-b)); left:0; right:0; overflow:hidden; z-index:10;' :
-                (isLongQuestionDesktop ? 'position:fixed; top:calc(var(--hdr) + 10px); bottom:15px; left:calc(52px + 15px); right:15px; z-index:10;' :
-                'position:fixed; top:var(--hdr); bottom:calc(var(--ftr) + var(--safe-b) + 8px); left:0; right:0; z-index:10;'))">
+    <main id="arena-main" class="no-scrollbar silk" :style="activePinModal ? 'position:fixed; top:0; bottom:0; left:0; right:0; z-index:100; background:white;' : ''">
 
-        <div id="blank-ruler" style="position:fixed; top:-9999px; visibility:hidden; font-family:'Almarai'; font-weight:900;"></div>
-
-        <template x-if="currentType==='tf'">
-            <div class="flex flex-col px-5 py-6 max-w-4xl mx-auto w-full min-h-full justify-center">
-                <h2 class="text-2xl md:text-3xl font-black text-center mb-8 leading-relaxed">لغة CSS هي المسؤولة عن إضافة التفاعلية والمنطق البرمجي لصفحات الويب.</h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <button @click="tfAnswer=true; haptic(15)" class="squish h-24 rounded-3xl border-2 flex items-center justify-center gap-3 font-bold text-xl silk transition-all" :class="tfAnswer===true?'bg-qNavy text-white border-qNavy shadow-xl':'bg-white border-slate-200 text-slate-500'">صح</button>
-                    <button @click="tfAnswer=false; haptic(15)" class="squish h-24 rounded-3xl border-2 flex items-center justify-center gap-3 font-bold text-xl silk transition-all" :class="tfAnswer===false?'bg-qNavy text-white border-qNavy shadow-xl':'bg-white border-slate-200 text-slate-500'">خطأ</button>
+        <template x-if="currentType === 'tf'">
+            <div class="flex flex-col px-5 py-6 max-w-4xl mx-auto w-full min-h-full">
+                <div class="my-auto w-full flex flex-col pb-8">
+                    <div class="flex-1 flex items-center justify-center py-6 text-center"><h2 class="text-2xl md:text-3xl font-black leading-relaxed text-qNavy">لغة CSS هي المسؤولة عن إضافة التفاعلية والمنطق البرمجي لصفحات الويب.</h2></div>
+                    <div class="grid grid-cols-2 gap-3 w-full shrink-0 mt-8">
+                        <button @click="tfAnswer=true;haptic(15)" class="squish silk h-[88px] rounded-3xl border-2 flex items-center justify-center gap-3" :class="tfAnswer===true?'bg-qNavy border-qNavy text-white shadow-xl':'bg-white border-slate-200 text-slate-500 hover:border-slate-300'"><span class="material-symbols-rounded text-3xl">check_circle</span><span class="font-black text-xl">صــح</span></button>
+                        <button @click="tfAnswer=false;haptic(15)" class="squish silk h-[88px] rounded-3xl border-2 flex items-center justify-center gap-3" :class="tfAnswer===false?'bg-qNavy border-qNavy text-white shadow-xl':'bg-white border-slate-200 text-slate-500 hover:border-slate-300'"><span class="material-symbols-rounded text-3xl">cancel</span><span class="font-black text-xl">خـطـأ</span></button>
+                    </div>
                 </div>
             </div>
         </template>
 
-        <template x-if="currentType==='mcq'">
-            <div class="flex flex-col px-5 py-10 max-w-4xl mx-auto w-full min-h-full justify-center">
-                <h2 class="text-2xl font-black text-center mb-10 leading-relaxed">أي من الدوال التالية تُستخدم في JavaScript لإرسال إشعارات اهتزاز للهاتف؟</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <template x-if="currentType === 'mcq'">
+            <div class="flex flex-col px-5 lg:px-20 py-10 max-w-4xl mx-auto w-full justify-center min-h-full pb-4">
+                <div class="flex-1 flex items-center justify-center py-6 text-center"><h2 class="text-2xl md:text-3xl font-black leading-relaxed text-qNavy">أي من الدوال التالية تُستخدم في JavaScript لإرسال إشعارات اهتزاز للهاتف؟</h2></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full shrink-0 mt-8">
                     <template x-for="(opt, index) in mcqOptions" :key="index">
-                        <button @click="mcqAnswer=index; haptic(15)" class="squish w-full px-5 py-4 rounded-2xl text-right font-black border-2 flex items-center justify-between silk transition-all" :class="mcqAnswer===index?'bg-qNavy border-qNavy text-white shadow-lg':'bg-white border-slate-200 text-slate-600'">
-                            <span x-text="opt"></span>
-                            <span class="material-symbols-rounded text-lg" x-show="mcqAnswer===index">check_circle</span>
-                        </button>
+                        <button @click="mcqAnswer=index;haptic(15)" class="squish silk w-full px-5 py-4 rounded-2xl text-right font-black text-base border-2 flex items-center justify-between" :class="mcqAnswer===index?'bg-qNavy border-qNavy text-white shadow-lg':'bg-white border-slate-200 text-slate-600 hover:border-slate-300'"><span x-text="opt"></span><span class="material-symbols-rounded text-lg opacity-60" x-show="mcqAnswer===index">check_circle</span></button>
                     </template>
                 </div>
             </div>
         </template>
 
-        <template x-if="currentType==='order'">
-            <div class="flex flex-col px-4 md:px-8 py-4 max-w-5xl mx-auto w-full min-h-full pb-10">
-                <h2 class="text-xl font-black text-center mb-6 leading-relaxed">رتب أطوار الانقسام المتساوي في الخلية:</h2>
+        <template x-if="currentType === 'order'">
+            <div class="flex flex-col px-2 md:px-8 py-4 max-w-5xl mx-auto w-full min-h-full pb-10">
+                <div class="mb-6 text-center"><h2 class="text-xl md:text-2xl font-black text-qNavy">رتب أطوار الانقسام المتساوي في الخلية:</h2></div>
                 <div id="order-list" class="flex flex-col gap-3"></div>
             </div>
         </template>
 
-        <template x-if="currentType==='step'">
-            <div class="flex flex-col px-4 md:px-8 py-4 max-w-5xl mx-auto w-full min-h-full pb-10">
-                <h2 class="text-xl font-black text-center mb-6 leading-relaxed">رتب الخطوات، ثم أجب على كل خطوة للحل.</h2>
+        <template x-if="currentType === 'step'">
+            <div class="flex flex-col px-2 md:px-8 py-4 max-w-5xl mx-auto w-full min-h-full pb-10">
+                <div class="mb-6 text-center"><h2 class="text-xl font-black text-qNavy">رتب الخطوات، ثم أجب على كل خطوة للحل.</h2></div>
                 <div id="step-list" class="flex flex-col gap-4"></div>
             </div>
         </template>
 
-        <template x-if="currentType==='fill'">
-            <div class="flex flex-col px-5 py-6 max-w-4xl mx-auto w-full min-h-full justify-center">
-                <div class="text-xl md:text-3xl font-bold leading-loose text-center text-slate-700">
-                    لغة <span id="blank-0" @click="setActiveBlank(0);haptic(10)" class="fluid-blank" :class="fillActiveIdx===0?'active-target':''"><span class="blank-word" :class="fillAnswers[0]?'visible':''" x-text="fillAnswers[0]??''"></span></span>
-                    تُستخدم لبناء هيكل صفحات الويب، بينما تُستخدم لغة <span id="blank-1" @click="setActiveBlank(1);haptic(10)" class="fluid-blank" :class="fillActiveIdx===1?'active-target':''"><span class="blank-word" :class="fillAnswers[1]?'visible':''" x-text="fillAnswers[1]??''"></span></span>
-                    لإضافة التنسيقات والألوان.
+        <template x-if="currentType === 'fill'">
+            <div class="flex flex-col px-5 lg:px-20 py-6 max-w-4xl mx-auto w-full min-h-full pb-4">
+                <div class="flex-1 flex items-center justify-center py-6">
+                    <div class="text-xl md:text-3xl font-bold leading-loose text-center text-slate-700 px-2">
+                        لغة <span id="blank-0" @click="setActiveBlank(0);haptic(10)" class="fluid-blank" :class="fillActiveIdx===0?'active-target':''"><span class="blank-word" :class="fillAnswers[0]?'visible':''" x-text="fillAnswers[0]??''"></span></span>
+                        تُستخدم لبناء هيكل صفحات الويب، بينما تُستخدم لغة <span id="blank-1" @click="setActiveBlank(1);haptic(10)" class="fluid-blank" :class="fillActiveIdx===1?'active-target':''"><span class="blank-word" :class="fillAnswers[1]?'visible':''" x-text="fillAnswers[1]??''"></span></span>
+                        لإضافة التنسيقات والألوان.
+                    </div>
                 </div>
-                <div class="mt-12 flex flex-wrap justify-center gap-3">
-                    <template x-for="word in fillBank" :key="word">
-                        <button @click="fillBlank(word);haptic(15)" class="squish px-6 py-3 bg-white border-2 border-slate-200 rounded-xl font-black text-slate-700 shadow-sm silk transition-all" :class="fillAnswers.includes(word)?'opacity-0 pointer-events-none scale-90':''" x-text="word"></button>
-                    </template>
+                <div class="shrink-0 pt-8 mt-auto">
+                    <div class="w-full max-w-2xl mx-auto bg-white border border-slate-200 rounded-3xl p-4 shadow-sm">
+                        <div class="flex flex-wrap justify-center gap-3">
+                            <template x-for="word in fillBank" :key="word">
+                                <button @click="fillBlank(word);haptic(15)" class="squish px-6 py-3 bg-white border-2 border-slate-200 rounded-xl font-black text-slate-700 shadow-sm hover:border-blue-400 hover:text-blue-600 silk" :class="fillAnswers.includes(word)?'opacity-0 pointer-events-none scale-90':'opacity-100'"><span x-text="word"></span></button>
+                            </template>
+                        </div>
+                    </div>
                 </div>
             </div>
         </template>
 
-        <template x-if="currentType==='match'">
-            <div class="flex flex-col px-4 md:px-8 py-4 max-w-6xl mx-auto w-full min-h-full pb-10">
-                <h2 class="text-xl font-black text-center mb-8 leading-relaxed">زاوج بين المصطلحات ومعانيها:</h2>
+        <template x-if="currentType === 'match'">
+            <div class="flex flex-col px-2 md:px-8 py-4 max-w-6xl mx-auto w-full min-h-full pb-10">
+                <div class="mb-8 text-center"><h2 class="text-xl md:text-2xl font-black text-qNavy">زاوج بين المصطلحات ومعانيها:</h2></div>
                 <div class="grid grid-cols-2 gap-4 md:gap-8 w-full">
-                    <div class="grid auto-rows-fr gap-4">
-                        <template x-for="item in matchRight" :key="item.id">
-                            <button @click="touchNode('right', item.id);haptic(15)" class="squish w-full h-full px-4 py-5 rounded-2xl font-bold border-2 text-center shadow-sm silk transition-all" :class="getNodeClass('right', item.id)" :style="getNodeStyle('right', item.id)" x-text="item.text"></button>
-                        </template>
-                    </div>
-                    <div class="grid auto-rows-fr gap-4">
-                        <template x-for="item in matchLeft" :key="item.id">
-                            <button @click="touchNode('left', item.id);haptic(15)" class="squish w-full h-full px-4 py-5 rounded-2xl font-bold border-2 text-center shadow-sm silk transition-all" :class="getNodeClass('left', item.id)" :style="getNodeStyle('left', item.id)" x-text="item.text"></button>
-                        </template>
-                    </div>
+                    <div class="grid auto-rows-fr gap-4"><template x-for="item in matchRight" :key="item.id"><button @click="touchNode('right', item.id);haptic(15)" class="squish silk w-full h-full px-4 py-5 rounded-2xl font-bold text-sm md:text-base border-2 flex items-center justify-center text-center shadow-sm" :class="getNodeClass('right', item.id)" :style="getNodeStyle('right', item.id)"><span class="leading-snug" x-text="item.text"></span></button></template></div>
+                    <div class="grid auto-rows-fr gap-4"><template x-for="item in matchLeft" :key="item.id"><button @click="touchNode('left', item.id);haptic(15)" class="squish silk w-full h-full px-4 py-5 rounded-2xl font-bold text-sm md:text-base border-2 flex items-center justify-center text-center shadow-sm" :class="getNodeClass('left', item.id)" :style="getNodeStyle('left', item.id)"><span class="leading-snug" x-text="item.text"></span></button></template></div>
                 </div>
             </div>
         </template>
 
-        <template x-if="currentType==='image'">
-            <div class="flex w-full bg-slate-100 overflow-hidden relative h-full flex-col lg:flex-row-reverse" :class="activePinModal ? 'fixed inset-0 z-[100] bg-white' : ''">
-                <div class="flex-1 relative flex items-center justify-center p-4 overflow-auto no-scrollbar">
-                    <div id="img-zoom-layer" class="art-frame-container" :class="activePinModal ? 'rounded-none p-0 shadow-none' : ''">
+        <template x-if="currentType === 'image'">
+            <div class="flex w-full bg-slate-100 overflow-hidden relative" :class="activePinModal ? 'fixed inset-0 z-[100] flex-col lg:flex-row-reverse bg-white' : 'h-full flex-col lg:flex-row-reverse'">
+                <div class="flex-1 relative flex items-center justify-center p-4 lg:p-10 overflow-auto no-scrollbar">
+                    <div id="img-zoom-layer" class="art-frame-container shadow-2xl" :class="activePinModal ? 'rounded-none p-0 shadow-none' : ''">
                         <div class="art-frame-inner" :class="activePinModal ? 'rounded-none' : ''">
-                            <div class="relative inline-flex items-center justify-center">
-                                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80" draggable="false" class="silk pointer-events-none" :style="activePinModal ? 'height:25dvh; width:auto;' : 'max-height:60dvh;'">
-                                <div class="absolute inset-0 pointer-events-none">
-                                    <template x-for="pin in imgPins" :key="pin.id">
-                                        <div @click.stop="openPin(pin);haptic(20)" class="map-pin pointer-events-auto silk transition-all" :style="`left:${pin.x}%; top:${pin.y}%; background-color:${pin.solved?'#10B981':pin.color};` ">
-                                            <span class="material-symbols-rounded text-[18px]" x-text="pin.solved ? 'check' : 'location_on'"></span>
-                                        </div>
-                                    </template>
-                                </div>
+                            <div class="relative inline-flex items-center justify-center align-middle">
+                                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80" draggable="false" class="silk pointer-events-none select-none" :style="activePinModal ? (windowWidth < 1024 ? 'height:25dvh; width:auto; max-width:none;' : 'height:92vh; width:auto;') : 'max-height: calc(100dvh - var(--hdr) - var(--ftr) - 60px); max-width: 100%; width:auto; height:auto;'">
+                                <div class="absolute inset-0 pointer-events-none"><template x-for="pin in imgPins" :key="pin.id"><div @click.stop="openPin(pin);haptic(20)" class="map-pin border-2 silk pointer-events-auto" :style="`left:${pin.x}%; top:${pin.y}%; background-color:${pin.solved?'#10B981':pin.color}; border-color:white;` "><span class="material-symbols-rounded text-[18px]" x-text="pin.solved ? 'check' : 'location_on'"></span></div></template></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="bg-white flex flex-col relative silk shadow-2xl" x-show="activePinModal" :style="windowWidth < 1024 ? 'height:75dvh; width:100%;' : 'width:420px; height:100%; border-right:2px solid #e2e8f0;'">
-                    <div class="p-5 border-b flex items-center justify-between"><span class="font-black">تفاصيل المكون</span><button @click="closePin()" class="text-rose-500 w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center"><span class="material-symbols-rounded">close</span></button></div>
-                    <div class="flex-1 overflow-y-auto p-6 no-scrollbar">
-                        <h3 class="text-xl font-black mb-6 leading-relaxed" x-text="activePinModal?.question"></h3>
-                        <template x-if="activePinModal?.type==='mcq'"><div class="grid gap-3"><template x-for="(opt,oi) in activePinModal?.options"><button @click="activePinModal.tempAnswer=oi; haptic(10)" class="p-4 rounded-xl border-2 text-right font-bold transition-all silk" :class="activePinModal.tempAnswer===oi?'bg-qNavy text-white border-qNavy shadow-lg':'bg-slate-50 border-slate-100'" x-text="opt"></button></template></div></template>
+                <div class="bg-white silk flex flex-col relative" :style="activePinModal ? (windowWidth < 1024 ? 'height:75dvh; width:100%;' : 'width:420px; height:100%; border-right:2px solid #e2e8f0;') : 'display:none; lg:display:flex; lg:width:400px;'">
+                    <div x-show="activePinModal" class="flex-1 flex flex-col overflow-hidden">
+                        <div class="p-5 border-b flex items-center justify-between bg-slate-50">
+                            <div class="flex items-center gap-2">
+                                <span class="w-8 h-8 rounded-lg bg-qNavy text-white flex items-center justify-center font-bold" x-text="activePinModal?.id"></span>
+                                <span class="font-black text-qNavy">تفاصيل المكون</span>
+                            </div>
+                            <button @click="closePin()" class="w-10 h-10 rounded-full bg-white border text-rose-500 silk"><span class="material-symbols-rounded">close</span></button>
+                        </div>
+                        <div class="flex-1 overflow-y-auto p-6 no-scrollbar pb-32">
+                            <h3 class="text-xl font-black text-qNavy mb-6 leading-relaxed" x-text="activePinModal?.question"></h3>
+
+                            <template x-if="activePinModal?.type==='mcq'">
+                                <div class="grid gap-3">
+                                    <template x-for="(opt,oi) in (activePinModal?.options ?? [])" :key="oi">
+                                        <button @click="activePinModal.tempAnswer=oi; haptic(10)" class="p-5 rounded-2xl text-right font-bold border-2 transition-all" :class="activePinModal.tempAnswer===oi ? 'border-qNavy bg-qNavy text-white shadow-md' : 'border-slate-100 bg-slate-50'"><span x-text="opt"></span></button>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <template x-if="activePinModal?.type==='tf'">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <button @click="activePinModal.tempAnswer=true; haptic(10)" class="h-32 rounded-3xl border-2 flex flex-col items-center justify-center gap-2 silk" :class="activePinModal.tempAnswer===true?'bg-emerald-500 border-emerald-500 text-white shadow-lg':'bg-slate-50 border-slate-100 text-slate-400'">
+                                        <span class="material-symbols-rounded text-4xl">check_circle</span>
+                                        <span class="font-black">صحيح</span>
+                                    </button>
+                                    <button @click="activePinModal.tempAnswer=false; haptic(10)" class="h-32 rounded-3xl border-2 flex flex-col items-center justify-center gap-2 silk" :class="activePinModal.tempAnswer===false?'bg-rose-500 border-rose-500 text-white shadow-lg':'bg-slate-50 border-slate-100 text-slate-400'">
+                                        <span class="material-symbols-rounded text-4xl">cancel</span>
+                                        <span class="font-black">خاطئ</span>
+                                    </button>
+                                </div>
+                            </template>
+
+                            <template x-if="activePinModal?.type==='fill'">
+                                <div class="text-center">
+                                    <div class="text-lg font-bold leading-loose text-slate-700 mb-8 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                                        يستخدم هذا المكون لتخزين
+                                        <span id="pin-blank-0" @click="activePinModal.activeF=0; haptic(10)" class="fluid-blank" :class="activePinModal.activeF===0?'active-target':''">
+                                            <span class="blank-word" :class="activePinModal.fillAnswers[0]?'visible':''" x-text="activePinModal.fillAnswers[0]??''"></span>
+                                        </span>
+                                        المؤقتة.
+                                    </div>
+                                    <div class="flex flex-wrap justify-center gap-3">
+                                        <template x-for="word in activePinModal?.bank" :key="word">
+                                            <button @click="if(activePinModal.activeF!==null && !activePinModal.fillAnswers.includes(word)) { activePinModal.fillAnswers[activePinModal.activeF]=word; const b=document.getElementById('pin-blank-'+activePinModal.activeF); if(b) b.style.minWidth= _measureWord(word,b)+'px'; activePinModal.tempAnswer=true; activePinModal.activeF=null; haptic(15); }" class="px-5 py-3 bg-white border-2 border-slate-200 rounded-xl font-black text-slate-700 shadow-sm silk" :class="activePinModal.fillAnswers.includes(word)?'opacity-0 pointer-events-none scale-90':'opacity-100'"><span x-text="word"></span></button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                        <div class="p-5 bg-white border-t mt-auto shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
+                            <button @click="confirmPin(); haptic(30)" :disabled="activePinModal?.tempAnswer===undefined" class="w-full py-5 rounded-2xl font-black text-lg silk shadow-xl" :class="activePinModal?.tempAnswer!==undefined ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-300'">تأكيد الإجابة وحفظ الدبوس</button>
+                        </div>
                     </div>
-                    <div class="p-5 border-t"><button @click="confirmPin(); haptic(20)" :disabled="activePinModal?.tempAnswer===undefined" class="w-full py-4 bg-emerald-500 text-white rounded-xl font-black disabled:opacity-20 shadow-xl">تأكيد الإجابة</button></div>
                 </div>
             </div>
         </template>
     </main>
 
-    <!-- 4. FOOTER -->
-    <footer class="footer-hub silk">
-        <div class="identity-label" :class="labelVisible ? '' : 'hidden-label'" @click="showLabel()" x-text="`السؤال ${currentQ} من ${totalQ} | ${currentSection.name}` "></div>
-
+    <footer class="footer-hub silk" x-show="!activePinModal" x-transition>
         <div class="flex w-full items-center justify-between gap-3 h-full" x-show="!isLongQuestionDesktop">
-            <button @click="prevQ(); haptic(15)" :disabled="currentQ <= 1" class="squish w-[52px] h-[52px] bg-slate-100 text-qNavy rounded-2xl flex items-center justify-center disabled:opacity-20 silk order-1"><span class="material-symbols-rounded">arrow_forward</span></button>
-            <button @click="handleMainAction(); haptic(20)" class="squish h-[55px] flex-1 bg-qNavy text-white rounded-2xl font-black text-lg shadow-lg silk order-2" x-text="currentQ === totalQ ? 'تأكيد وتسليم' : 'السؤال التالي'"></button>
-            <button @click="confirmExit()" class="squish w-[52px] h-[52px] bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center silk order-3"><span class="material-symbols-rounded" style="transform:scaleX(-1)">logout</span></button>
+            <button @click="prevQ(); haptic(15)" :disabled="currentQ <= 1" class="squish silk h-[52px] w-[52px] bg-slate-100 text-qNavy rounded-2xl flex items-center justify-center disabled:opacity-20"><span class="material-symbols-rounded">arrow_forward</span></button>
+            <button @click="handleMainAction(); haptic(20)" class="squish silk h-[55px] flex-1 bg-qNavy text-white rounded-2xl font-black text-lg shadow-lg" x-text="currentQ === totalQ ? 'تأكيد وتسليم' : 'السؤال التالي'"></button>
+            <button @click="confirmExit()" class="squish silk h-[52px] w-[52px] bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center"><span class="material-symbols-rounded" style="transform:scaleX(-1)">logout</span></button>
         </div>
-
-        <div class="flex w-full items-center justify-start gap-3 h-full" x-show="isLongQuestionDesktop">
-            <button @click="prevQ(); haptic(15)" :disabled="currentQ <= 1" class="squish w-[52px] h-[52px] bg-slate-100 text-qNavy rounded-2xl flex items-center justify-center disabled:opacity-20 silk"><span class="material-symbols-rounded">arrow_forward</span></button>
-            <button @click="confirmExit()" class="squish w-[52px] h-[52px] bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center silk"><span class="material-symbols-rounded" style="transform:scaleX(-1)">logout</span></button>
+        <div class="flex w-full items-center justify-end gap-3 px-6" x-show="isLongQuestionDesktop">
+            <button @click="confirmExit()" class="squish w-[52px] h-[52px] bg-white border border-slate-200 text-rose-500 rounded-2xl flex items-center justify-center silk shadow-xl"><span class="material-symbols-rounded" style="transform:scaleX(-1)">logout</span></button>
+            <button @click="prevQ(); haptic(15)" :disabled="currentQ <= 1" class="squish w-[52px] h-[52px] bg-white border border-slate-200 text-qNavy rounded-2xl flex items-center justify-center disabled:opacity-20 silk shadow-xl"><span class="material-symbols-rounded">arrow_forward</span></button>
         </div>
     </footer>
 
-    <button x-show="isLongQuestionDesktop" @click="handleMainAction(); haptic(20)" class="side-next-btn silk squish transition-all" :class="currentQ >= totalQ ? 'bg-emerald-500' : 'bg-qNavy'"><span class="material-symbols-rounded text-2xl">west</span></button>
+    <button @click="handleMainAction(); haptic(20)" class="side-nav-btn silk"><span class="material-symbols-rounded text-white text-2xl">west</span></button>
 
     <script>
     const sectionIcons = {
         tf: `<svg class="icon-card-svg" viewBox="0 0 100 100"><g class="tf-g-check"><circle class="tf-check-bg" cx="32" cy="50" r="20" /><path class="tf-check-mark" d="M 24 52 L 30 58 L 42 42" /></g><g class="tf-g-cross"><circle class="tf-cross-bg" cx="68" cy="50" r="20" /><path class="tf-cross-mark" d="M 62 44 L 74 56 M 74 44 L 62 56" /></g></svg>`,
-        mcq: `<svg class="icon-card-svg" viewBox="0 0 100 100"><g class="mc-1"><circle class="mc-ring" cx="30" cy="30" r="14"/><circle class="mc-dot" cx="30" cy="30" r="6"/></g><g class="mc-2"><circle class="mc-ring" cx="70" cy="30" r="14"/><circle class="mc-dot" cx="70" cy="30" r="6"/></g><g class="mc-3"><circle class="mc-ring" cx="70" cy="70" r="14"/><circle class="mc-dot" cx="70" cy="70" r="6"/></g><g class="mc-4"><circle class="mc-ring" cx="30" cy="70" r="14"/><circle class="mc-dot" cx="30" cy="70" r="6"/></g></svg>`,
-        order: `<svg class="icon-card-svg" viewBox="0 0 100 100"><g class="or-row-1"><rect class="or-pill" x="15" y="18" width="70" height="20" /><text class="or-num" x="25" y="33">1</text><line x1="45" y1="28" x2="75" y2="28" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" opacity="0.5"/></g><g class="or-row-2"><rect class="or-pill" x="15" y="46" width="55" height="20" /><text class="or-num" x="25" y="61">2</text><line x1="45" y1="56" x2="60" y2="56" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" opacity="0.5"/></g><g class="or-row-3"><rect class="or-pill" x="15" y="74" width="40" height="20" /><text class="or-num" x="25" y="89">3</text><line x1="45" y1="84" x2="45" y2="84" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" opacity="0.5"/></g></svg>`,
-        fill: `<svg class="icon-card-svg" viewBox="0 0 100 100"><line class="fb-text-line" x1="10" y1="40" x2="25" y2="40" stroke="#94A3B8" stroke-width="3" /><line class="fb-text-line" x1="75" y1="40" x2="90" y2="40" stroke="#94A3B8" stroke-width="3" /><rect class="fb-blank" x="30" y="28" width="40" height="24" /><rect class="fb-word" x="34" y="32" width="32" height="16" /></svg>`,
-        match: `<svg class="icon-card-svg" viewBox="0 0 100 100"><rect class="ma-card" x="15" y="12" width="28" height="18" /><rect class="ma-card" x="15" y="41" width="28" height="18" /><rect class="ma-card" x="15" y="70" width="28" height="18" /><rect class="ma-card" x="57" y="12" width="28" height="18" /><rect class="ma-card" x="57" y="41" width="28" height="18" /><rect class="ma-card" x="57" y="70" width="28" height="18" /></svg>`,
-        step: `<svg class="icon-card-svg" viewBox="0 0 100 100"><rect class="br-node" x="30" y="15" width="40" height="18" /><path class="br-line" d="M 50 33 L 50 45 M 50 45 L 25 60 M 50 45 L 50 60 M 50 45 L 75 60" stroke="#94A3B8" stroke-width="2" fill="none" /><rect class="br-node" x="10" y="60" width="30" height="16" /><rect class="br-node" x="35" y="60" width="30" height="16" /><rect class="br-node" x="60" y="60" width="30" height="16" /></svg>`,
-        image: `<svg class="icon-card-svg" viewBox="0 0 100 100"><rect class="im-frame" x="10" y="15" width="80" height="70" /><circle class="im-sun" cx="30" cy="35" r="8" /><path class="im-mount" d="M 10 85 L 40 45 L 55 65 L 70 50 L 90 85" stroke="#94A3B8" stroke-width="2.5" fill="none" /><g class="im-target"><line x1="25" y1="30" x2="35" y2="40" stroke="#EF4444" stroke-width="3" /><line x1="35" y1="30" x2="25" y2="40" stroke="#EF4444" stroke-width="3" /></g></svg>`
+        mcq: `<svg class="icon-card-svg" viewBox="0 0 100 100"><g class="mc-1"><circle class="mc-ring" cx="30" cy="30" r="14"/><circle class="mc-dot" cx="30" cy="30" r="6"/></g><g class="mc-2"><circle class="mc-ring" cx="70" cy="30" r="14"/><circle class="mc-dot" cx="70" cy="30" r="6"/></g><g class="mc-3"><circle class="mc-ring" cx="70" cy="70" r="14"/><circle class="mc-dot" cx="70" cy="70" r="6"/></g><g class="mc-4"><circle class="mc-ring" cx="30" cy="70" r="14"/><circle class="mc-dot" cx="30" cy="30" r="6"/></g></svg>`,
+        order: `<svg class="icon-card-svg" viewBox="0 0 100 100"><g class="or-row-1"><rect class="or-pill" x="15" y="18" width="70" height="20" /><text class="or-num" x="25" y="33">1</text><line x1="45" y1="28" x2="75" y2="28" stroke="var(--icon-base)" stroke-width="2" stroke-linecap="round" opacity="0.5"/></g><g class="or-row-2"><rect class="or-pill" x="15" y="46" width="55" height="20" /><text class="or-num" x="25" y="61">2</text><line x1="45" y1="56" x2="60" y2="56" stroke="var(--icon-base)" stroke-width="2" stroke-linecap="round" opacity="0.5"/></g><g class="or-row-3"><rect class="or-pill" x="15" y="74" width="40" height="20" /><text class="or-num" x="25" y="89">3</text><line x1="45" y1="84" x2="45" y2="84" stroke="var(--icon-base)" stroke-width="2" stroke-linecap="round" opacity="0.5"/></g></svg>`,
+        fill: `<svg class="icon-card-svg" viewBox="0 0 100 100"><line class="fb-text-line" x1="10" y1="40" x2="25" y2="40" /><line class="fb-text-line" x1="75" y1="40" x2="90" y2="40" /><rect class="fb-blank" x="30" y="28" width="40" height="24" /><rect class="fb-word" x="34" y="32" width="32" height="16" /></svg>`,
+        match: `<svg class="icon-card-svg" viewBox="0 0 100 100"><rect class="ma-card ma-l1" x="15" y="12" width="28" height="18" /><rect class="ma-card ma-l2" x="15" y="41" width="28" height="18" /><rect class="ma-card ma-l3" x="15" y="70" width="28" height="18" /><rect class="ma-card ma-r1" x="57" y="12" width="28" height="18" /><rect class="ma-card ma-r2" x="57" y="41" width="28" height="18" /><rect class="ma-card ma-r3" x="57" y="70" width="28" height="18" /></svg>`,
+        step: `<svg class="icon-card-svg" viewBox="0 0 100 100"><rect class="br-node br-main" x="30" y="15" width="40" height="18" /><path class="br-line br-path" d="M 50 33 L 50 45 M 50 45 L 25 60 M 50 45 L 50 60 M 50 45 L 75 60" /><rect class="br-node br-n1" x="10" y="60" width="30" height="16" /><rect class="br-node br-n2" x="35" y="60" width="30" height="16" /><rect class="br-node br-n3" x="60" y="60" width="30" height="16" /></svg>`,
+        image: `<svg class="icon-card-svg" viewBox="0 0 100 100"><rect class="im-frame" x="10" y="15" width="80" height="70" /><circle class="im-sun" cx="30" cy="35" r="8" /><path class="im-mount" d="M 10 85 L 40 45 L 55 65 L 70 50 L 90 85" /><g class="im-target im-t1"><line x1="25" y1="30" x2="35" y2="40"/><line x1="35" y1="30" x2="25" y2="40"/></g><g class="im-target im-t2"><line x1="65" y1="45" x2="75" y2="55"/><line x1="75" y1="45" x2="65" y2="55"/></g><g class="im-target im-t3"><line x1="35" y1="65" x2="45" y2="75"/><line x1="45" y1="65" x2="35" y2="75"/></g></svg>`
     };
 
     const palettes = {
-        safe: { c1: '#005C97', c2: '#363795', c3: '#004FF9', c4: '#00B4DB' },
-        warning: { c1: '#F2994A', c2: '#F2C94C', c3: '#E65C00', c4: '#F9D423' },
-        danger: { c1: '#430000', c2: '#920000', c3: '#E30022', c4: '#FF2D55' }
+        safe: { c1: '#005C97', c2: '#363795', c3: '#004FF9', c4: '#00B4DB', c5: '#0A84FF', c6: '#1C0D54' },
+        warning: { c1: '#F2994A', c2: '#F2C94C', c3: '#E65C00', c4: '#F9D423', c5: '#FF9500', c6: '#B83A00' },
+        danger: { c1: '#430000', c2: '#920000', c3: '#E30022', c4: '#FF2D55', c5: '#640000', c6: '#1A0000' }
     };
 
     document.addEventListener('alpine:init', () => {
         Alpine.data('qimamEngine', () => ({
             subjectName: 'الفيزياء الكونية', totalQ: 25, currentQ: 1, windowWidth: window.innerWidth,
-            timeLeft: 60, timerDisplay: '01:00', timeColor: '#0f172a', colors: palettes.safe,
-            isPartying: false, hasPartied: false, showLargeAnim: false, labelVisible: true, visitedSections: new Set(),
+            timeLeft: 60, timerDisplay: '01:00', colors: palettes.safe, timeState: 'safe',
+            isPartying: false, hasPartied: false, showLargeAnim: false, animTrigger: false, visitedSections: new Set(),
             sections: [
                 {id:'tf', name:'صح وخطأ', endQ:4, iconSvg: sectionIcons.tf},
                 {id:'mcq', name:'خيارات', endQ:8, iconSvg: sectionIcons.mcq},
@@ -448,14 +478,17 @@
             get isLongQuestionDesktop() { return this.windowWidth >= 1024 && ['order','step','match'].includes(this.currentType); },
 
             init() {
-                this.startTimer(); this.showLabel(); this.checkNewSection();
-                this.$watch('currentType', () => {
-                    this.checkNewSection();
-                    if(this.currentType==='order') this.$nextTick(()=>this.renderOrderList());
-                    if(this.currentType==='step') this.$nextTick(()=>this.renderStepList());
-                    if(this.currentType==='fill') this.$nextTick(()=>this.fillAnswers.forEach((a,i)=>this._setBlankWidth(i,a)));
+                window.qimam = this;
+                this.startTimer(); this.checkNewSection();
+                this.$watch('currentType', (val) => {
+                    this.checkNewSection(); this.activePinModal = null;
+                    if(val==='order') this.$nextTick(()=>this.renderOrderList());
+                    if(val==='step') this.$nextTick(()=>this.renderStepList());
+                    if(val==='fill') this.$nextTick(()=>this.fillAnswers.forEach((a,i)=>this._setBlankWidth(i,a)));
                 });
                 if(this.currentType==='order') this.$nextTick(()=>this.renderOrderList());
+                if(this.currentType==='step') this.$nextTick(()=>this.renderStepList());
+                if(this.currentType==='fill') this.$nextTick(()=>this.fillAnswers.forEach((a,i)=>this._setBlankWidth(i,a)));
             },
             startTimer() {
                 setInterval(() => {
@@ -463,53 +496,49 @@
                         this.timeLeft--; let m=Math.floor(this.timeLeft/60), s=this.timeLeft%60;
                         this.timerDisplay = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
                         let r = this.timeLeft / 60;
-                        this.timeColor = r <= 0.236 ? '#EF4444' : (r <= 0.382 ? '#F59E0B' : '#0f172a');
-                        this.colors = r <= 0.236 ? palettes.danger : (r <= 0.382 ? palettes.warning : palettes.safe);
+                        if(r <= 0.236) { this.timeState = 'danger'; this.colors = palettes.danger; }
+                        else if(r <= 0.382) { this.timeState = 'warning'; this.colors = palettes.warning; }
+                        else { this.timeState = 'safe'; this.colors = palettes.safe; }
                     }
                 }, 1000);
             },
-            checkNewSection() { if(!this.visitedSections.has(this.currentType)) { this.visitedSections.add(this.currentType); this.showLargeAnim = true; setTimeout(()=>this.showLargeAnim=false, 2500); } },
-            showLabel() { this.labelVisible = true; if(this.lTimer) clearTimeout(this.lTimer); this.lTimer = setTimeout(()=>this.labelVisible=false, 3000); },
-            nextQ() { if(this.currentQ < this.totalQ) { this.currentQ++; this.showLabel(); } },
-            prevQ() { if(this.currentQ > 1) { this.currentQ--; this.showLabel(); } },
+            checkNewSection() { if(!this.visitedSections.has(this.currentType)) { this.visitedSections.add(this.currentType); this.showLargeAnim = true; this.animTrigger = false; setTimeout(() => { this.animTrigger = true; }, 400); setTimeout(() => { this.showLargeAnim = false; this.animTrigger = false; }, 3000); } },
+            nextQ() { if(this.currentQ < this.totalQ) { this.currentQ++; this.haptic(15); } },
+            prevQ() { if(this.currentQ > 1) { this.currentQ--; this.haptic(10); } },
             handleMainAction() { this.nextQ(); },
             confirmExit() { if(confirm('هل تريد الخروج؟')) alert('تم الخروج'); },
             haptic(ms) { if(navigator.vibrate) navigator.vibrate(ms); },
 
-            // Question Logic
             tfAnswer: null, mcqOptions:['navigator.vibrate()','window.shake()','device.haptic()','document.vibrate()'], mcqAnswer:null,
             orderItems: [{id:1,text:'الطور التمهيدي (Prophase)'},{id:2,text:'الطور الاستوائي (Metaphase)'},{id:3,text:'الطور الانفصالي (Anaphase)'},{id:4,text:'الطور النهائي (Telophase)'}],
             renderOrderList() {
                 const c = document.getElementById('order-list'); if(!c) return; c.innerHTML='';
-                this.orderItems.forEach((it, i) => { const d=document.createElement('div'); d.className='p-4 bg-white border-2 rounded-xl flex items-center gap-3 shadow-sm silk transition-all'; d.innerHTML=`<div class="flex flex-col gap-1 shrink-0"><button class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-qNavy transition ${i===0?'opacity-30 pointer-events-none':''}"><span class="material-symbols-rounded">expand_less</span></button><button class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-qNavy transition ${i===this.orderItems.length-1?'opacity-30 pointer-events-none':''}"><span class="material-symbols-rounded">expand_more</span></button></div><span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-slate-500 border">${i+1}</span><span class="flex-1 font-bold text-slate-700">${it.text}</span><span class="handle material-symbols-rounded text-slate-300 cursor-grab p-2">drag_indicator</span>`; c.appendChild(d); });
-                Sortable.create(c, { handle:'.handle', animation:150, onEnd: (e) => { const el=this.orderItems.splice(e.oldIndex, 1)[0]; this.orderItems.splice(e.newIndex, 0, el); this.haptic(10); this.renderOrderList(); } });
+                this.orderItems.forEach((it, i) => { const d=document.createElement('div'); d.className='bg-white border-2 border-slate-200 shadow-sm rounded-2xl p-4 flex items-center gap-3'; d.innerHTML=`<div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 font-black text-sm flex items-center justify-center shrink-0 border border-slate-200">${i+1}</div><div class="flex-1 font-bold text-base text-slate-700">${it.text}</div><div class="step-drag-handle material-symbols-rounded text-slate-300 cursor-grab p-2">drag_indicator</span>`; c.appendChild(d); });
+                Sortable.create(c, { handle:'.step-drag-handle', animation:150, forceFallback:true, onEnd: (e) => { const el=this.orderItems.splice(e.oldIndex, 1)[0]; this.orderItems.splice(e.newIndex, 0, el); this.haptic(10); this.renderOrderList(); } });
             },
-            stepItems: [
-                {id:1,title:'احسب طاقة الوضع',isOpen:true,isSolved:false,options:['1000 جول','2000 جول','500 جول'],tempAnswer:null},
-                {id:2,title:'استنتج السرعة',isOpen:false,isSolved:false,options:['10 م/ث','20 م/ث'],tempAnswer:null}
-            ],
+            stepItems: [{id:1,title:'احسب طاقة الوضع',isOpen:true,isSolved:false,options:['1000 جول','2000 جول','500 جول'],tempAnswer:null,confirmedAnswer:null},{id:2,title:'استنتج السرعة',isOpen:false,isSolved:false,options:['10 م/ث','20 م/ث'],tempAnswer:null,confirmedAnswer:null}],
             renderStepList() {
                 const c = document.getElementById('step-list'); if(!c) return; c.innerHTML='';
                 this.stepItems.forEach((st, i) => {
                     const d=document.createElement('div'); d.className='bg-white border-2 rounded-2xl shadow-sm silk overflow-hidden transition-all';
                     if(st.isSolved) d.style.borderColor='#D4AF37';
-                    d.innerHTML=`<div class="p-4 flex items-center justify-between cursor-pointer"><div class="flex items-center gap-3"><span class="w-8 h-8 rounded-lg ${st.isSolved?'bg-amber-100 text-amber-600':'bg-slate-100 text-slate-500'} flex items-center justify-center font-bold border">${i+1}</span><span class="font-bold">${st.title}</span></div><span class="material-symbols-rounded transition-transform ${st.isOpen?'rotate-180':''}">expand_more</span></div>`;
+                    d.innerHTML=`<div class="p-4 flex items-center justify-between cursor-pointer"><div class="flex items-center gap-3"><span class="w-8 h-8 rounded-xl ${st.isSolved?'bg-amber-100 text-amber-600 border-amber-300':'bg-slate-100 text-slate-500 border-slate-200'} flex items-center justify-center font-black text-sm border">${i+1}</span><span class="font-bold text-slate-700 text-sm md:text-base truncate">${st.title}</span></div><span class="material-symbols-rounded transition-transform ${st.isOpen?'rotate-180':''}">expand_more</span></div>`;
                     d.onclick = () => { this.stepItems.forEach((s,j)=>{if(i!==j)s.isOpen=false;}); st.isOpen=!st.isOpen; this.renderStepList(); };
                     if(st.isOpen) {
-                        const bd = document.createElement('div'); bd.className='p-4 pt-0 border-t bg-slate-50/50';
+                        const bd = document.createElement('div'); bd.className='p-4 pt-0 border-t border-slate-50 bg-slate-50/50';
                         const opts = document.createElement('div'); opts.className='flex flex-col gap-2 mt-4';
-                        st.options.forEach((o,oi)=>{ const b=document.createElement('button'); b.className='p-4 border-2 rounded-xl text-right font-bold bg-white silk transition-all'; b.innerText=o; b.onclick=(e)=>{e.stopPropagation(); st.tempAnswer=oi; this.renderStepList();}; if(st.tempAnswer===oi) b.className+=' border-qNavy bg-qNavy text-white shadow-md'; opts.appendChild(b); });
-                        const cb = document.createElement('button'); cb.className=`w-full py-4 mt-4 rounded-xl font-black ${st.tempAnswer!==null?'bg-qGold text-qNavy':'bg-slate-200 text-slate-400'}`; cb.innerText='تأكيد الخطوة'; cb.onclick=(e)=>{e.stopPropagation(); if(st.tempAnswer!==null){st.isSolved=true; st.isOpen=false; this.renderStepList();}};
+                        st.options.forEach((o,oi)=>{ const b=document.createElement('button'); b.className='p-4 border-2 rounded-xl text-right font-bold bg-white silk transition-all flex items-center justify-between'; b.innerHTML=`<span>${o}</span>`; b.onclick=(e)=>{e.stopPropagation(); st.tempAnswer=oi; this.renderStepList();}; if(st.tempAnswer===oi) { b.className+=' border-qNavy bg-qNavy text-white shadow-md'; b.innerHTML+=`<span class="material-symbols-rounded text-lg">check_circle</span>`; } opts.appendChild(b); });
+                        const cb = document.createElement('button'); cb.className=`squish w-full py-4 mt-4 rounded-xl font-black silk ${st.tempAnswer!==null?'bg-qGold text-qNavy shadow-lg':'bg-slate-200 text-slate-400'}`; cb.innerText='تأكيد الخطوة'; cb.onclick=(e)=>{e.stopPropagation(); if(st.tempAnswer!==null){st.isSolved=true; st.isOpen=false; st.confirmedAnswer=st.tempAnswer; this.renderStepList(); this.haptic(20); }};
                         bd.appendChild(opts); bd.appendChild(cb); d.appendChild(bd);
                     }
                     c.appendChild(d);
                 });
             },
             fillBank: ['HTML','JavaScript','CSS','Python'], fillAnswers: [null, null], fillActiveIdx: 0,
-            _measureWord(word) { const r=document.getElementById('blank-ruler'); if(!r||!word) return 68; r.innerText=word; return Math.max(r.offsetWidth+24, 68); },
-            _setBlankWidth(i, w) { const b=document.getElementById(`blank-${i}`); if(b) b.style.minWidth = this._measureWord(w)+'px'; },
+            _measureWord(word, ref) { const r=document.getElementById('blank-ruler'); if(!r||!word) return 68; if(ref) r.style.fontSize = window.getComputedStyle(ref.parentElement).fontSize; r.innerText=word; return Math.max(r.offsetWidth+24, 68); },
+            _setBlankWidth(i, w) { const b=document.getElementById(`blank-${i}`); if(b) b.style.minWidth = this._measureWord(w, b)+'px'; },
             setActiveBlank(i) { if(this.fillAnswers[i]) { this.fillAnswers[i]=null; this._setBlankWidth(i,null); } this.fillActiveIdx=i; },
-            fillBlank(w) { if(this.fillActiveIdx!==null && !this.fillAnswers.includes(w)) { this.fillAnswers[this.fillActiveIdx]=w; this._setBlankWidth(this.fillActiveIdx, w); this.fillActiveIdx = this.fillAnswers.findIndex(a=>a===null); this.haptic(10); } },
+            fillBlank(w) { if(this.fillActiveIdx!==null && !this.fillAnswers.includes(w)) { this.fillAnswers[this.fillActiveIdx]=w; this._setBlankWidth(this.fillActiveIdx, w); this.fillActiveIdx = this.fillAnswers.findIndex(a=>a===null); if(this.fillActiveIdx===-1) this.fillActiveIdx=null; this.haptic(10); } },
             matchRight:[{id:'r1',text:'HTML'},{id:'r2',text:'CSS'},{id:'r3',text:'JavaScript'},{id:'r4',text:'Python'}], matchLeft:[{id:'l1',text:'الهيكل الأساسي'},{id:'l2',text:'التنسيق والألوان'},{id:'l3',text:'المنطق والتفاعل'},{id:'l4',text:'تحليل البيانات'}], connections:[], pendingRight:null, pendingLeft:null,
             touchNode(s,id) {
                 const ci=this.connections.findIndex(c=>c.rightId===id||c.leftId===id); if(ci!==-1){this.connections.splice(ci,1); return;}
@@ -521,8 +550,58 @@
             },
             getNodeStyle(s,id) { const cn=this.connections.find(c=>c[s+'Id']===id); return cn ? `background:${cn.color}; border-color:${cn.color}; color:white;` : ''; },
             getNodeClass(s,id) { return (s==='right'?this.pendingRight:this.pendingLeft)===id ? 'border-qNavy bg-slate-100 shadow-md' : 'border-slate-200 bg-white'; },
-            activePinModal:null, imgPins:[{id:1,x:22,y:48,color:'#1e293b',question:'ما هو دور CPU؟',options:['المعالجة','التخزين'],type:'mcq',solved:false}],
-            openPin(p) { this.activePinModal={...p, tempAnswer:undefined}; }, closePin() { this.activePinModal=null; }, confirmPin() { const i=this.imgPins.findIndex(px=>px.id===this.activePinModal.id); this.imgPins[i].solved=true; this.haptic(20); this.closePin(); }
+            activePinModal:null,
+            imgPins:[
+                {id:1,x:22,y:48,type:'mcq',color:'#1e293b',question:'ما هو دور وحدة المعالجة (CPU) في اللوحة؟',options:['تخزين البيانات','معالجة العمليات','توليد الطاقة'],solved:false,answer:null},
+                {id:2,x:70,y:30,type:'tf', color:'#ef4444',question:'هذا المنفذ يستخدم لتوصيل الشاشة (HDMI) فقط.',solved:false,answer:null},
+                {id:3,x:50,y:72,type:'fill',color:'#3b82f6',question:'يستخدم هذا المكون لتخزين البيانات في',bank:['الذاكرة','الكاش','المعالج'],fillAnswers:[null],solved:false,answer:null}
+            ],
+            openPin(pin) {
+                this.activePinModal = {
+                    ...pin,
+                    tempAnswer: pin.answer !== null ? pin.answer : undefined,
+                    fillAnswers: pin.type === 'fill' ? [...(pin.fillAnswers || [null])] : [],
+                    activeF: pin.type === 'fill' ? 0 : null
+                };
+                this.$nextTick(() => {
+                    const layer = document.getElementById('img-zoom-layer');
+                    if (layer) {
+                        layer.style.transition = 'none';
+                        layer.style.transformOrigin = `${pin.x}% ${pin.y}%`;
+                        void layer.offsetHeight;
+                        requestAnimationFrame(() => {
+                            layer.style.transition = 'transform 600ms cubic-bezier(0.22, 1, 0.36, 1)';
+                            layer.style.transform = `scale(${window.innerWidth < 1024 ? 3.0 : 2.6})`;
+                        });
+                    }
+                    if (pin.type === 'fill') {
+                        setTimeout(() => {
+                            this.activePinModal.fillAnswers.forEach((word, idx) => {
+                                if (word) {
+                                    const blank = document.getElementById(`pin-blank-${idx}`);
+                                    if (blank) blank.style.minWidth = this._measureWord(word, blank) + 'px';
+                                }
+                            });
+                        }, 50);
+                    }
+                });
+            },
+            closePin() {
+                const layer = document.getElementById('img-zoom-layer');
+                if (layer) {
+                    layer.style.transition = 'transform 600ms cubic-bezier(0.22, 1, 0.36, 1)';
+                    layer.style.transform = 'scale(1)';
+                    setTimeout(() => { if(!this.activePinModal) layer.style.transformOrigin = 'center center'; }, 600);
+                }
+                this.activePinModal = null;
+            },
+            confirmPin() {
+                const i=this.imgPins.findIndex(px=>px.id===this.activePinModal.id);
+                this.imgPins[i].solved=true;
+                this.imgPins[i].answer=this.activePinModal.tempAnswer;
+                if(this.activePinModal.type==='fill') this.imgPins[i].fillAnswers=[...this.activePinModal.fillAnswers];
+                this.haptic(20); this.closePin();
+            }
         }));
     });
     </script>
