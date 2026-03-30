@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qimam - The Masterpiece Icons</title>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           1. QIMAM DESIGN SYSTEM (Extracted from your code)
+           ========================================================================== */
+        :root {
+            /* Qimam Royal Theme Colors */
+            --bg-body: #0A142B;
+            --bg-card: #102044;
+            --text-primary: #FFFFFF;
+            --text-secondary: #CBD5E1;
+            --text-accent: #D4AF37; /* Royal Gold */
+            
+            /* Glass & Borders */
+            --border-color: rgba(212, 175, 55, 0.2);
+            --glass-bg: rgba(16, 32, 68, 0.6);
+            --glass-hover: rgba(212, 175, 55, 0.05);
+            
+            /* Icon Specific Colors */
+            --icon-base: #94A3B8; /* Slate 400 for high contrast static lines */
+            --icon-fill: rgba(148, 163, 184, 0.1); /* Body fill */
+            --icon-success: #10B981;
+            --icon-danger: #EF4444;
+            
+            /* Physics */
+            --ease-apple: cubic-bezier(0.25, 1, 0.5, 1);
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --anim-time: 1000ms;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            font-family: 'Almarai', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            padding: 40px;
+        }
+
+        /* ==========================================================================
+           2. THE PREMIUM CARD (Matches Qimam's ios-card / glass-card)
+           ========================================================================== */
+        .icon-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            width: 140px;
+            height: 140px;
+            border-radius: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.05);
+            transition: all 0.4s var(--ease-apple);
+            /* Hardware Acceleration */
+            transform: translateZ(0);
+            will-change: transform, background, border-color;
+        }
+
+        .icon-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: var(--glass-hover);
+            border-color: rgba(212, 175, 55, 0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(212, 175, 55, 0.1);
+        }
+
+        /* SVG Canvas - Perfectly Scaled */
+        svg {
+            width: 76px;
+            height: 76px;
+            overflow: visible;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Base SVG Elements */
+        g, path, rect, circle, line, text {
+            transform-box: fill-box;
+            transform-origin: center;
+            will-change: transform, opacity, stroke, fill, filter;
+        }
+
+        /* ==========================================================================
+           3. STATIC BEAUTY & ANIMATIONS (The Dual-Tone Approach)
+           ========================================================================== */
+
+        /* --- 1. True/False (Distinct even when static) --- */
+        .tf-check-bg { fill: rgba(16, 185, 129, 0.1); stroke: rgba(16, 185, 129, 0.3); stroke-width: 2; }
+        .tf-cross-bg { fill: rgba(239, 68, 68, 0.1); stroke: rgba(239, 68, 68, 0.3); stroke-width: 2; }
+        .tf-check-mark { stroke: var(--icon-success); stroke-width: 3.5; fill: none; }
+        .tf-cross-mark { stroke: var(--icon-danger); stroke-width: 3.5; fill: none; }
+
+        .is-animating .tf-g-check { animation: tfPopCheck var(--anim-time) var(--ease-bounce) forwards; }
+        .is-animating .tf-g-cross { animation: tfPopCross var(--anim-time) var(--ease-bounce) forwards; }
+
+        @keyframes tfPopCheck {
+            0%, 100% { transform: scale(1) translateX(0); opacity: 1; filter: none; }
+            20%, 40% { transform: scale(1.2) translateX(8px); opacity: 1; filter: drop-shadow(0 0 10px rgba(16,185,129,0.4)); z-index: 10; }
+            60%, 80% { transform: scale(0.8) translateX(-10px); opacity: 0.3; filter: none; }
+        }
+        @keyframes tfPopCross {
+            0%, 100% { transform: scale(1) translateX(0); opacity: 1; filter: none; }
+            20%, 40% { transform: scale(0.8) translateX(10px); opacity: 0.3; filter: none; }
+            60%, 80% { transform: scale(1.2) translateX(-8px); opacity: 1; filter: drop-shadow(0 0 10px rgba(239,68,68,0.4)); z-index: 10; }
+        }
+
+        /* --- 2. Multiple Choice (Premium Radio Grid) --- */
+        .mc-ring { stroke: var(--icon-base); stroke-width: 2.5; fill: var(--icon-fill); }
+        .mc-dot { fill: var(--text-accent); transform: scale(0); opacity: 0; }
+
+        .is-animating .mc-1 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 0ms forwards; }
+        .is-animating .mc-2 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 150ms forwards; }
+        .is-animating .mc-3 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 300ms forwards; }
+        
+        .is-animating .mc-4 { animation: mcHaptic 600ms var(--ease-bounce) 450ms forwards; }
+        .is-animating .mc-4 .mc-dot { animation: mcFillHold 600ms var(--ease-bounce) 450ms forwards; }
+        .is-animating .mc-4 .mc-ring { animation: mcRingGlow 600ms var(--ease-bounce) 450ms forwards; }
+
+        @keyframes mcFill { 0%, 100% { transform: scale(0); opacity: 0; } 50% { transform: scale(1); opacity: 1; } }
+        @keyframes mcFillHold { 0%, 100% { transform: scale(0); opacity: 0; } 20%, 80% { transform: scale(1); opacity: 1; } }
+        @keyframes mcHaptic { 0%, 100% { transform: scale(1); } 20% { transform: scale(0.8); } 40%, 80% { transform: scale(1.1); } }
+        @keyframes mcRingGlow { 40%, 80% { stroke: var(--text-accent); filter: drop-shadow(0 0 8px rgba(212,175,55,0.4)); } }
+
+        /* --- 3. Order Steps (UI Pills) --- */
+        .or-pill { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2; rx: 10; }
+        .or-num { fill: var(--text-primary); font-family: 'Almarai', sans-serif; font-weight: 900; font-size: 14px; }
+        
+        .is-animating .or-row-1 { animation: orSlideDown var(--anim-time) var(--ease-apple) forwards; }
+        .is-animating .or-row-2 { animation: orSlideUp var(--anim-time) var(--ease-apple) forwards; }
+        .is-animating .or-row-1 .or-pill, .is-animating .or-row-2 .or-pill { animation: orGlow var(--anim-time) var(--ease-apple) forwards; }
+
+        @keyframes orSlideDown { 0%, 100% { transform: translateY(0); } 40%, 70% { transform: translateY(28px); } }
+        @keyframes orSlideUp { 0%, 100% { transform: translateY(0); } 40%, 70% { transform: translateY(-28px); } }
+        @keyframes orGlow { 40%, 70% { stroke: var(--text-accent); fill: rgba(212,175,55,0.15); } }
+
+        /* --- 4. Fill in the Blank (The Magnetic Word) --- */
+        .fb-text-line { stroke: var(--icon-base); stroke-width: 3; stroke-linecap: round; }
+        .fb-blank { fill: rgba(0,0,0,0.2); stroke: var(--icon-base); stroke-width: 2; stroke-dasharray: 4 4; rx: 8; }
+        .fb-word { fill: var(--text-accent); rx: 6; opacity: 0.8; transform: translateY(25px); }
+        
+        .is-animating .fb-word { animation: fbSnap var(--anim-time) var(--ease-bounce) forwards; }
+        .is-animating .fb-blank { animation: fbAbsorb var(--anim-time) var(--ease-bounce) forwards; }
+
+        @keyframes fbSnap {
+            0%, 100% { transform: translateY(25px) scale(0.9); opacity: 0.8; }
+            30%, 70% { transform: translateY(0) scale(1); opacity: 1; filter: drop-shadow(0 0 10px rgba(212,175,55,0.5)); }
+        }
+        @keyframes fbAbsorb {
+            30%, 70% { stroke: var(--text-accent); stroke-dasharray: 0; transform: scaleX(1.1); fill: rgba(212,175,55,0.1); }
+        }
+
+        /* --- 5. Matching (Mini Cards) --- */
+        .ma-card { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2; rx: 6; }
+        
+        .is-animating .ma-r1, .is-animating .ma-l2 { animation: maPair1 var(--anim-time) var(--ease-bounce) forwards; }
+        .is-animating .ma-r3, .is-animating .ma-l1 { animation: maPair2 var(--anim-time) var(--ease-bounce) 200ms forwards; }
+
+        @keyframes maPair1 {
+            20%, 60% { transform: scale(1.15); stroke: #3B82F6; fill: rgba(59,130,246,0.2); filter: drop-shadow(0 0 8px rgba(59,130,246,0.4)); z-index: 10; }
+        }
+        @keyframes maPair2 {
+            20%, 60% { transform: scale(1.15); stroke: var(--text-accent); fill: rgba(212,175,55,0.2); filter: drop-shadow(0 0 8px rgba(212,175,55,0.4)); z-index: 10; }
+        }
+
+        /* --- 6. Branching (The Node Tree) --- */
+        .br-node { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2.5; rx: 8; }
+        .br-line { stroke: var(--icon-base); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+        
+        .br-hidden { stroke-dasharray: 50; stroke-dashoffset: 50; opacity: 0; }
+        .br-scale { transform: scale(0); opacity: 0; }
+
+        .is-animating .br-main { animation: brGlow var(--anim-time) var(--ease-apple) forwards; }
+        .is-animating .br-path { animation: brDraw 800ms var(--ease-apple) 100ms forwards; }
+        .is-animating .br-n1 { animation: brPop 800ms var(--ease-bounce) 200ms forwards; }
+        .is-animating .br-n2 { animation: brPop 800ms var(--ease-bounce) 300ms forwards; }
+        .is-animating .br-n3 { animation: brPop 800ms var(--ease-bounce) 400ms forwards; }
+        .is-animating .br-n2-glow { animation: brGlow 800ms var(--ease-apple) 400ms forwards; }
+
+        @keyframes brGlow { 20%, 80% { stroke: var(--text-accent); fill: rgba(212,175,55,0.2); filter: drop-shadow(0 0 8px rgba(212,175,55,0.3)); } }
+        @keyframes brDraw { 30%, 70% { stroke-dashoffset: 0; opacity: 1; stroke: var(--text-accent); } }
+        @keyframes brPop { 20%, 80% { transform: scale(1); opacity: 1; } }
+
+        /* --- 7. Image Targets (Minimalist Landscape) --- */
+        .im-frame { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2.5; rx: 10; }
+        .im-sun { fill: var(--text-accent); opacity: 0.9; }
+        .im-mount { stroke: var(--icon-base); stroke-width: 2.5; fill: none; stroke-linejoin: round; }
+        
+        .im-target { stroke: var(--icon-danger); stroke-width: 3; stroke-linecap: round; transform: scale(0); opacity: 0; }
+
+        .is-animating .im-t1 { animation: imAim 600ms var(--ease-bounce) 50ms forwards; }
+        .is-animating .im-t2 { animation: imAim 600ms var(--ease-bounce) 200ms forwards; }
+        .is-animating .im-t3 { animation: imAim 600ms var(--ease-bounce) 350ms forwards; }
+        .is-animating .im-t4 { animation: imAim 600ms var(--ease-bounce) 500ms forwards; }
+
+        @keyframes imAim {
+            0%, 100% { transform: scale(0) rotate(-45deg); opacity: 0; }
+            30%, 70% { transform: scale(1) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 6px rgba(239,68,68,0.5)); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="gallery-grid">
+        
+        <!-- 1. True/False (Distinct Dual-Tone) -->
+        <div class="icon-card" onclick="triggerAnim(this)">
+            <svg viewBox="0 0 100 100">
+                <g class="tf-g-check">
+                    <circle class="tf-check-bg" cx="32" cy="50" r="20" />
+                    <path class="tf-check-mark" d="M 24 52 L 30 58 L 42 42" />
+                </g>
+                <g class="tf-g-cross">
+                    <circle class="tf-cross-bg" cx="68" cy="50" r="20" />
+                    <path class="tf-cross-mark" d="M 62 44 L 74 56 M 74 44 L 62 56" />
+                </g>
+            </svg>
+        </div>
+
+        <!-- 2. Multiple Choice (Premium Radio Grid) -->
+        <div class="icon-card" onclick="triggerAnim(this)">
+            <svg viewBox="0 0 100 100">
+                <g class="mc-1"><circle class="mc-ring" cx="30" cy="30" r="14"/><circle class="mc-dot" cx="30" cy="30" r="6"/></g>
+                <g class="mc-2"><circle class="mc-ring" cx="70" cy="30" r="14"/><circle class="mc-dot" cx="70" cy="30" r="6"/></g>
+                <g class="mc-3"><circle class="mc-ring" cx="70" cy="70" r="14"/><circle class="mc-dot" cx="70" cy="70" r="6"/></g>
+                <g class="mc-4"><circle class="mc-ring" cx="30" cy="70" r="14"/><circle class="mc-dot" cx="30" cy="70" r="6"/></g>
+            </svg>
+        </div>
+
+        <!-- 3. Order Steps (UI Pills with Numbers) -->
+        <div class="icon-card" onclick="triggerAnim(this)">
+            <svg viewBox="0 0 100 100">
+                <g class="or-row-1">
+                    <rect class="or-pill" x="15" y="18" width="70" height="20" />
+                    <text class="or-num" x="25" y="33">1</text>
+                    <line x1="45" y1="28" x2="75" y2="28" stroke="var(--icon-base)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+                </g>
+                <g class="or-row-2">
+                    <rect class="or-pill" x="15" y="46" width="55" height="20" />
+                    <text class="or-num" x="25" y="61">2</text>
+                    <line x1="45" y1="56" x2="60" y2="56" stroke="var(--icon-base)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+                </g>
+                <g class="or-row-3">
+                    <rect class="or-pill" x="15" y="74" width="40" height="20" />
+                    <text class="or-num" x="25" y="89">3</text>
+                    <line x1="45" y1="84" x2="45" y2="84" stroke="var(--icon-base)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+                </g>
+            </svg>
+        </div>
+
+        <!-- 4. Fill in the Blank (Text + Magnetic Pill) -->
+        <div class="icon-card" onclick="triggerAnim(this)">
+            <svg viewBox="0 0 100 100">
+                <!-- Static Text Lines -->
+                <line class="fb-text-line" x1="10" y1="40" x2="25" y2="40" />
+                <line class="fb-text-line" x1="75" y1="40" x2="90" y2="40" />
+                
+                <!-- The Blank Space -->
+                <rect class="fb-blank" x="30" y="28" width="40" height="24" />
+                
+                <!-- The Word to snap in -->
+                <rect class="fb-word" x="34" y="32" width="32" height="16" />
+            </svg>
+        </div>
+
+        <!-- 5. Matching (Mini Cards) -->
+        <div class="icon-card" onclick="triggerAnim(this)">
+            <svg viewBox="0 0 100 100">
+                <!-- Left Column -->
+                <rect class="ma-card ma-l1" x="15" y="12" width="28" height="18" />
+                <rect class="ma-card ma-l2" x="15" y="41" width="28" height="18" />
+                <rect class="ma-card ma-l3" x="15" y="70" width="28" height="18" />
+                <!-- Right Column -->
+                <rect class="ma-card ma-r1" x="57" y="12" width="28" height="18" />
+                <rect class="ma-card ma-r2" x="57" y="41" width="28" height="18" />
+                <rect class="ma-card ma-r3" x="57" y="70" width="28" height="18" />
+            </svg>
+        </div>
+
+        <!-- 6. Branching (Node Tree) -->
+        <div class="icon-card" onclick="triggerAnim(this)">
+            <svg viewBox="0 0 100 100">
+                <!-- Main Node -->
+                <rect class="br-node br-main" x="30" y="15" width="40" height="18" />
+                
+                <!-- Paths -->
+                <path class="br-line br-hidden br-path" d="M 50 33 L 50 45 M 50 45 L 25 60 M 50 45 L 50 60 M 50 45 L 75 60" />
+                
+                <!-- Sub Nodes -->
+                <rect class="br-node br-scale br-n1" x="10" y="60" width="30" height="16" />
+                <rect class="br-node br-scale br-n2 br-n2-glow" x="35" y="60" width="30" height="16" />
+                <rect class="br-node br-scale br-n3" x="60" y="60" width="30" height="16" />
+            </svg>
+        </div>
+
+        <!-- 7. Image Targets (Minimalist Landscape) -->
+        <div class="icon-card" onclick="triggerAnim(this)">
+            <svg viewBox="0 0 100 100">
+                <!-- Frame & Scenery -->
+                <rect class="im-frame" x="10" y="15" width="80" height="70" />
+                <circle class="im-sun" cx="30" cy="35" r="8" />
+                <path class="im-mount" d="M 10 85 L 40 45 L 55 65 L 70 50 L 90 85" />
+                
+                <!-- Targets -->
+                <g class="im-target im-t1"><line x1="25" y1="30" x2="35" y2="40"/><line x1="35" y1="30" x2="25" y2="40"/></g>
+                <g class="im-target im-t2"><line x1="65" y1="45" x2="75" y2="55"/><line x1="75" y1="45" x2="65" y2="55"/></g>
+                <g class="im-target im-t3"><line x1="35" y1="65" x2="45" y2="75"/><line x1="45" y1="65" x2="35" y2="75"/></g>
+                <g class="im-target im-t4"><line x1="75" y1="70" x2="85" y2="80"/><line x1="85" y1="70" x2="75" y2="80"/></g>
+            </svg>
+        </div>
+
+    </div>
+
+    <script>
+        function triggerAnim(element) {
+            if (element.classList.contains('is-animating')) return;
+            element.classList.add('is-animating');
+            // Lock for 1100ms to allow the 1000ms animations to finish perfectly
+            setTimeout(() => {
+                element.classList.remove('is-animating');
+            }, 1100); 
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Qimam - The Sovereign Arena v8.3</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.13.3/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,600,1,0" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Almarai', 'sans-serif'] },
+                    colors: { qNavy: '#0f172a', qGold: '#D4AF37', qBg: '#F8FAFC' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --ease-silk: cubic-bezier(0.22, 1, 0.36, 1);
+            --dur-silk: 480ms;
+            --hdr: 90px;
+            --ftr: 75px;
+            --safe-b: env(safe-area-inset-bottom, 0px);
+        }
+
+        body {
+            background-color: #F8FAFC; color: #0f172a;
+            overflow: hidden; overscroll-behavior: none; touch-action: manipulation;
+            user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+        }
+        #arena-main {
+            background-color: transparent !important;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+        *::-webkit-scrollbar { display: none !important; }
+
+        .silk { transition: all var(--dur-silk) var(--ease-silk); will-change: transform, opacity, background-color, border-color, padding; }
+        .squish { transition: transform 280ms var(--ease-silk), box-shadow 280ms var(--ease-silk); will-change: transform; transform: translateZ(0); }
+        .squish:active { transform: scale(0.96) translateZ(0); }
+
+        /* SORTABLE */
+        .sortable-ghost { opacity: 0 !important; }
+        .sortable-drag { opacity: 1 !important; background: white !important; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .sortable-fallback {
+            opacity: 1 !important;
+            background: white !important;
+            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.15) !important;
+            z-index: 9999 !important;
+        }
+        .drag-handle, .step-drag-handle { touch-action: none !important; cursor: grab; }
+
+        .fluid-blank {
+            display: inline-flex; align-items: center; justify-content: center;
+            position: relative; height: 38px;
+            border-bottom: 3px solid #D4AF37;
+            background: rgba(212, 175, 55, 0.06);
+            border-radius: 6px 6px 0 0;
+            font-weight: 900; color: #007AFF;
+            cursor: pointer; padding: 2px 12px;
+            white-space: nowrap; vertical-align: middle; margin: 0 3px;
+            min-width: 68px;
+            transition: min-width 420ms cubic-bezier(0.34, 1.2, 0.64, 1),
+                        background-color 240ms var(--ease-silk),
+                        border-color 240ms var(--ease-silk),
+                        box-shadow 240ms var(--ease-silk);
+            will-change: min-width; overflow: hidden;
+        }
+        .fluid-blank.active-target {
+            border-color: #007AFF; background: rgba(0, 122, 255, 0.1);
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.12);
+        }
+        .blank-word {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transform: translateY(6px);
+            transition: opacity 280ms var(--ease-silk) 160ms,
+                        transform 280ms var(--ease-silk) 160ms;
+        }
+        .blank-word.visible { opacity: 1; transform: translateY(0); }
+
+        #blank-ruler {
+            position: fixed; top: -9999px; left: -9999px;
+            visibility: hidden; font-family: 'Almarai', sans-serif;
+            font-weight: 900; white-space: nowrap; padding: 0 12px; pointer-events: none;
+        }
+        .word-bank-container { min-height: 60px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; align-content: center; }
+
+        /* MAP PINS */
+        .map-pin {
+            position: absolute; transform: translate(-50%, -50%);
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4); cursor: pointer; z-index: 10;
+            color: white; border: 2px solid white;
+            transition: opacity 280ms var(--ease-silk), box-shadow 280ms var(--ease-silk);
+        }
+        .map-pin::after {
+            content: ''; position: absolute; inset: -6px; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.6);
+            animation: pulse-pin 2.5s infinite var(--ease-silk);
+        }
+        .map-pin.solved::after { display: none; }
+        @keyframes pulse-pin { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.8); opacity: 0; } }
+        @keyframes fibo-color-pulse {
+            0%, 100% { opacity: 1; filter: brightness(1); }
+            61.8% { opacity: 0.4; filter: brightness(1.3); }
+        }
+        .active-pin-pulse {
+            animation: fibo-color-pulse 1.618s infinite linear !important;
+            z-index: 100 !important;
+            box-shadow: 0 0 20px rgba(255,255,255,0.5) !important;
+            transform: translate(-50%, -50%) scale(1.1) !important;
+        }
+
+        /* SIDE NAV */
+        .side-nav-btn {
+            position: fixed; left: 0;
+            top: var(--hdr); bottom: 0;
+            width: clamp(44px, 4vw, 52px);
+            background-color: #0f172a;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 30; cursor: pointer; border: none; outline: none;
+            border-radius: 0 14px 14px 0;
+            transition: background-color 280ms var(--ease-silk);
+        }
+        .side-nav-btn:hover { background-color: #1e293b; box-shadow: 4px 0 24px rgba(0,0,0,0.22); }
+        .side-nav-btn:active { transform: scaleX(0.93); background-color: #D4AF37; }
+
+        /* STEP SOLVED */
+        .step-solved-indicator {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: rgba(212, 175, 55, 0.12); border: 2px solid #D4AF37;
+            display: flex; align-items: center; justify-content: center; color: #D4AF37;
+        }
+
+        /* ANIMATIONS */
+        @keyframes subtle-arrow { 0%, 100% { transform: translateX(0); opacity: 0.45; } 50% { transform: translateX(-5px); opacity: 1; } }
+        .arrow-pulse { animation: subtle-arrow 1.6s infinite var(--ease-silk); }
+
+        /* IMAGE */
+        .img-zoom-layer { will-change: transform; transform: translate3d(0,0,0); backface-visibility: hidden; }
+
+        /* PIN MODAL */
+        .pin-modal {
+            transition: opacity 380ms cubic-bezier(0.34, 1.3, 0.64, 1),
+                        transform 420ms cubic-bezier(0.34, 1.3, 0.64, 1);
+        }
+        .pin-modal.modal-hidden { opacity: 0; transform: scale(0.93) translateY(10px); pointer-events: none; }
+        .pin-modal.modal-visible { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+
+        .img-hint { transition: opacity 300ms var(--ease-silk), transform 300ms var(--ease-silk); }
+        .img-hint.hint-hidden { opacity: 0; transform: scale(0.95); pointer-events: none; }
+
+        /* الحاوية الخارجية (الإطار الأبيض) */
+        .art-frame-container {
+            background: white;
+            padding: 5px; /* إطار متزن */
+            border-radius: 10px;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.05), 0 10px 40px -10px rgba(0,0,0,0.2);
+            /* هذا التغيير هو الأهم: يجعل الحاوية تأخذ حجم الصورة بالضبط */
+            display: inline-block; 
+            vertical-align: middle;
+            transition: all 600ms cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
+            max-width: 95%; /* يمنع الالتصاق التام بالجوانب في الموبايل */
+        }
+
+        .art-frame-inner {
+            position: relative;
+            overflow: hidden;
+            border-radius: 6px;
+            line-height: 0; /* يزيل الفراغ السفلي الغريب تحت الصور */
+            transition: border-radius 600ms var(--ease-silk);
+        }
+
+        .art-frame-inner img {
+            display: block;
+            width: auto;
+            height: auto;
+            border-radius: inherit;
+            /* إزالة object-fit لترك الصورة تحدد حجم الإطار بنفسها */
+        }
+
+        /* خدعة الشاشة الكاملة للهاتف */
+        html, body {
+            height: 100%;
+            /* يسمح بتمرير بسيط جداً لإخفاء شريط المتصفح */
+            overflow: auto !important; 
+            overscroll-behavior-y: none;
+        }
+
+        /* نضمن أن الحاوية الرئيسية هي التي تمسك الطول الحقيقي */
+        body {
+            min-height: 101vh; /* أطول من الشاشة بقليل لإجبار المتصفح على الاستجابة */
+        }
+
+
+
+
+    </style>
+</head>
+<body class="flex flex-col h-dvh" x-data="arenaEngine()" oncontextmenu="return false;">
+
+    <!-- HEADER -->
+    <div class="h-[90px] fixed top-0 w-full bg-slate-200 border-b border-dashed border-slate-300 flex items-center justify-center z-40 silk"
+         :class="activePinModal ? '-translate-y-full' : 'translate-y-0'">
+        <span class="text-slate-400 font-bold text-[10px] tracking-widest uppercase opacity-70">[ الهيدر / المؤقت / معلومات السؤال ]</span>
+        <select x-model="currentType" @change="resetState()"
+                class="absolute left-4 px-3 py-2 rounded-xl text-xs font-bold bg-white border border-slate-300 shadow-sm text-qNavy outline-none cursor-pointer hover:border-qNavy">
+            <template x-for="type in typesList" :key="type.id">
+                <option :value="type.id" x-text="type.name"></option>
+            </template>
+        </select>
+    </div>
+
+    <!-- التعديل في وسم main -->
+    <main class="overflow-y-auto overflow-x-hidden flex flex-col no-scrollbar silk"
+        id="arena-main"
+        style="background-color: transparent !important;"
+        :style="
+            activePinModal
+                ? 'position:fixed; top:0; bottom:0; left:0; right:0; z-index:100; background:white;'
+                : (currentType === 'image')
+                    ? 'position:fixed; top:var(--hdr); bottom:calc(var(--ftr) + var(--safe-b)); left:0; right:0; overflow:hidden; z-index:10;'
+                    : (isLongQuestionDesktop)
+                        ? 'position:fixed; top:calc(var(--hdr) + 10px); bottom:15px; left:calc(clamp(44px,4vw,52px) + 15px); right:15px; z-index:10;' 
+                        : 'position:fixed; top:var(--hdr); bottom:calc(var(--ftr) + var(--safe-b) + 8px); left:0; right:0; z-index:10;'
+        ">
+    <!-- 
+        شرح التعديل:
+        1. في isLongQuestionDesktop: جعلنا bottom: 15px لضمان عدم الالتصاق بالحافة السفلية أبداً.
+        2. في الأسئلة العادية: جعلنا bottom: 0 مع padding-bottom كبير، ليظهر الفراغ شفافاً (يظهر لون خلفية الصفحة F8FAFC).
+    -->
+        <!-- ملاحظة: padding-bottom: 80px أعلاه تحل مشكلة الالتصاق السفلي في سؤال رتب -->
+
+        <div id="blank-ruler"></div>
+
+        <!-- 1. TRUE / FALSE -->
+        <template x-if="currentType === 'tf'">
+            <div class="flex flex-col px-5 py-6 max-w-4xl mx-auto w-full min-h-full">
+                <div class="my-auto w-full flex flex-col pb-8">
+                    <div class="flex-1 flex items-center justify-center py-6">
+                        <h2 class="text-2xl md:text-3xl font-black leading-relaxed text-qNavy text-center">
+                            لغة CSS هي المسؤولة عن إضافة التفاعلية والمنطق البرمجي لصفحات الويب.
+                        </h2>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 w-full shrink-0 mt-8">
+                        <button @click="tfAnswer=true;haptic(15)"
+                                class="squish silk h-[88px] rounded-3xl border-2 flex items-center justify-center gap-3"
+                                :class="tfAnswer===true?'bg-qNavy border-qNavy text-white shadow-xl':'bg-white border-slate-200 text-slate-500 hover:border-slate-300'">
+                            <span class="material-symbols-rounded text-3xl">check_circle</span>
+                            <span class="font-black text-xl">صــح</span>
+                        </button>
+                        <button @click="tfAnswer=false;haptic(15)"
+                                class="squish silk h-[88px] rounded-3xl border-2 flex items-center justify-center gap-3"
+                                :class="tfAnswer===false?'bg-qNavy border-qNavy text-white shadow-xl':'bg-white border-slate-200 text-slate-500 hover:border-slate-300'">
+                            <span class="material-symbols-rounded text-3xl">cancel</span>
+                            <span class="font-black text-xl">خـطـأ</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- 2. MCQ -->
+        <template x-if="currentType === 'mcq'">
+            <div class="flex flex-col px-5 lg:px-20 py-10 max-w-4xl mx-auto w-full justify-center min-h-full pb-4">
+                <div class="flex-1 flex items-center justify-center py-6 text-center">
+                    <h2 class="text-2xl md:text-3xl font-black leading-relaxed text-qNavy">
+                        أي من الدوال التالية تُستخدم في JavaScript لإرسال إشعارات اهتزاز للهاتف؟
+                    </h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full shrink-0 mt-8">
+                    <template x-for="(opt, index) in mcqOptions" :key="index">
+                        <button @click="mcqAnswer=index;haptic(15)"
+                                class="squish silk w-full px-5 py-4 rounded-2xl text-right font-black text-base border-2 flex items-center justify-between"
+                                :class="mcqAnswer===index?'bg-qNavy border-qNavy text-white shadow-lg':'bg-white border-slate-200 text-slate-600 hover:border-slate-300'">
+                            <span x-text="opt"></span>
+                            <span class="material-symbols-rounded text-lg opacity-60" x-show="mcqAnswer===index">check_circle</span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </template>
+
+        <!-- 3. ORDER -->
+        <template x-if="currentType === 'order'">
+            <!-- أضفنا pb-10 لضمان مسافة إضافية داخلية -->
+            <div class="flex flex-col px-2 md:px-8 py-4 max-w-5xl mx-auto w-full min-h-full pb-10">
+                <div class="mb-6 text-center">
+                    <h2 class="text-xl md:text-2xl font-black text-qNavy">رتب أطوار الانقسام المتساوي في الخلية:</h2>
+                </div>
+                <div id="order-list" class="flex flex-col gap-3"></div>
+            </div>
+        </template>
+
+        <!-- 4. STEP MCQ -->
+        <template x-if="currentType === 'step'">
+            <div class="flex flex-col px-2 md:px-8 py-4 max-w-5xl mx-auto w-full min-h-full pb-10">
+                <div class="mb-6 text-center">
+                    <h2 class="text-xl font-black text-qNavy">رتب الخطوات، ثم أجب على كل خطوة للحل.</h2>
+                </div>
+                <div id="step-list" class="flex flex-col gap-4"></div>
+            </div>
+        </template>
+
+        <!-- 5. FILL -->
+        <template x-if="currentType === 'fill'">
+            <div class="flex flex-col px-5 lg:px-20 py-6 max-w-4xl mx-auto w-full min-h-full pb-4">
+                <div id="blank-ruler"></div>
+                <div class="flex-1 flex items-center justify-center py-6">
+                    <div class="text-xl md:text-3xl font-bold leading-loose text-center text-slate-700 px-2">
+                        لغة
+                        <span id="blank-0" @click="setActiveBlank(0);haptic(10)"
+                              class="fluid-blank" :class="fillActiveIdx===0?'active-target':''">
+                            <span class="blank-word" :class="fillAnswers[0]?'visible':''" x-text="fillAnswers[0]??''"></span>
+                        </span>
+                        تُستخدم لبناء هيكل صفحات الويب، بينما تُستخدم لغة
+                        <span id="blank-1" @click="setActiveBlank(1);haptic(10)"
+                              class="fluid-blank" :class="fillActiveIdx===1?'active-target':''">
+                            <span class="blank-word" :class="fillAnswers[1]?'visible':''" x-text="fillAnswers[1]??''"></span>
+                        </span>
+                        لإضافة التنسيقات والألوان.
+                    </div>
+                </div>
+                <div class="shrink-0 pt-8 mt-auto">
+                    <div class="w-full max-w-2xl mx-auto bg-white border border-slate-200 rounded-3xl p-4 shadow-sm">
+                        <div class="text-xs font-black text-slate-400 mb-3 text-center uppercase tracking-widest">بنك الكلمات المتاحة</div>
+                        <div class="word-bank-container">
+                            <template x-for="word in fillBank" :key="word">
+                                <button @click="fillBlank(word);haptic(15)"
+                                        class="squish px-6 py-3 bg-white border-2 border-slate-200 rounded-xl font-black text-slate-700 shadow-sm hover:border-blue-400 hover:text-blue-600 silk"
+                                        :class="fillAnswers.includes(word)?'opacity-0 pointer-events-none scale-90':'opacity-100'"
+                                        style="transition: opacity 300ms var(--ease-silk), transform 300ms var(--ease-silk);">
+                                    <span x-text="word"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- 6. MATCHING -->
+        <template x-if="currentType === 'match'">
+            <div class="flex flex-col px-2 md:px-8 py-4 max-w-6xl mx-auto w-full min-h-full pb-10">
+                <div class="mb-8 text-center">
+                    <h2 class="text-xl md:text-2xl font-black text-qNavy">زاوج بين المصطلحات ومعانيها:</h2>
+                </div>
+                <!-- تم تعديل الشبكة لتكون أكثر مرونة ولا تلتصق -->
+                <div class="grid grid-cols-2 gap-4 md:gap-8 w-full">
+                    <!-- اليمين -->
+                    <div class="grid auto-rows-fr gap-4">
+                        <template x-for="item in matchRight" :key="item.id">
+                            <button @click="touchNode('right', item.id);haptic(15)"
+                                    class="squish silk w-full h-full px-4 py-5 rounded-2xl font-bold text-sm md:text-base border-2 flex items-center justify-center text-center shadow-sm"
+                                    :class="getNodeClass('right', item.id)" :style="getNodeStyle('right', item.id)">
+                                <span class="leading-snug" x-text="item.text"></span>
+                            </button>
+                        </template>
+                    </div>
+                    <!-- اليسار -->
+                    <div class="grid auto-rows-fr gap-4">
+                        <template x-for="item in matchLeft" :key="item.id">
+                            <button @click="touchNode('left', item.id);haptic(15)"
+                                    class="squish silk w-full h-full px-4 py-5 rounded-2xl font-bold text-sm md:text-base border-2 flex items-center justify-center text-center shadow-sm"
+                                    :class="getNodeClass('left', item.id)" :style="getNodeStyle('left', item.id)">
+                                <span class="leading-snug" x-text="item.text"></span>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- 7. IMAGE MAPPER -->
+        <template x-if="currentType === 'image'">
+            <div class="flex w-full bg-slate-100 overflow-hidden relative"
+                :class="activePinModal ? 'fixed inset-0 z-[100] flex-col lg:flex-row-reverse bg-white' : 'h-full flex-col lg:flex-row-reverse'">
+
+                <!-- منطقة العرض (Canvas) -->
+                <div class="flex-1 relative flex items-center justify-center p-4 lg:p-10 overflow-auto no-scrollbar">
+                    
+                    <!-- الحاوية البيضاء الذكية -->
+                    <div id="img-zoom-layer" 
+                        class="art-frame-container shadow-2xl"
+                        :class="activePinModal ? 'rounded-none p-0 shadow-none' : ''">
+
+                        <div class="art-frame-inner" :class="activePinModal ? 'rounded-none' : ''">
+                            
+                            <div class="relative inline-flex items-center justify-center align-middle">
+                                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80"
+                                    draggable="false"
+                                    class="silk pointer-events-none select-none"
+                                    :style="activePinModal 
+                                        ? (windowWidth < 1024 ? 'height:25dvh; width:auto; max-width:none;' : 'height:92vh; width:auto;') 
+                                        : 'max-height: calc(100dvh - var(--hdr) - var(--ftr) - ' + (windowWidth < 1024 ? '30px' : '60px') + '); max-width: 100%; width:auto; height:auto;'">
+                                
+                                <!-- طبقة الدبابيس -->
+                                <div class="absolute inset-0 pointer-events-none">
+                                    <template x-for="pin in imgPins" :key="pin.id">
+                                        <div @click.stop="openPin(pin);haptic(20)"
+                                            class="map-pin border-2 silk pointer-events-auto"
+                                            :class="{ 'active-pin-pulse': activePinModal && activePinModal.id===pin.id, 'solved': pin.solved }"
+                                            :style="`left:${pin.x}%; top:${pin.y}%; background-color:${pin.solved?'#10B981':pin.color}; border-color:white;` ">
+                                            <span class="material-symbols-rounded text-[18px]" x-text="activePinModal && activePinModal.id===pin.id ? 'close' : (pin.solved ? 'check' : 'location_on')"></span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- منطقة الأسئلة (PC: اليمين | Mobile Active: الـ 3 أرباع الباقية) -->
+                <div class="bg-white silk flex flex-col relative"
+                    :style="activePinModal 
+                        ? (windowWidth < 1024 ? 'height:75dvh; width:100%;' : 'width:420px; height:100%; border-right:2px solid #e2e8f0;') 
+                        : 'display:none; lg:display:flex; lg:width:400px; lg:height:100%; align-items:center; justify-content:center; background:#f8fafc;'">
+
+                    <!-- تلميح البدء للحاسوب -->
+                    <div x-show="!activePinModal" class="flex flex-col items-center gap-4 text-slate-300">
+                        <span class="material-symbols-rounded text-6xl">touch_app</span>
+                        <p class="font-black text-lg">اختر دبوساً من الصورة</p>
+                    </div>
+
+                    <!-- محتوى السؤال عند الضغط على دبوس -->
+                    <div x-show="activePinModal" class="flex-1 flex flex-col overflow-hidden">
+                        <!-- الهيدر الصغير للمودال -->
+                        <div class="p-5 border-b flex items-center justify-between bg-slate-50">
+                            <div class="flex items-center gap-2">
+                                <span class="w-8 h-8 rounded-lg bg-qNavy text-white flex items-center justify-center font-bold" x-text="activePinModal?.id"></span>
+                                <span class="font-black text-qNavy">تفاصيل المكون</span>
+                            </div>
+                            <button @click="closePin()" class="w-10 h-10 rounded-full bg-white border shadow-sm flex items-center justify-center text-rose-500 active:scale-90 silk">
+                                <span class="material-symbols-rounded">close</span>
+                            </button>
+                        </div>
+
+                        <!-- منطقة الأسئلة القابلة للتمرير -->
+                        <div class="flex-1 overflow-y-auto p-6 no-scrollbar pb-32">
+                            <h3 class="text-xl font-black text-qNavy mb-6 leading-relaxed" x-text="activePinModal?.question"></h3>
+                            
+                            <!-- أسئلة الاختيار من متعدد داخل الدبوس -->
+                            <template x-if="activePinModal?.type==='mcq'">
+                                <div class="grid gap-3">
+                                    <template x-for="(opt,oi) in (activePinModal?.options ?? [])" :key="oi">
+                                        <button @click="activePinModal.tempAnswer=oi; haptic(10)" 
+                                                class="p-5 rounded-2xl text-right font-bold border-2 transition-all"
+                                                :class="activePinModal.tempAnswer===oi ? 'border-qNavy bg-qNavy text-white shadow-lg' : 'border-slate-100 bg-slate-50 text-slate-600 hover:border-slate-200'">
+                                            <span x-text="opt"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- أسئلة الصح والخطأ داخل الدبوس -->
+                            <template x-if="activePinModal?.type==='tf'">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <button @click="activePinModal.tempAnswer=true; haptic(10)" class="h-32 rounded-3xl border-2 flex flex-col items-center justify-center gap-2 silk" :class="activePinModal.tempAnswer===true?'bg-emerald-500 border-emerald-500 text-white shadow-lg':'bg-slate-50 border-slate-100 text-slate-400'">
+                                        <span class="material-symbols-rounded text-4xl">check_circle</span>
+                                        <span class="font-black">صحيح</span>
+                                    </button>
+                                    <button @click="activePinModal.tempAnswer=false; haptic(10)" class="h-32 rounded-3xl border-2 flex flex-col items-center justify-center gap-2 silk" :class="activePinModal.tempAnswer===false?'bg-rose-500 border-rose-500 text-white shadow-lg':'bg-slate-50 border-slate-100 text-slate-400'">
+                                        <span class="material-symbols-rounded text-4xl">cancel</span>
+                                        <span class="font-black">خاطئ</span>
+                                    </button>
+                                </div>
+                            </template>
+
+                            <!-- أسئلة أكمل الفراغ داخل الدبوس -->
+                            <template x-if="activePinModal?.type === 'fill'">
+                                <div class="text-center">
+                                    <div class="text-lg font-bold leading-loose text-slate-700 mb-8 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                                        يستخدم هذا المكون لتخزين 
+                                        <span id="pin-blank-0" @click="setPinActiveBlank(0);haptic(10)" class="fluid-blank" :class="activePinModal.activeF===0?'active-target':''">
+                                            <span class="blank-word" :class="activePinModal.fillAnswers[0]?'visible':''" x-text="activePinModal.fillAnswers[0]??''"></span>
+                                        </span>
+                                        المؤقتة.
+                                    </div>
+                                    <div class="flex flex-wrap justify-center gap-3">
+                                        <template x-for="word in activePinModal?.bank" :key="word">
+                                            <button @click="pinFillBlank(word);haptic(15)" class="px-5 py-3 bg-white border-2 border-slate-200 rounded-xl font-black text-slate-700 shadow-sm silk" :class="activePinModal.fillAnswers.includes(word)?'opacity-0 pointer-events-none scale-90':'opacity-100'">
+                                                <span x-text="word"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- زر التأكيد السفلي (Fixed) -->
+                        <div class="p-5 bg-white border-t mt-auto shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
+                            <button @click="confirmPin(); haptic(30)" 
+                                    :disabled="activePinModal?.tempAnswer===undefined"
+                                    class="w-full py-5 rounded-2xl font-black text-lg silk shadow-xl"
+                                    :class="activePinModal?.tempAnswer!==undefined ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-slate-100 text-slate-300 cursor-not-allowed'">
+                                تأكيد الإجابة وحفظ الدبوس
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <div x-show="(!isLongQuestionDesktop || currentType==='image') && !activePinModal"
+         x-transition:enter="transition duration-[480ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+         x-transition:enter-start="opacity-0 translate-y-full"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition duration-[480ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 translate-y-full"
+         class="w-full bg-white border-t border-slate-200 flex flex-row items-center justify-between px-4 gap-3 fixed bottom-0 z-40"
+         style="height: calc(var(--ftr) + var(--safe-b)); padding-bottom: var(--safe-b)">
+        <button @click="goToNextQuestion();haptic(20)"
+                class="squish silk h-[52px] flex-1 bg-qNavy text-white rounded-2xl font-black text-lg shadow-lg shadow-slate-900/15 flex items-center justify-center gap-2">
+            <span>التالي</span>
+            <span class="material-symbols-rounded">west</span>
+        </button>
+        <button class="w-[48px] h-[48px] shrink-0 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-400 squish hover:bg-rose-100">
+            <span class="material-symbols-rounded text-xl" style="transform:scaleX(-1)">logout</span>
+        </button>
+    </div>
+
+    <!-- SIDE NAV -->
+    <button x-show="isLongQuestionDesktop && currentType!=='image'" x-cloak
+            @click="goToNextQuestion();haptic(20)"
+            class="side-nav-btn hidden lg:flex">
+        <span class="material-symbols-rounded text-white text-2xl">west</span>
+    </button>
+
+    <!-- FLOATING LOGOUT -->
+    <button x-show="isLongQuestionDesktop && currentType!=='image'" x-cloak
+            class="hidden lg:flex fixed bottom-6 right-6 bg-white rounded-2xl shadow-xl border border-slate-200 items-center justify-center text-rose-400 hover:bg-rose-50 squish z-50"
+            style="width:52px;height:52px;">
+        <span class="material-symbols-rounded" style="transform:scaleX(-1)">logout</span>
+    </button>
+
+    <script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('arenaEngine', () => ({
+
+            currentType: 'tf',
+            typesList: [
+                {id:'tf',    name:'1. صح وخطأ'},
+                {id:'mcq',   name:'2. اختيار من متعدد'},
+                {id:'order', name:'3. رتب الخطوات'},
+                {id:'step',  name:'4. ترتيب متفرع'},
+                {id:'fill',  name:'5. أكمل الفراغ'},
+                {id:'match', name:'6. زاوج القائمة'},
+                {id:'image', name:'7. الصورة التفاعلية'},
+            ],
+
+            haptic(ms) { if (navigator.vibrate) navigator.vibrate(ms); },
+
+            windowWidth: window.innerWidth,
+
+            get isLongQuestionDesktop() {
+                return this.windowWidth >= 1024 && ['order','step','match'].includes(this.currentType);
+            },
+
+            goToNextQuestion() {
+                const i = this.typesList.findIndex(t => t.id === this.currentType);
+                if (i < this.typesList.length - 1) this.currentType = this.typesList[i+1].id;
+                else alert('أنت في آخر سؤال!');
+            },
+
+            resetState() {
+                this.activePinModal = null;
+                this.pendingRight = null;
+                this.pendingLeft = null;
+            },
+
+            // TF
+            tfAnswer: null,
+
+            // MCQ
+            mcqOptions: ['document.vibrate()','window.shake()','navigator.vibrate()','device.haptic()'],
+            mcqAnswer: null,
+
+            // ORDER
+            orderItems: [
+                {id:1,text:'الطور التمهيدي (Prophase)'},
+                {id:2,text:'الطور الاستوائي (Metaphase)'},
+                {id:3,text:'الطور الانفصالي (Anaphase)'},
+                {id:4,text:'الطور النهائي (Telophase)'},
+            ],
+            orderSortable: null,
+
+            renderOrderList() {
+                const container = document.getElementById('order-list');
+                if (!container) return;
+                container.innerHTML = '';
+                this.orderItems.forEach((item, idx) => {
+                    const div = document.createElement('div');
+                    div.dataset.id = item.id;
+                    div.className = 'bg-white border-2 border-slate-200 shadow-sm rounded-2xl p-4 flex items-center gap-3';
+                    div.innerHTML = `
+                        <div class="flex flex-col gap-1 shrink-0">
+                            <button data-action="up" data-idx="${idx}" class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-qNavy hover:bg-slate-100 transition ${idx===0?'opacity-30 pointer-events-none':''}"><span class="material-symbols-rounded text-lg">expand_less</span></button>
+                            <button data-action="down" data-idx="${idx}" class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-qNavy hover:bg-slate-100 transition ${idx===this.orderItems.length-1?'opacity-30 pointer-events-none':''}"><span class="material-symbols-rounded text-lg">expand_more</span></button>
+                        </div>
+                        <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 font-black text-sm flex items-center justify-center shrink-0 border border-slate-200">${idx+1}</div>
+                        <div class="flex-1 font-bold text-base text-slate-700">${item.text}</div>
+                        <div class="step-drag-handle shrink-0 text-slate-300 hover:text-slate-500 transition-colors p-2 cursor-grab active:cursor-grabbing"><span class="material-symbols-rounded">drag_indicator</span></div>`;
+                    div.querySelectorAll('button[data-action]').forEach(btn => {
+                        btn.addEventListener('click', e => {
+                            e.stopPropagation();
+                            const action=btn.dataset.action; const i=parseInt(btn.dataset.idx);
+                            if(action==='up'&&i>0){const el=this.orderItems.splice(i,1)[0];this.orderItems.splice(i-1,0,el);this.haptic(10);this.renderOrderList();}
+                            else if(action==='down'&&i<this.orderItems.length-1){const el=this.orderItems.splice(i,1)[0];this.orderItems.splice(i+1,0,el);this.haptic(10);this.renderOrderList();}
+                        });
+                    });
+                    container.appendChild(div);
+                });
+                if(this.orderSortable) this.orderSortable.destroy();
+                this.orderSortable = Sortable.create(container, {
+                    animation: 150,
+                    handle: '.step-drag-handle',
+                    ghostClass: 'sortable-ghost',
+                    dragClass: 'sortable-drag',
+                    // --- الإضافات الجديدة والضرورية للهاتف ---
+                    forceFallback: true,        // إجبار السحب الوهمي لمنع القفزة
+                    fallbackClass: "sortable-fallback",
+                    fallbackOnBody: true,       // لجعل العنصر يتحرك بحرية فوق كل الطبقات
+                    swapThreshold: 0.65,        // حساسية التبديل بين العناصر
+                    // ---------------------------------------
+                    onEnd: evt => {
+                        this.haptic(15);
+                        const el = this.orderItems.splice(evt.oldIndex, 1)[0];
+                        this.orderItems.splice(evt.newIndex, 0, el);
+                        this.renderOrderList();
+                    }
+                });
+            },
+
+            // STEP
+            stepItems: [
+                {id:1,title:'احسب طاقة الوضع',     isOpen:false,isSolved:false,tempAnswer:null,confirmedAnswer:null,options:['1000 جول','2000 جول','500 جول']},
+                {id:2,title:'استنتج السرعة',         isOpen:false,isSolved:false,tempAnswer:null,confirmedAnswer:null,options:['10 م/ث','20 م/ث','5 م/ث']},
+                {id:3,title:'احسب الزمن اللازم',     isOpen:false,isSolved:false,tempAnswer:null,confirmedAnswer:null,options:['3 ثوانٍ','5 ثوانٍ','8 ثوانٍ']},
+            ],
+            stepSortable: null,
+
+            renderStepList() {
+                const container = document.getElementById('step-list');
+                if(!container) return;
+                container.innerHTML = '';
+                
+                this.stepItems.forEach((step, sIdx) => {
+                    const card = document.createElement('div');
+                    card.dataset.id = step.id;
+                    // أضفنا 'cursor-auto' لضمان أن السحب يبدأ من المقبض فقط
+                    card.className = 'step-card rounded-2xl overflow-hidden border-2 bg-white shadow-sm cursor-auto';
+                    
+                    if(step.isSolved) {
+                        card.style.borderColor = '#D4AF37';
+                        card.style.backgroundColor = 'rgba(212,175,55,0.02)';
+                    } else if(step.isOpen) {
+                        card.style.borderColor = '#D4AF37';
+                    } else {
+                        card.style.borderColor = '#e2e8f0';
+                    }
+
+                    const hd = document.createElement('div');
+                    hd.className = 'p-4 flex items-center gap-3';
+
+                    // 1. الرقم
+                    const num = document.createElement('div');
+                    num.className = 'w-8 h-8 rounded-xl font-black text-sm flex items-center justify-center shrink-0 border';
+                    num.style.cssText = step.isSolved 
+                        ? 'background:rgba(212,175,55,0.12); border-color:#D4AF37; color:#D4AF37;' 
+                        : 'background:#f1f5f9; border-color:#e2e8f0; color:#64748b;';
+                    num.textContent = sIdx + 1;
+
+                    // 2. العنوان
+                    const ttl = document.createElement('div');
+                    ttl.className = 'flex-1 font-bold text-sm md:text-base text-slate-700 truncate';
+                    ttl.textContent = step.title;
+
+                    // 3. المقبض (نفس مكان وشكل رتب العادي)
+                    const dh = document.createElement('div');
+                    dh.className = 'step-drag-handle shrink-0 text-slate-300 hover:text-slate-500 p-2 cursor-grab active:cursor-grabbing';
+                    dh.innerHTML = '<span class="material-symbols-rounded">drag_indicator</span>';
+
+                    // ترتيب العناصر: [الرقم] [العنوان] [المقبض]
+                    hd.append(num, ttl, dh);
+
+                    // 4. زر التحكم
+                    if(step.isSolved) {
+                        const eb = document.createElement('button');
+                        eb.className = 'w-10 h-10 rounded-full flex items-center justify-center bg-amber-50 text-amber-600 border border-amber-100 shrink-0';
+                        eb.innerHTML = '<span class="material-symbols-rounded text-sm">edit</span>';
+                        eb.addEventListener('click', (e) => {
+                            e.stopPropagation(); // منع تعارض الضغط مع السحب
+                            step.isSolved = false; step.isOpen = true;
+                            this.renderStepList();
+                        });
+                        hd.appendChild(eb);
+                    } else {
+                        const tb = document.createElement('button');
+                        tb.className = `w-10 h-10 rounded-full flex items-center justify-center bg-slate-50 text-slate-400 border border-slate-200 shrink-0`;
+                        tb.innerHTML = `<span class="material-symbols-rounded" style="transition:transform 300ms; transform:rotate(${step.isOpen?180:0}deg)">expand_more</span>`;
+                        tb.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            this.stepItems.forEach((s, j) => { if(j !== sIdx) s.isOpen = false; });
+                            step.isOpen = !step.isOpen; this.renderStepList();
+                        });
+                        hd.appendChild(tb);
+                    }
+
+                    card.appendChild(hd);
+
+                    if(step.isOpen) {
+                        const bd = document.createElement('div');
+                        bd.className = 'p-4 pt-0 border-t border-slate-50 bg-slate-50/50';
+                        const opts = document.createElement('div');
+                        opts.className = 'flex flex-col gap-2 my-3';
+                        step.options.forEach((opt, oIdx) => {
+                            const b = document.createElement('button');
+                            const sel = step.tempAnswer === oIdx;
+                            b.className = 'squish w-full p-4 rounded-xl font-bold text-sm text-right border-2 flex items-center justify-between bg-white silk';
+                            b.style.cssText = sel ? 'background:#0f172a; border-color:#0f172a; color:white;' : 'border-color:#e2e8f0; color:#475569;';
+                            b.innerHTML = `<span>${opt}</span>${sel?'<span class="material-symbols-rounded text-base opacity-60">check_circle</span>':''}`;
+                            b.addEventListener('click', () => { step.tempAnswer = oIdx; this.haptic(10); this.renderStepList(); });
+                            opts.appendChild(b);
+                        });
+                        const cb = document.createElement('button');
+                        const can = step.tempAnswer !== null;
+                        cb.className = `squish w-full py-4 rounded-xl font-black text-sm silk ${can?'bg-qGold text-qNavy shadow-lg shadow-amber-200':'bg-slate-200 text-slate-400 cursor-not-allowed'}`;
+                        cb.textContent = 'تأكيد الخطوة';
+                        cb.onclick = () => { if(can){ step.isSolved = true; step.isOpen = false; step.confirmedAnswer = step.tempAnswer; this.haptic(20); this.renderStepList(); }};
+                        bd.append(opts, cb); card.appendChild(bd);
+                    }
+                    container.appendChild(card);
+                });
+
+                // إعدادات السحب "الاحترافية" المطابقة لرتب العادي
+                if(this.stepSortable) this.stepSortable.destroy();
+                this.stepSortable = Sortable.create(container, {
+                    animation: 150,               // نفس سرعة رتب العادي
+                    handle: '.step-drag-handle',
+                    ghostClass: 'sortable-ghost',
+                    dragClass: 'sortable-drag',
+                    forceFallback: true,          // ضروري للهاتف
+                    fallbackClass: "sortable-fallback",
+                    fallbackOnBody: true,
+                    onEnd: evt => {
+                        this.haptic(15);
+                        const el = this.stepItems.splice(evt.oldIndex, 1)[0];
+                        this.stepItems.splice(evt.newIndex, 0, el);
+                        this.renderStepList();   // تحديث القائمة
+                    }
+                });
+            },
+
+            // FILL
+            fillBank: ['HTML','JavaScript','CSS','Python'],
+            fillAnswers: [null, null],
+            fillActiveIdx: 0,
+
+            _measureWord(word, referenceEl) {
+                const ruler = document.getElementById('blank-ruler');
+                if (!ruler || !referenceEl) return 68;
+                if (!word) return 68;
+                ruler.style.fontSize = window.getComputedStyle(referenceEl.parentElement).fontSize;
+                ruler.textContent = word;
+                return Math.max(ruler.offsetWidth + 24, 68);
+            },
+
+            _setBlankWidth(idx, word) {
+                const blank = document.getElementById(`blank-${idx}`);
+                if (!blank) return;
+                blank.style.minWidth = (word ? this._measureWord(word, blank) : 68) + 'px';
+            },
+
+            setActiveBlank(idx) {
+                if(this.fillAnswers[idx]){const a=[...this.fillAnswers];a[idx]=null;this.fillAnswers=a;this._setBlankWidth(idx,null);}
+                this.fillActiveIdx=idx;
+            },
+            fillBlank(word) {
+                if(this.fillActiveIdx===null||this.fillAnswers.includes(word)) return;
+                const idx=this.fillActiveIdx;
+                this._setBlankWidth(idx, word);
+                const a=[...this.fillAnswers];a[idx]=word;this.fillAnswers=a;
+                const next=a.findIndex(x=>x===null);
+                this.fillActiveIdx=next!==-1?next:null;
+            },
+
+            setPinActiveBlank(idx) {
+                if(!this.activePinModal) return;
+                const answers = this.activePinModal.fillAnswers ?? [];
+                if(answers[idx]){
+                    const a=[...answers]; a[idx]=null;
+                    this.activePinModal.fillAnswers=a;
+                    const blank=document.getElementById(`pin-blank-${idx}`);
+                    if(blank) blank.style.minWidth='68px';
+                    this.activePinModal.tempAnswer=undefined;
+                }
+                this.activePinModal.activeF=idx;
+            },
+
+            pinFillBlank(word) {
+                if(!this.activePinModal) return;
+                const answers = this.activePinModal.fillAnswers ?? [];
+                if(this.activePinModal.activeF===null||this.activePinModal.activeF===undefined) return;
+                if(answers.includes(word)) return;
+                const idx = this.activePinModal.activeF;
+                const blank = document.getElementById(`pin-blank-${idx}`);
+                if(blank){
+                    const ruler = document.getElementById('blank-ruler');
+                    if(ruler){
+                        ruler.style.fontSize = window.getComputedStyle(blank.parentElement).fontSize;
+                        ruler.textContent = word;
+                        blank.style.minWidth = Math.max(ruler.offsetWidth + 24, 68) + 'px';
+                    }
+                }
+                const a=[...answers]; a[idx]=word;
+                this.activePinModal.fillAnswers=a;
+                this.activePinModal.activeF=null;
+                this.activePinModal.tempAnswer=true;
+                this.haptic(15);
+            },
+
+            // MATCH
+            colorPool: [
+                '#3B82F6','#8B5CF6','#F59E0B','#06B6D4','#EC4899',
+                '#6366F1','#14B8A6','#F97316','#D946EF','#0EA5E9',
+                '#A855F7','#0284C7','#C026D3','#D97706','#2563EB',
+                '#9333EA','#0D9488','#EA580C','#EAB308','#4F46E5',
+            ],
+            matchRight:[{id:'r1',text:'HTML'},{id:'r2',text:'CSS'},{id:'r3',text:'JavaScript'},{id:'r4',text:'Python'}],
+            matchLeft:[{id:'l1',text:'التنسيق والألوان'},{id:'l2',text:'المنطق والتفاعل'},{id:'l3',text:'الهيكل الأساسي'},{id:'l4',text:'تحليل البيانات'}],
+            pendingRight:null, pendingLeft:null, connections:[],
+
+            getRandomSafeColor() {
+                let hue;
+                do{hue=Math.floor(Math.random()*360);}
+                while((hue>=340||hue<=20)||(hue>=90&&hue<=150));
+                return `hsl(${hue},80%,55%)`;
+            },
+            touchNode(side,id){
+                const ci=this.connections.findIndex(c=>c.rightId===id||c.leftId===id);
+                if(ci!==-1){const c=this.connections.splice(ci,1)[0];this.colorPool.push(c.color);this.pendingRight=this.pendingLeft=null;return;}
+                if(side==='right'){this.pendingRight=this.pendingRight===id?null:id;if(this.pendingRight&&this.pendingLeft)this.makeMatch();}
+                else{this.pendingLeft=this.pendingLeft===id?null:id;if(this.pendingLeft&&this.pendingRight)this.makeMatch();}
+            },
+            makeMatch(){
+                let color;
+                if(this.colorPool.length>0){const ri=Math.floor(Math.random()*this.colorPool.length);color=this.colorPool.splice(ri,1)[0];}
+                else color=this.getRandomSafeColor();
+                this.connections.push({rightId:this.pendingRight,leftId:this.pendingLeft,color});
+                this.pendingRight=this.pendingLeft=null;
+            },
+            getNodeStyle(side,id){const c=this.connections.find(x=>x[side+'Id']===id);return c?`background-color:${c.color};border-color:${c.color};color:#fff;`:'';},
+            getNodeClass(side,id){
+                if(this.connections.find(x=>x[side+'Id']===id)) return 'font-black shadow-md border-transparent scale-[1.02]';
+                const p=(side==='right'?this.pendingRight:this.pendingLeft)===id;
+                return p?'border-qNavy bg-slate-100 text-qNavy shadow-md scale-[1.03] font-black':'border-slate-200 bg-white text-slate-600 hover:border-slate-300 font-bold';
+            },
+
+            // IMAGE
+            activePinModal: null,
+            pinColors: [
+                {hex:'#1e293b',border:'white'},{hex:'#FFFFFF',border:'#cbd5e1'},
+                {hex:'#ef4444',border:'white'},{hex:'#3b82f6',border:'white'},
+                {hex:'#FBBF24',border:'white'},{hex:'#10B981',border:'white'},
+            ],
+            imgPins: [
+                {id:1,x:22,y:48,type:'mcq',color:'#1e293b',question:'ما هو دور وحدة المعالجة (CPU) في اللوحة؟',options:['تخزين البيانات','معالجة العمليات','توليد الطاقة'],solved:false,answer:null},
+                {id:2,x:70,y:30,type:'tf', color:'#ef4444',question:'هذا المنفذ يستخدم لتوصيل الشاشة (HDMI) فقط.',solved:false,answer:null},
+                {id:3,x:50,y:72,type:'fill',color:'#3b82f6',question:'يستخدم هذا المكون لتخزين',bank:['البيانات الرائعة جدا','ذاكرة','مؤقتة'],fillAnswers:[null],activeF:0,solved:false,answer:null},
+            ],
+
+            changePinColor(newColor){
+                if(!this.activePinModal) return;
+                this.activePinModal.color=newColor;
+                const idx=this.imgPins.findIndex(p=>p.id===this.activePinModal.id);
+                if(idx!==-1) this.imgPins[idx].color=newColor;
+            },
+
+            openPin(pin) {
+                // 1. تجهيز بيانات المودال مع دعم أسئلة "أكمل الفراغ"
+                this.activePinModal = {
+                    ...pin,
+                    fillAnswers: pin.type === 'fill' ? [...(pin.fillAnswers?.length ? pin.fillAnswers : [null])] : [],
+                    activeF: pin.type === 'fill' ? (pin.activeF ?? 0) : null,
+                    tempAnswer: pin.answer !== null ? pin.answer : undefined
+                };
+
+                this.$nextTick(() => {
+                    const layer = document.getElementById('img-zoom-layer');
+                    if (layer) {
+                        // 1. تثبيت نقطة الارتكاز فوراً (بدون أنيميشن)
+                        layer.style.transition = 'none';
+                        layer.style.transformOrigin = `${pin.x}% ${pin.y}%`;
+                        
+                        // 2. إجبار المتصفح على قراءة الموضع الجديد
+                        void layer.offsetHeight; 
+                        
+                        // 3. بدء الأنيميشن بسلاسة
+                        requestAnimationFrame(() => {
+                            layer.style.transition = 'transform 600ms cubic-bezier(0.22, 1, 0.36, 1), border-radius 600ms ease, padding 600ms ease';
+                            const scale = window.innerWidth < 1024 ? 3.0 : 2.6; // تكبير أكبر للحاسوب
+                            layer.style.transform = `scale(${scale})`;
+                        });
+                    }
+
+                    // 3. منطق قياس الفراغات (لأسئلة Fill)
+                    // أضفنا تأخير بسيط (setTimeout) لضمان أن عناصر الـ DOM الجديدة قد ظهرت فعلاً في المودال
+                    if (pin.type === 'fill') {
+                        setTimeout(() => {
+                            (this.activePinModal.fillAnswers || []).forEach((word, idx) => {
+                                if (word) {
+                                    const blank = document.getElementById(`pin-blank-${idx}`);
+                                    const ruler = document.getElementById('blank-ruler');
+                                    if (blank && ruler) {
+                                        // نسخ حجم الخط من العنصر الأب لضمان دقة القياس
+                                        ruler.style.fontSize = window.getComputedStyle(blank.parentElement || document.body).fontSize;
+                                        ruler.textContent = word;
+                                        // تعيين العرض بناءً على قياس المسطرة الخفية
+                                        blank.style.minWidth = Math.max(ruler.offsetWidth + 24, 68) + 'px';
+                                    }
+                                }
+                            });
+                        }, 50); 
+                    }
+                });
+            },
+
+            closePin() {
+                const layer = document.getElementById('img-zoom-layer');
+                this.activePinModal = null;
+                
+                if (layer) {
+                    // نستخدم نفس الأنيميشن للعودة
+                    layer.style.transition = 'transform 600ms cubic-bezier(0.22, 1, 0.36, 1), border-radius 600ms ease, padding 600ms ease';
+                    // نعود لمقياس 1 (سيعود تلقائياً لنقطة الأصل المثبتة عند الفتح)
+                    layer.style.transform = 'scale(1)';
+                    
+                    // لا نلمس transformOrigin هنا لضمان سلاسة الرجوع
+                    // فقط بعد انتهاء الحركة تماماً (600ms) يمكننا إعادة الضبط إذا أردت
+                    setTimeout(() => {
+                        if (!this.activePinModal) {
+                            layer.style.transformOrigin = 'center center';
+                        }
+                    }, 600);
+                }
+            },
+
+            fillPinBlank(word) {
+                if (this.activePinModal.activeF === null) return;
+                if (this.activePinModal.fillAnswers.includes(word)) return;
+                const newAnswers = [...this.activePinModal.fillAnswers];
+                newAnswers[this.activePinModal.activeF] = word;
+                this.activePinModal.fillAnswers = newAnswers;
+                this.activePinModal.tempAnswer = true;
+                const nextEmpty = newAnswers.findIndex(a => a === null);
+                this.activePinModal.activeF = nextEmpty !== -1 ? nextEmpty : null;
+            },
+
+            confirmPin(){
+                const i=this.imgPins.findIndex(p=>p.id===this.activePinModal.id);
+                if(i!==-1){
+                    this.imgPins[i].solved=true;
+                    this.imgPins[i].answer=this.activePinModal.tempAnswer;
+                    if(this.activePinModal.type==='fill'){
+                        this.imgPins[i].fillAnswers=[...(this.activePinModal.fillAnswers??[])];
+                    }
+                }
+                this.haptic(20); this.closePin();
+            },
+
+            // INIT
+            init() {
+                this.$watch('currentType', val => {
+                    if (this.activePinModal) this.closePin();
+                    this.pendingRight = this.pendingLeft = null;
+                    if (val === 'order') this.$nextTick(() => this.renderOrderList());
+                    if (val === 'step')  this.$nextTick(() => this.renderStepList());
+                    if (val === 'fill') {
+                        this.$nextTick(() => {
+                            this.fillAnswers.forEach((ans, idx) => {
+                                this._setBlankWidth(idx, ans);
+                            });
+                        });
+                    }
+                });
+                
+                window.addEventListener('resize', () => { this.windowWidth = window.innerWidth; });
+                
+                if (this.currentType === 'order') this.$nextTick(() => this.renderOrderList());
+                if (this.currentType === 'step')  this.$nextTick(() => this.renderStepList());
+                if (this.currentType === 'fill') {
+                    this.$nextTick(() => {
+                        this.fillAnswers.forEach((ans, idx) => this._setBlankWidth(idx, ans));
+                    });
+                }
+            }
+        }));
+    });
+    </script>
+</body>
+</html>

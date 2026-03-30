@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Qimam - Supreme Assessment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    
+    <!-- الخطوط -->
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <style>
+        /* ==========================================================================
+           1. CORE VARIABLES & GPU ACCELERATION
+           ========================================================================== */
+        :root {
+            --bg-body: #0A142B; 
+            --text-main: #FFFFFF;
+            
+            --fibo-time: 618ms; 
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-fluid: cubic-bezier(0.4, 0, 0.2, 1);
+            
+            --progress-color: #D4AF37; 
+            --track-color: rgba(255, 255, 255, 0.12);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Almarai', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            /* دعم الشاشات الحديثة ذات الحواف (Notch) */
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: max(5px, env(safe-area-inset-bottom)); 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .gpu-accelerate {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+        }
+
+        /* ==========================================================================
+           2. HEADER STRUCTURE (Capsule + Nav + Exit)
+           ========================================================================== */
+        .header-section {
+            width: 100%;
+            max-width: 1050px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex-shrink: 0; /* منع انضغاط الهيدر */
+        }
+
+        /* زر الخروج العائم (لا يتداخل مع المستطيل) */
+        .exit-btn {
+            position: fixed; /* ثابت على الشاشة */
+            bottom: max(20px, env(safe-area-inset-bottom)); /* يراعي حواف الآيفون السفلية */
+            left: 20px; /* أقصى اليسار */
+            width: 44px; height: 44px; /* كبرناه قليلاً لسهولة النقر */
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px; /* جعلناه مربع بحواف ناعمة بدل الدائرة ليناسب الهوية */
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255, 255, 255, 0.7); cursor: pointer;
+            transition: all 0.2s var(--ease-bounce); z-index: 50;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .exit-btn:active { transform: translateZ(0) scale(0.9); background: rgba(239, 68, 68, 0.2); border-color: #EF4444; color: #EF4444; }
+        .exit-btn .material-symbols-rounded { font-size: 22px; transform: scaleX(-1); /* عكس الأيقونة لتتجه لليسار */ }
+
+        /* الكبسولة الرئيسية */
+        .glass-capsule {
+            position: relative;
+            width: 100%;
+            /* 
+               ==> هُنا يمكنك تعديل ارتفاع المستطيل الرئيسي <== 
+               (تم ضبطه على 72 لتوفير مساحة، يمكنك إعادته 89 أو أي رقم) 
+            */
+            height: 72px; 
+            border-radius: 24px; 
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+            z-index: 10;
+        }
+
+        /* ==========================================================================
+           3. THE LIQUID ENGINE
+           ========================================================================== */
+        /* 1. تقليل التمويه قليلاً لزيادة حدة الحركة */
+        /* ==========================================================================
+        3. THE LIQUID ENGINE (المحرك الموزون بـ 20% حركة)
+        ========================================================================== */
+        .liquid-layer {
+            position: absolute; 
+            inset: 0; 
+            border-radius: 23px; 
+            overflow: hidden;
+            background: transparent; 
+            z-index: 0; 
+            transform: translateZ(0);
+        }
+
+        .blob {
+            position: absolute; 
+            border-radius: 50%; 
+            filter: blur(40px); /* تمويه كافٍ لدمج الألوان ببعضها */
+            opacity: 0.85; 
+            will-change: transform;
+            transition: background-color 2s ease;
+        }
+
+        /* توزيع البلوبات الستة مع حركة لا تتجاوز الـ 20% لضمان عدم وجود فراغات */
+        .b-1 { width: 85%; height: 190%; top: -45%; left: -10%; animation: f1 8s infinite alternate ease-in-out; }
+        .b-2 { width: 80%; height: 180%; top: -35%; right: -15%; animation: f2 10s infinite alternate ease-in-out; }
+        .b-3 { width: 90%; height: 200%; bottom: -45%; left: -20%; animation: f3 9s infinite alternate ease-in-out; }
+        .b-4 { width: 85%; height: 190%; bottom: -35%; right: -10%; animation: f4 12s infinite alternate ease-in-out; }
+        .b-5 { width: 75%; height: 160%; top: -25%; left: 20%; animation: f5 11s infinite alternate ease-in-out; }
+        .b-6 { width: 70%; height: 170%; bottom: -25%; right: 15%; animation: f6 7s infinite alternate ease-in-out; }
+
+        /* الكي فريمز (Keyframes) بحد أقصى 20% للتحرك */
+        @keyframes f1 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(20%, 10%) scale(1.1); } }
+        @keyframes f2 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-20%, 15%) scale(1.05); } }
+        @keyframes f3 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(15%, -20%) scale(1.15); } }
+        @keyframes f4 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-15%, -10%) scale(1.1); } }
+        @keyframes f5 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-10%, 20%) scale(1.2); } }
+        @keyframes f6 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(20%, -15%) scale(1.05); } }
+
+
+
+        .glass-frost {
+            position: absolute; 
+            inset: 0; 
+            border-radius: 23px;
+            /* توحيد القيم للنعومة القصوى */
+            backdrop-filter: blur(25px) saturate(110%); 
+            -webkit-backdrop-filter: blur(25px) saturate(110%); 
+            z-index: 1;
+        }
+
+
+        /* ==========================================================================
+           4. 61.8% PARTY MODE & SVG TRACK
+           ========================================================================== */
+        .party-layer {
+            position: absolute; inset: 0; border-radius: 23px; z-index: 2; opacity: 0;
+            background: linear-gradient(90deg, rgba(212,175,55,0.8), rgba(255,255,255,0.4), rgba(212,175,55,0.8));
+            background-size: 200% 100%; transition: opacity 0.8s ease; backdrop-filter: blur(5px);
+        }
+        .is-partying .party-layer { opacity: 1; animation: elegantParty 2s linear infinite; }
+        @keyframes elegantParty { 0% { background-position: 200% center; } 100% { background-position: 0% center; } }
+
+        .party-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9) translateZ(0);
+            z-index: 30; opacity: 0; pointer-events: none; width: 100%; text-align: center;
+            font-size: clamp(16px, 4vw, 20px); font-weight: 900; color: #FFF; 
+            text-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 20px rgba(212,175,55,0.8);
+            transition: all 0.5s var(--ease-bounce);
+        }
+        .is-partying .party-text { opacity: 1; transform: translate(-50%, -50%) scale(1) translateZ(0); }
+
+        .perimeter-svg {
+            position: absolute; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none;
+            transform: scaleX(-1) translateZ(0);
+        }
+        .track-bg { fill: none; stroke: var(--track-color); stroke-width: 4; rx: 22px; }
+        .track-progress {
+            fill: none; stroke: var(--progress-color); stroke-width: 4; stroke-linecap: round; rx: 22px; 
+            stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset var(--fibo-time) var(--ease-bounce);
+            will-change: stroke-dashoffset;
+        }
+
+        /* ==========================================================================
+           5. NODES
+           ========================================================================== */
+        .node-layer { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
+        .node-wrapper {
+            position: absolute; width: 30px; height: 30px; transform: translate3d(50%, -50%, 0);
+            transition: all var(--fibo-time) var(--ease-bounce); will-change: transform;
+        }
+        .node-1 { top: 0; right: 15%; } .node-2 { top: 0; right: 40%; } .node-3 { top: 0; right: 65%; }
+        .node-4 { top: 50%; left: 0; transform: translate3d(-50%, -50%, 0); } 
+        .node-5 { bottom: 0; left: 25%; transform: translate3d(-50%, 50%, 0); }
+        .node-6 { bottom: 0; left: 55%; transform: translate3d(-50%, 50%, 0); }
+        .node-7 { bottom: 0; left: 85%; transform: translate3d(-50%, 50%, 0); }
+
+        .node-circle {
+            width: 100%; height: 100%; border-radius: 50%; background: var(--bg-body); border: 2px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center; color: #64748B; 
+            transition: all var(--fibo-time) var(--ease-bounce); position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .node-circle svg { width: 16px; height: 16px; position: relative; z-index: 1; transform: translateZ(0); }
+
+        .node-wrapper.is-active { transform: translate3d(var(--tx, 50%), var(--ty, -50%), 0) scale(1.3); z-index: 30; }
+        .node-wrapper.is-active .node-circle { border-color: var(--progress-color); color: var(--progress-color); background: #0F172A; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+        .node-wrapper.is-completed { transform: translate3d(var(--tx, 50%), var(--ty, -50%), 0) scale(0.9); }
+        .node-wrapper.is-completed .node-circle { border-color: rgba(16, 185, 129, 0.5); color: rgba(255, 255, 255, 0.8); }
+        .node-wrapper.is-completed .node-circle::after { content: ''; position: absolute; inset: 0; background: rgba(16, 185, 129, 0.3); backdrop-filter: blur(2px); z-index: 5; }
+
+        .node-4.is-active, .node-4.is-completed { --tx: -50%; --ty: -50%; }
+        .node-5.is-active, .node-6.is-active, .node-7.is-active, 
+        .node-5.is-completed, .node-6.is-completed, .node-7.is-completed { --tx: -50%; --ty: 50%; }
+
+        /* ==========================================================================
+           6. CONTENT & THE ELEGANT CORE CLONE
+           ========================================================================== */
+        .capsule-content {
+            position: absolute; inset: 0; z-index: 25; display: flex; justify-content: space-between; align-items: center;
+            /* دفع النصوص للحواف بشكل ديناميكي حسب الشاشة */
+            padding: 0 clamp(16px, 4vw, 36px); 
+            pointer-events: none; transition: opacity 0.3s;
+        }
+        .is-partying .capsule-content { opacity: 0 !important; }
+
+        .timer-box {
+            position: relative;
+            font-family: 'Share Tech Mono', monospace; 
+            /* حجم خط متجاوب */
+            font-size: clamp(24px, 6vw, 34px); 
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            transition: color 0.5s ease;
+            direction: ltr;
+        }
+        
+        /* وضع الخطر: أحمر نقي، حواف بيضاء صلبة، ثابت كالصخر */
+        .timer-danger { 
+            color: #FF3B30 !important; 
+            -webkit-text-stroke: 1.2px #FFFFFF;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.6); 
+            z-index: 10;
+        }
+
+        /* النبضة القلبية (Core Pulse) تخرج من قلب الأرقام وتتلاشى */
+        .phantom-echo {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; opacity: 0; z-index: -1;
+            /* لون ثابت موحد للشبح */
+            color: #FFB3B3; 
+            -webkit-text-stroke: 1.2px #FFB3B3;
+            will-change: transform, opacity;
+        }
+        .timer-danger .phantom-echo {
+            display: block;
+            /* عدنا للـ 1.5 ثانية مع المنحنى الانسيابي الراقي (iOS Style) */
+            animation: coreClone 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+        }
+        @keyframes coreClone {
+            /* البداية: انطلاق "قاسٍ" بلون أحمر مشع (Light Red) وشفافية متزنة (0.6) */
+            0% { 
+                transform: translateZ(0) scale(1); 
+                opacity: 0.6; 
+                color: #FFB3B3; /* أحمر فاتح جداً (مبيض) ثابت */
+                -webkit-text-stroke: 1.2px #FFB3B3;
+                filter: blur(0px) drop-shadow(0 0 5px rgba(255, 59, 48, 0.4)); 
+            }
+
+            /* 100%: الاختفاء القاسي - تلاشي سريع جداً في آخر 20% من الوقت */
+            100% { 
+                transform: translateZ(0) scale(1.618) scaleY(1); 
+                opacity: 0; 
+                filter: blur(2px); 
+            }
+        }
+
+        .subject-box { 
+            /* حجم متجاوب ودفع للطرف */
+            font-size: clamp(16px, 4.5vw, 22px); 
+            font-weight: 900; text-shadow: 0 2px 10px rgba(0,0,0,0.5); color: #FFFFFF; 
+        }
+
+        /* ==========================================================================
+           7. NAVIGATION HUB
+           ========================================================================== */
+        .nav-hub {
+            margin-top: 21px; /* مسافة أمان (فيبوناتشي) لمنع التداخل */
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; padding: 0 2%; position: relative; z-index: 10;
+        }
+
+        .nav-btn {
+            /* 
+               ==> هُنا يمكنك تعديل ارتفاع أزرار التنقل <== 
+               (تم ضبطه على 44 لتقليل المساحة وإعادتها للستايل النظيف القديم)
+            */
+            height: 44px; 
+            width: 60px; flex-shrink: 0; 
+            /* ستايل نظيف غير لامع كالسابق */
+            background: rgba(16, 32, 68, 0.4); 
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: none; color: white; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s var(--ease-bounce);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05), 0 4px 10px rgba(0,0,0,0.1); 
+        }
+        .btn-prev { border-radius: 20px 10px 10px 20px; }
+        .btn-next { border-radius: 10px 20px 20px 10px; }
+
+        .nav-btn:active { transform: translateZ(0) scale(0.92); background: rgba(212, 175, 55, 0.2); }
+        .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; transform: none; background: rgba(16, 32, 68, 0.2); }
+        .nav-btn .material-symbols-rounded { font-size: 24px; color: #FFFFFF !important; transform: translateZ(0); }
+
+        .identity-capsule {
+            flex: 1; min-width: 0; margin: 0 12px; 
+            height: 44px; /* يطابق الأزرار */
+            background: rgba(0, 0, 0, 0.2); border: none;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+            border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            backdrop-filter: blur(15px);
+        }
+        
+        .id-top { display: flex; align-items: center; gap: 6px; color: var(--progress-color); margin-bottom: 2px; }
+        .id-top svg { width: 12px; height: 12px; transform: translateZ(0); }
+        .id-top span { font-size: 10px; font-weight: 800; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px;}
+        .id-bottom { font-size: 14px; font-weight: 900; color: white; font-family: monospace; letter-spacing: 2px;}
+
+        .fade-update { animation: quickFade 400ms var(--ease-bounce); }
+        @keyframes quickFade { 0% { opacity: 0; transform: translate3d(0, -5px, 0); } 100% { opacity: 1; transform: translate3d(0, 0, 0); } }
+
+        /* ==========================================================================
+           8. MAIN QUIZ AREA & FOOTER ACTION
+           ========================================================================== */
+        /* منطقة الاختبار الوسطى (تمدد لاحتلال المساحة المتاحة) */
+        .quiz-area {
+            flex: 1; width: 100%; max-width: 800px; margin: 20px auto; padding: 0 16px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            /* تصميم مبدئي للمنطقة */
+            border: 2px dashed rgba(255,255,255,0.1); border-radius: 20px; color: rgba(255,255,255,0.3);
+        }
+
+        /* الفوتر (أزرار التأكيد) */
+        .action-footer {
+            width: 100%; 
+            max-width: 1050px; 
+            margin: 0 auto; 
+            padding-right: 10px; /* الالتصاق باليمين */
+            padding-left: clamp(89px, 13vw, 144px); /* مساحة زر الخروج */
+            
+            margin-bottom: 5px; /* تصفير الهامش تماماً */
+            margin-top: auto; /* دفع الزر لآخر نقطة بالأسفل */
+            padding-bottom: 0px; /* تصفير البادينغ ليعتمد فقط على بادينغ الـ body */
+            
+            flex-shrink: 0;
+            transform: translateZ(0);
+        }
+
+        /* زر مات فخم بدون توهج */
+        .primary-btn {
+            width: 100%; height: 55px; border-radius: 16px; border: none;
+            font-family: 'Almarai', sans-serif; font-size: 18px; font-weight: 800; color: white;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            cursor: pointer; transition: all 0.2s var(--ease-bounce);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transform: translateZ(0);
+        }
+        .primary-btn:active { transform: translateZ(0) scale(0.97); }
+        
+        .btn-next-q { background-color: #007AFF; } /* أزرق أبل */
+        .btn-submit { background-color: #10B981; } /* أخضر تأكيد */
+
+        /* المودال الزجاجي للخروج */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+            z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-box {
+            background: #0F172A; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px;
+            width: 100%; max-width: 320px; padding: 24px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+        .modal-desc { font-size: 14px; color: #94A3B8; margin-bottom: 24px; }
+        .modal-actions { display: flex; gap: 12px; }
+        .modal-btn { flex: 1; height: 44px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; border: none; }
+        .modal-btn-cancel { background: rgba(255,255,255,0.1); color: white; }
+        .modal-btn-cancel:active { background: rgba(255,255,255,0.15); }
+        .modal-btn-leave { background: #EF4444; color: white; }
+        .modal-btn-leave:active { background: #DC2626; }
+
+        /* ==========================================================================
+           9. DEV CONTROLS (مؤقتة للتجربة)
+           ========================================================================== */
+        .dev-controls {
+            position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 10px; background: rgba(0,0,0,0.8); padding: 8px 16px; border-radius: 20px; z-index: 100; backdrop-filter: blur(10px);
+        }
+        .dev-btn { padding: 6px 12px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; color: white; border: none; transition: transform 0.2s; }
+        .dev-btn:active { transform: scale(0.9); }
+    </style>
+</head>
+<body x-data="cockpitEngine()">
+
+    <!-- مودال الخروج -->
+    <div class="modal-overlay gpu-accelerate" x-show="showExitModal" x-transition.opacity style="display: none;">
+        <div class="modal-box" @click.stop>
+            <div class="modal-title">مغادرة الاختبار؟</div>
+            <div class="modal-desc">تقدمك الحالي سيتم حفظه تلقائياً.</div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" @click="showExitModal = false">إلغاء</button>
+                <button class="modal-btn modal-btn-leave" @click="alert('تم الخروج'); showExitModal = false">مغادرة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. HEADER SECTION (Cockpit) -->
+    <header class="header-section">
+        
+
+        <!-- THE SUPREME CAPSULE -->
+        <div class="glass-capsule gpu-accelerate" :class="isPartying ? 'is-partying' : ''">
+            
+            <div class="liquid-layer gpu-accelerate">
+                <div class="blob b-1" :style="`background-color: var(--c-1)`"></div>
+                <div class="blob b-2" :style="`background-color: var(--c-2)`"></div>
+                <div class="blob b-3" :style="`background-color: var(--c-3)`"></div>
+                <div class="blob b-4" :style="`background-color: var(--c-4)`"></div>
+                <div class="blob b-5" :style="`background-color: var(--c-5)`"></div>
+                <div class="blob b-6" :style="`background-color: var(--c-6)`"></div>
+            </div>
+            
+            <style x-html="`
+                .liquid-layer {
+                    --c-1: ${colors.c1}; --c-2: ${colors.c2}; --c-3: ${colors.c3};
+                    --c-4: ${colors.c4}; --c-5: ${colors.c5}; --c-6: ${colors.c6};
+                }
+            `"></style>
+            
+            <div class="glass-frost"></div>
+
+            <div class="party-layer"></div>
+            <div class="party-text gpu-accelerate">اقتربت من القمة! واصل التحدي</div>
+
+            <svg class="perimeter-svg gpu-accelerate" preserveAspectRatio="none">
+                <rect class="track-bg" x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" pathLength="100"></rect>
+                <rect class="track-progress" x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" pathLength="100" :style="`stroke-dashoffset: ${100 - progress}`"></rect>
+            </svg>
+
+            <div class="node-layer">
+                <template x-for="(sec, idx) in sections" :key="sec.id">
+                    <div class="node-wrapper gpu-accelerate" 
+                         :class="[ 'node-' + (idx + 1), currentSecIdx === idx ? 'is-active' : '', currentSecIdx > idx ? 'is-completed' : '' ]">
+                        <div class="node-circle gpu-accelerate" x-html="sec.iconSvg"></div>
+                    </div>
+                </template>
+            </div>
+
+            <div class="capsule-content gpu-accelerate">
+                <div class="timer-box gpu-accelerate" :class="timeState === 'danger' ? 'timer-danger' : 'text-white'">
+                    <span x-text="timerDisplay"></span>
+                    <span class="phantom-echo" x-text="timerDisplay" x-show="timeState === 'danger'"></span>
+                </div>
+                <div class="subject-box gpu-accelerate" x-text="subjectName"></div>
+            </div>
+        </div>
+
+        <!-- NAVIGATION HUB -->
+        <div class="nav-hub">
+            <button class="nav-btn btn-next gpu-accelerate" @click="prevQ()" :disabled="currentQ <= 1">
+                <span class="material-symbols-rounded">arrow_forward</span>
+            </button>
+
+            <div class="identity-capsule gpu-accelerate">
+                <div class="w-full flex flex-col items-center gpu-accelerate" :key="currentQ" class="fade-update">
+                    <div class="id-top">
+                        <div x-html="currentSection.iconSvg"></div>
+                        <span x-text="currentSection.name"></span>
+                    </div>
+                    <div class="id-bottom" x-text="`${currentQ} / ${totalQ}`"></div>
+                </div>
+            </div>
+
+            <button class="nav-btn btn-prev gpu-accelerate" @click="nextQ()" :disabled="currentQ >= totalQ">
+                <span class="material-symbols-rounded">arrow_back</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- 2. MAIN QUIZ AREA (المساحة المخصصة للأسئلة) -->
+    <main class="quiz-area">
+        <span class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px;">quiz</span>
+        <p style="font-size: 18px; font-weight: 700;">منطقة عرض محتوى السؤال والخيارات</p>
+        <p style="font-size: 14px; opacity: 0.6; margin-top: 8px;">هنا تأخذ الأسئلة راحتها الكاملة بالتمدد</p>
+    </main>
+
+    <!-- 3. FOOTER ACTION BUTTON -->
+    <footer class="action-footer">
+        <button class="primary-btn gpu-accelerate" 
+                :class="currentQ === totalQ ? 'btn-submit' : 'btn-next-q'"
+                @click="handleMainAction()">
+            <span x-text="currentQ === totalQ ? 'تأكيد وتسليم' : 'السؤال التالي'"></span>
+            <span class="material-symbols-rounded" x-show="currentQ !== totalQ" style="font-size: 20px;">arrow_back</span>
+            <span class="material-symbols-rounded" x-show="currentQ === totalQ" style="font-size: 20px;">task_alt</span>
+        </button>
+    </footer>
+
+    <!-- زر الخروج العائم (أسفل اليسار) -->
+    <div class="exit-btn gpu-accelerate" @click="showExitModal = true">
+        <span class="material-symbols-rounded">logout</span>
+    </div>
+    <!-- DEV CONTROLS (لأغراض الاختبار فقط) -->
+    <div class="dev-controls gpu-accelerate">
+        <button class="dev-btn bg-emerald-500" @click="setTimeState('safe')">آمن</button>
+        <button class="dev-btn bg-amber-500" @click="setTimeState('warning')">حذر</button>
+        <button class="dev-btn bg-red-600" @click="setTimeState('danger')">خطر</button>
+    </div>
+
+    <script>
+        const svgs = {
+            tf: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7 L12 13 M12 7 L6 13" opacity="0.5"/><path d="M13 12 L16 15 L22 7"/></svg>`,
+            mc: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="7" r="3"/><circle cx="7" cy="17" r="3"/><circle cx="17" cy="17" r="3" fill="currentColor"/></svg>`,
+            or: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M5 4 L5 8 M4 5 L5 4" stroke-width="2"/><path d="M4 10 C6 10 6 12 4 14 L6 14" stroke-width="2"/><path d="M4 16 C6 16 6 18 5 18 C6 18 6 20 4 20" stroke-width="2"/></svg>`,
+            fb: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="12" x2="7" y2="12" stroke-dasharray="2 2" opacity="0.5"/><path d="M9 14 L9 16 L15 16 L15 14" stroke-width="2.5"/><line x1="17" y1="12" x2="21" y2="12" stroke-dasharray="2 2" opacity="0.5"/></svg>`,
+            ma: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="15" y="4" width="6" height="4" rx="1"/><rect x="15" y="10" width="6" height="4" rx="1"/><rect x="15" y="16" width="6" height="4" rx="1"/><rect x="3" y="4" width="6" height="4" rx="1"/><rect x="3" y="10" width="6" height="4" rx="1"/><rect x="3" y="16" width="6" height="4" rx="1"/><line x1="15" y1="6" x2="9" y2="12" stroke-width="1.5" opacity="0.6"/></svg>`,
+            sm: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="7" x2="19" y2="7"/><path d="M12 7 L12 15 M9 12 L12 15 L15 12"/><line x1="8" y1="19" x2="16" y2="19" opacity="0.5"/></svg>`,
+            im: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16 L8 10 L12 14 L16 9 L21 15" opacity="0.6"/><circle cx="16" cy="8" r="1.5" opacity="0.6"/><path d="M12 14 C12 14 15 10 15 8 C15 6.34 13.66 5 12 5 C10.34 5 9 6.34 9 8 C9 10 12 14 12 14 Z" fill="currentColor"/></svg>`
+        };
+
+        const palettes = {
+            safe: { c1: '#005C97', c2: '#363795', c3: '#004FF9', c4: '#00B4DB', c5: '#0A84FF', c6: '#1C0D54' },
+            warning: { c1: '#F2994A', c2: '#F2C94C', c3: '#E65C00', c4: '#F9D423', c5: '#FF9500', c6: '#B83A00' },
+            danger: { 
+                c1: '#430000', // أحمر داكن جداً للعمق
+                c2: '#920000', 
+                c3: '#E30022', // أحمر فيراري ناعم
+                c4: '#FF2D55', // وردي محمر (Rose) لكسر الحدة
+                c5: '#640000', 
+                c6: '#1A0000' 
+            }
+
+        };
+
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('cockpitEngine', () => ({
+                subjectName: 'الرياضيات',
+                totalQ: 25,
+                currentQ: 1, 
+                
+                hasPartied: false,
+                isPartying: false,
+                showExitModal: false,
+                
+                timeState: 'safe', 
+                timerDisplay: '15:12', 
+                colors: palettes.safe,
+                
+
+                sections: [
+                    { id: 1, name: 'صح وخطأ', iconSvg: svgs.tf, endQ: 4 },     
+                    { id: 2, name: 'خيارات', iconSvg: svgs.mc, endQ: 7 }, 
+                    { id: 3, name: 'رتب الخطوات', iconSvg: svgs.or, endQ: 11 },  
+                    { id: 4, name: 'أكمل الفراغ', iconSvg: svgs.fb, endQ: 14 },  
+                    { id: 5, name: 'زاوج القائمة', iconSvg: svgs.ma, endQ: 18 }, 
+                    { id: 6, name: 'ترتيب متفرع', iconSvg: svgs.sm, endQ: 21 },  
+                    { id: 7, name: 'الرسم', iconSvg: svgs.im, endQ: 25 }   
+                ],
+
+                get progress() {
+                    let perc = (this.currentQ / this.totalQ) * 100;
+                    if (perc >= 61.8 && !this.hasPartied) {
+                        this.hasPartied = true;
+                        this.isPartying = true;
+                        if (navigator.vibrate) navigator.vibrate([30, 80, 30]); 
+                        setTimeout(() => { this.isPartying = false; }, 4000);
+                    }
+                    return perc;
+                },
+
+                get currentSecIdx() {
+                    return this.sections.findIndex(s => this.currentQ <= s.endQ);
+                },
+
+                get currentSection() {
+                    return this.sections[this.currentSecIdx] || this.sections[0];
+                },
+
+                setTimeState(state) {
+                    this.timeState = state;
+                    this.colors = palettes[state]; 
+                    if (state === 'safe') this.timerDisplay = '15:12';
+                    if (state === 'warning') this.timerDisplay = '04:55';
+                    if (state === 'danger') this.timerDisplay = '00:09';
+                },
+
+                nextQ() {
+                    if (this.currentQ < this.totalQ) {
+                        this.currentQ++;
+                        if (navigator.vibrate) navigator.vibrate(15);
+                    }
+                },
+
+                prevQ() {
+                    if (this.currentQ > 1) {
+                        this.currentQ--;
+                        if (navigator.vibrate) navigator.vibrate(10);
+                    }
+                },
+
+                handleMainAction() {
+                    if (this.currentQ < this.totalQ) {
+                        this.nextQ();
+                    } else {
+                        alert('تم تسليم الاختبار بنجاح!');
+                    }
+                }
+            }));
+        });
+    </script>
+</body>
+</html>
