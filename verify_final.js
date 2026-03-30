@@ -1,31 +1,30 @@
+
 const { chromium } = require('playwright');
-const path = require('path');
 
 (async () => {
   const browser = await chromium.launch();
   const page = await browser.newPage();
-  const filePath = 'file://' + path.resolve('index.html');
-
-  // Desktop mode - Long Question
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto(filePath);
 
+  await page.goto('file://' + process.cwd() + '/index.html');
+
+  // Wait for initial load
+  await page.waitForTimeout(1000);
+
+  // Go to question 5 (Matching - Long Mode)
   await page.evaluate(() => {
-    const app = window.Alpine.find(document.querySelector('[x-data]'));
-    app.currentQ = 10; // Order section
+    window.qimam.currentQuestion = 4;
+    window.qimam.renderQuestion();
   });
   await page.waitForTimeout(500);
+  await page.screenshot({ path: '/home/jules/verification/long_mode_check.png' });
 
-  const sideNavVisible = await page.isVisible('.side-nav-btn');
-  console.log('Side Nav Visible (Desktop Order):', sideNavVisible);
-  await page.screenshot({ path: 'desktop_order_mode.png' });
-
-  // Mobile mode
-  await page.setViewportSize({ width: 375, height: 812 });
-  await page.waitForTimeout(500);
-  const footerVisible = await page.isVisible('.footer-hub');
-  console.log('Mobile Footer Visible:', footerVisible);
-  await page.screenshot({ path: 'mobile_mode.png' });
+  // Trigger burst manually to capture it
+  await page.evaluate(() => {
+    window.qimam.showBurst(0); // TF icon
+  });
+  await page.waitForTimeout(300); // Wait for animation to be visible
+  await page.screenshot({ path: '/home/jules/verification/burst_capture.png' });
 
   await browser.close();
 })();
