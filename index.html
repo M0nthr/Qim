@@ -52,9 +52,11 @@
         }
 
         body {
-            background-color: var(--bg-body); color: #0f172a; font-family: 'Almarai', sans-serif;
+            background-color: #0A142B; color: #0f172a; font-family: 'Almarai', sans-serif;
             display: flex; flex-direction: column; min-height: 100vh; margin: 0; overflow: hidden;
             user-select: none; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased;
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: max(5px, env(safe-area-inset-bottom));
         }
 
         .gpu-accelerate { transform: translateZ(0); backface-visibility: hidden; perspective: 1000px; }
@@ -62,8 +64,8 @@
         .header-section {
             width: 100%; max-width: 1050px; margin: 0 auto; padding: 0 16px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: fixed; top: 0; left: 50%; transform: translateX(-50%);
-            height: var(--hdr); z-index: 50; pointer-events: none;
+            position: fixed; top: max(20px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
+            height: 72px; z-index: 50; pointer-events: none;
         }
         .header-section > * { pointer-events: auto; }
 
@@ -74,7 +76,7 @@
             z-index: 10; overflow: visible;
         }
 
-        .liquid-layer { position: absolute; inset: 0; border-radius: 23px; overflow: hidden; background: transparent; z-index: 0; transform: translateZ(0); }
+        .liquid-layer { position: absolute; inset: 1px; border-radius: 23px; overflow: hidden; background: transparent; z-index: 0; transform: translateZ(0); }
         .blob { position: absolute; border-radius: 50%; filter: blur(40px); opacity: 0.85; will-change: transform; transition: background-color 2s ease; }
         .b-1 { width: 85%; height: 190%; top: -45%; left: -10%; animation: f1 8s infinite alternate ease-in-out; }
         .b-2 { width: 80%; height: 180%; top: -35%; right: -15%; animation: f2 10s infinite alternate ease-in-out; }
@@ -101,15 +103,19 @@
         .track-progress { fill: none; stroke: var(--progress-color); stroke-width: 4; stroke-linecap: round; rx: 22px; stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset var(--fibo-time) var(--ease-bounce); will-change: stroke-dashoffset; }
 
         .node-layer { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
-        .node-wrapper { position: absolute; width: 30px; height: 30px; transform: translate3d(50%, -50%, 0); transition: all var(--fibo-time) var(--ease-bounce); will-change: transform; }
-        .node-1 { top: 0; right: 12%; } .node-2 { top: 0; right: 38%; } .node-3 { top: 0; right: 64%; }
-        .node-4 { top: 50%; left: 0; transform: translate3d(-50%, -50%, 0); }
-        .node-5 { bottom: 0; left: 18%; transform: translate3d(-50%, 50%, 0); }
-        .node-6 { bottom: 0; left: 48%; transform: translate3d(-50%, 50%, 0); }
-        .node-7 { bottom: 0; left: 78%; transform: translate3d(-50%, 50%, 0); }
+        .node-wrapper { position: absolute; width: 32px; height: 32px; transform: translate3d(50%, -50%, 0); transition: all var(--fibo-time) var(--ease-bounce); will-change: transform; }
+        /* Precision Sync for 25Q Perimeter (344px: 100w, 72h). Start Top-Right CCW.
+           Q4(16%): T-48px. Q7(28%): T-96px. Q10(40%): L-38px. Q14(56%): B-20px. Q18(72%): B-75px. Q21(84%): R-17px. Q25(100%): T-0px. */
+        .node-1 { top: 0; right: 48%; }
+        .node-2 { top: 0; right: 96%; }
+        .node-3 { top: 38px; left: 0; transform: translate3d(-50%, -50%, 0); }
+        .node-4 { bottom: 0; left: 20%; transform: translate3d(-50%, 50%, 0); }
+        .node-5 { bottom: 0; left: 75%; transform: translate3d(-50%, 50%, 0); }
+        .node-6 { bottom: 17px; right: 0; transform: translate3d(50%, 50%, 0); }
+        .node-7 { top: 0; right: 0; }
 
         .node-circle { width: 100%; height: 100%; border-radius: 50%; background: #0A142B; border: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; color: #64748B; transition: all var(--fibo-time) var(--ease-bounce); position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .node-circle svg { width: 16px; height: 16px; position: relative; z-index: 1; transform: translateZ(0); }
+        .node-circle svg { width: 18px; height: 18px; position: relative; z-index: 1; transform: translateZ(0); }
         .node-wrapper.is-active { transform: translate3d(var(--tx, 50%), var(--ty, -50%), 0) scale(1.3); z-index: 30; }
         .node-wrapper.is-active .node-circle { border-color: var(--progress-color); color: var(--progress-color); background: #0F172A; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
         .node-wrapper.is-completed { transform: translate3d(var(--tx, 50%), var(--ty, -50%), 0) scale(0.9); }
@@ -118,20 +124,15 @@
         .node-4.is-active, .node-4.is-completed { --tx: -50%; --ty: -50%; }
         .node-5.is-active, .node-6.is-active, .node-7.is-active, .node-5.is-completed, .node-6.is-completed, .node-7.is-completed { --tx: -50%; --ty: 50%; }
 
-        .capsule-content { position: absolute; inset: 0; z-index: 25; display: grid; grid-template-columns: 120px 1fr 120px; align-items: center; padding: 0 24px; pointer-events: none; transition: opacity 0.3s; }
+        .capsule-content { position: absolute; inset: 0; z-index: 25; display: flex; justify-content: space-between; align-items: center; padding: 0 clamp(16px, 4vw, 36px); pointer-events: none; transition: opacity 0.3s; }
         .is-partying .capsule-content { opacity: 0 !important; }
 
-        .identity-info { display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; opacity: 0.9; }
-        .id-top { display: flex; align-items: center; gap: 6px; color: var(--progress-color); font-size: 10px; font-weight: 800; margin-bottom: 1px; }
-        .id-top svg { width: 12px; height: 12px; }
-        .id-bottom { font-size: 14px; font-weight: 900; color: white; font-family: monospace; letter-spacing: 1.5px; line-height: 1; }
-
-        .timer-box { position: relative; font-family: 'Share Tech Mono', monospace; font-size: clamp(24px, 6vw, 34px); letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); transition: color 0.5s ease; direction: ltr; display: flex; justify-content: flex-start; }
+        .timer-box { position: relative; font-family: 'Share Tech Mono', monospace; font-size: clamp(24px, 6vw, 34px); letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); transition: color 0.5s ease; direction: ltr; display: flex; align-items: center; justify-content: flex-start; min-width: 100px; }
         .timer-danger { color: #FF3B30 !important; -webkit-text-stroke: 1.2px #FFFFFF; text-shadow: 0 4px 15px rgba(0,0,0,0.6); z-index: 10; }
-        .phantom-echo { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; opacity: 0; z-index: -1; color: #FFB3B3; -webkit-text-stroke: 1.2px #FFB3B3; will-change: transform, opacity; }
+        .phantom-echo { position: absolute; inset: 0; pointer-events: none; opacity: 0; z-index: -1; color: #FFB3B3; -webkit-text-stroke: 1.2px #FFB3B3; display: flex; align-items: center; justify-content: flex-start; will-change: transform, opacity; }
         .timer-danger .phantom-echo { display: block; animation: coreClone 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
         @keyframes coreClone { 0% { transform: translateZ(0) scale(1); opacity: 0.6; color: #FFB3B3; -webkit-text-stroke: 1.2px #FFB3B3; filter: blur(0px) drop-shadow(0 0 5px rgba(255, 59, 48, 0.4)); } 100% { transform: translateZ(0) scale(1.618) scaleY(1); opacity: 0; filter: blur(2px); } }
-        .subject-box { font-size: clamp(16px, 4.5vw, 22px); font-weight: 900; text-shadow: 0 2px 10px rgba(0,0,0,0.5); color: #FFFFFF; display: flex; justify-content: flex-end; }
+        .subject-box { font-size: clamp(16px, 4.5vw, 22px); font-weight: 900; text-shadow: 0 2px 10px rgba(0,0,0,0.5); color: #FFFFFF; }
 
         #arena-main {
             position: fixed; z-index: 10; overflow-y: auto; overflow-x: hidden;
@@ -252,13 +253,37 @@
         .large-burst-overlay.active .large-burst-box { transform: scale(1) translateY(0); }
 
         /* FOOTER & NAVIGATION */
-        .footer-hub { position: fixed; bottom: 0; left: 0; right: 0; height: calc(var(--ftr) + var(--safe-b)); padding: 0 16px var(--safe-b); background: white; border-top: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 50; }
+        .footer-hub { position: fixed; bottom: 0; left: 0; right: 0; height: calc(var(--ftr) + var(--safe-b)); padding: 0 10px 0 clamp(89px, 13vw, 144px); background: white; border-top: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 50; }
         .is-desktop-long .footer-hub { background: transparent !important; border: none !important; pointer-events: none; height: auto; }
         .is-desktop-long .long-mode-btns { position: fixed; bottom: 24px; right: 24px; display: flex; gap: 12px; pointer-events: auto; z-index: 60; }
 
         .side-nav-btn { position: fixed; left: 0; top: 0; bottom: 0; width: clamp(44px, 4vw, 52px); background-color: #0f172a; display: none; align-items: center; justify-content: center; z-index: 60; border-radius: 0 14px 14px 0; transition: background-color 280ms var(--ease-silk); border: none; cursor: pointer; }
         .is-desktop-long .side-nav-btn { display: flex; }
         .side-nav-btn:active { transform: scaleX(0.93); background-color: #D4AF37; }
+
+        .exit-btn {
+            position: fixed;
+            bottom: max(15px, env(safe-area-inset-bottom));
+            left: 20px;
+            width: 48px; height: 48px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255, 255, 255, 0.9); cursor: pointer;
+            transition: all 0.2s var(--ease-bounce); z-index: 70;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .exit-btn:active { transform: scale(0.9); background: rgba(239, 68, 68, 0.25); border-color: #EF4444; }
+
+        /* Identity Bubble */
+        .identity-bubble { position: fixed; bottom: calc(var(--ftr) + var(--safe-b) + 15px); left: 50%; transform: translateX(-50%) scale(0.8); opacity: 0; background: #0f172a; color: white; padding: 10px 18px; border-radius: 18px; display: flex; align-items: center; gap: 10px; z-index: 100; pointer-events: none; transition: all 0.4s var(--ease-bounce); box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
+        .identity-bubble.active { opacity: 1; transform: translateX(-50%) scale(1); }
+        .is-desktop-long .identity-bubble { bottom: 30px; left: calc(clamp(44px, 4vw, 52px) + 20px); transform: scale(0.8); }
+        .is-desktop-long .identity-bubble.active { transform: scale(1); }
+        .bubble-icon { width: 22px; height: 22px; color: var(--progress-color); }
+        .bubble-icon svg { width: 100%; height: 100%; }
 
         /* QUESTION COMPONENTS */
         .fluid-blank { display: inline-flex; align-items: center; justify-content: center; position: relative; height: 38px; border-bottom: 3px solid #D4AF37; background: rgba(212, 175, 55, 0.06); border-radius: 6px 6px 0 0; font-weight: 900; color: #007AFF; cursor: pointer; padding: 2px 12px; white-space: nowrap; vertical-align: middle; margin: 0 3px; min-width: 68px; transition: min-width 420ms cubic-bezier(0.34, 1.2, 0.64, 1); overflow: hidden; }
@@ -327,11 +352,7 @@
             <div class="capsule-content gpu-accelerate">
                 <div class="timer-box gpu-accelerate" :class="timeState === 'danger' ? 'timer-danger' : 'text-white'">
                     <span x-text="timerDisplay"></span>
-                    <span class="phantom-echo" x-text="timerDisplay" x-show="timeState === 'danger'"></span>
-                </div>
-                <div class="identity-info">
-                    <div class="id-top" x-html="currentSection.iconSvg + '<span>' + currentSection.name + '</span>'"></div>
-                    <div class="id-bottom" x-text="`${currentQ} / ${totalQ}`"></div>
+                    <div class="phantom-echo" x-show="timeState === 'danger'"><span x-text="timerDisplay"></span></div>
                 </div>
                 <div class="subject-box gpu-accelerate" x-text="subjectName"></div>
             </div>
@@ -488,17 +509,29 @@
     <!-- FOOTER -->
     <footer class="footer-hub silk" x-show="!activePinModal" x-transition>
         <!-- Mobile/Standard Layout -->
-        <div class="flex w-full items-center justify-between gap-3 h-full" x-show="!isLongQuestionDesktop">
+        <div class="flex w-full items-center justify-end gap-3 h-full" x-show="!isLongQuestionDesktop">
             <button @click="prevQ(); haptic(15)" :disabled="currentQ <= 1" class="squish silk h-[52px] w-[52px] bg-slate-100 text-qNavy rounded-2xl flex items-center justify-center disabled:opacity-20"><span class="material-symbols-rounded">arrow_forward</span></button>
             <button @click="handleMainAction(); haptic(20)" class="squish silk h-[55px] flex-1 bg-qNavy text-white rounded-2xl font-black text-lg shadow-lg" x-text="currentQ === totalQ ? 'تأكيد وتسليم' : 'السؤال التالي'"></button>
-            <button @click="confirmExit()" class="squish silk h-[52px] w-[52px] bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center"><span class="material-symbols-rounded" style="transform:scaleX(-1)">logout</span></button>
         </div>
         <!-- Desktop Long Layout: Buttons at Bottom Right -->
         <div class="long-mode-btns" x-show="isLongQuestionDesktop">
             <button @click="prevQ(); haptic(15)" :disabled="currentQ <= 1" class="squish w-[52px] h-[52px] bg-white border border-slate-200 text-qNavy rounded-2xl flex items-center justify-center disabled:opacity-20 silk shadow-xl"><span class="material-symbols-rounded">arrow_forward</span></button>
-            <button @click="confirmExit()" class="squish w-[52px] h-[52px] bg-white border border-slate-200 text-rose-500 rounded-2xl flex items-center justify-center silk shadow-xl"><span class="material-symbols-rounded" style="transform:scaleX(-1)">logout</span></button>
         </div>
     </footer>
+
+    <!-- Exit Button (Fixed Bottom Left) -->
+    <div class="exit-btn silk gpu-accelerate" @click="confirmExit()">
+        <span class="material-symbols-rounded" style="transform:scaleX(-1)">logout</span>
+    </div>
+
+    <!-- Identity Bubble (Transient) -->
+    <div class="identity-bubble" :class="showBubble ? 'active' : ''">
+        <div class="bubble-icon" x-html="currentSection.iconSvg"></div>
+        <div class="flex flex-col">
+            <span class="text-[10px] font-bold opacity-60 leading-none mb-1" x-text="currentSection.name"></span>
+            <span class="text-sm font-black tracking-widest" x-text="`${currentQ} / ${totalQ}`"></span>
+        </div>
+    </div>
 
     <!-- Side Nav: Next Action in Long Mode -->
     <button @click="handleMainAction(); haptic(20)" class="side-nav-btn silk"><span class="material-symbols-rounded text-white text-2xl">west</span></button>
@@ -561,7 +594,7 @@
             sections: [
                 {id:'tf', name:'صح وخطأ', endQ:4, iconSvg: sectionIcons.tf},
                 {id:'mcq', name:'خيارات', endQ:7, iconSvg: sectionIcons.mcq},
-                {id:'order', name:'رتب', endQ:11, iconSvg: sectionIcons.order},
+                {id:'order', name:'رتب', endQ:10, iconSvg: sectionIcons.order},
                 {id:'fill', name:'أكمل', endQ:14, iconSvg: sectionIcons.fill},
                 {id:'match', name:'زاوج', endQ:18, iconSvg: sectionIcons.match},
                 {id:'step', name:'متفرع', endQ:21, iconSvg: sectionIcons.step},
@@ -603,7 +636,14 @@
                     }
                 }, 1000);
             },
+            showBubble: false, bubbleTimer: null,
+            triggerBubble() {
+                this.showBubble = true;
+                if(this.bubbleTimer) clearTimeout(this.bubbleTimer);
+                this.bubbleTimer = setTimeout(() => { this.showBubble = false; }, 2000);
+            },
             checkNewSection() {
+                this.triggerBubble();
                 if(!this.visitedSections.has(this.currentType)) {
                     this.visitedSections.add(this.currentType);
                     // 1. Wait for progress track to reach node (approx 600ms)
@@ -625,7 +665,7 @@
                     }, 600);
                 }
             },
-            nextQ() { if(this.currentQ < this.totalQ) { this.currentQ++; this.haptic(15); } },
+            nextQ() { if(this.currentQ < this.totalQ) { this.currentQ++; this.haptic(15); this.triggerBubble(); } },
             prevQ() { if(this.currentQ > 1) { this.currentQ--; this.haptic(10); } },
             handleMainAction() { this.nextQ(); },
             confirmExit() { if(confirm('هل تريد الخروج؟')) alert('تم الخروج'); },
@@ -678,12 +718,15 @@
                 const c = document.getElementById('step-list'); if(!c) return; c.innerHTML='';
 
                 // Show Confirmation Button if not confirmed yet
+                const info = document.createElement('div');
                 if(!this.stepOrderConfirmed) {
-                    const info = document.createElement('div');
                     info.className = 'p-4 bg-amber-50 border border-amber-200 rounded-2xl mb-4 text-amber-800 text-sm font-bold text-center';
                     info.innerHTML = 'يرجى ترتيب الخطوات أولاً، ثم الضغط على تأكيد الترتيب للبدء في الحل.';
-                    c.appendChild(info);
+                } else {
+                    info.className = 'p-4 bg-emerald-50 border border-emerald-200 rounded-2xl mb-4 text-emerald-800 text-sm font-bold text-center';
+                    info.innerHTML = 'الان انقر السهم لحل كل خطوة';
                 }
+                c.appendChild(info);
 
                 this.stepItems.forEach((st, i) => {
                     const d=document.createElement('div'); d.dataset.id=st.id;
