@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>قمم - الاختبار الأسمى</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.13.3/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Almarai', 'sans-serif'] },
+                    colors: { qNavy: '#0f172a', qGold: '#D4AF37', qBg: '#F8FAFC' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        [x-cloak] { display: none !important; }
+        :root {
+            --bg-body: #F8FAFC;
+            --fibo-time: 618ms;
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-silk: cubic-bezier(0.22, 1, 0.36, 1);
+            --progress-color: #D4AF37;
+            --track-color: rgba(255, 255, 255, 0.12);
+            --hdr: 90px;
+            --ftr: 75px;
+            --safe-b: env(safe-area-inset-bottom, 0px);
+
+            /* Icon Variables */
+            --icon-success: #10B981;
+            --icon-danger: #EF4444;
+            --icon-base: #94A3B8;
+            --icon-fill: rgba(148, 163, 184, 0.1);
+            --text-accent: #D4AF37;
+            --text-primary: #0f172a;
+            --bg-card: #ffffff;
+            --border-color: rgba(0,0,0,0.1);
+            --glass-hover: rgba(255,255,255,0.9);
+            --anim-time: 1000ms;
+            --ease-apple: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        body {
+            background-color: #0F1115; color: #ffffff; font-family: 'Almarai', sans-serif;
+            display: flex; flex-direction: column; min-height: 100vh; margin: 0; overflow: hidden;
+            user-select: none; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased;
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: max(5px, env(safe-area-inset-bottom));
+        }
+
+        .gpu-accelerate { transform: translateZ(0); backface-visibility: hidden; perspective: 1000px; }
+
+        .header-section {
+            width: 100%; max-width: 1050px; margin: 0 auto; padding: 0 16px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: fixed; top: max(20px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
+            height: 72px; z-index: 50; pointer-events: none;
+        }
+        .header-section > * { pointer-events: auto; }
+
+        .glass-capsule {
+            position: relative; width: 100%; height: 72px; border-radius: 24px;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+            z-index: 10; overflow: visible;
+        }
+
+        .liquid-layer { position: absolute; inset: 1px; border-radius: 23px; overflow: hidden; background: transparent; z-index: 0; transform: translateZ(0); }
+        .blob { position: absolute; border-radius: 50%; filter: blur(40px); opacity: 0.85; will-change: transform; transition: background-color 2s ease; }
+        .b-1 { width: 85%; height: 190%; top: -45%; left: -10%; animation: f1 8s infinite alternate ease-in-out; }
+        .b-2 { width: 80%; height: 180%; top: -35%; right: -15%; animation: f2 10s infinite alternate ease-in-out; }
+        .b-3 { width: 90%; height: 200%; bottom: -45%; left: -20%; animation: f3 9s infinite alternate ease-in-out; }
+        .b-4 { width: 85%; height: 190%; bottom: -35%; right: -10%; animation: f4 12s infinite alternate ease-in-out; }
+        .b-5 { width: 75%; height: 160%; top: -25%; left: 20%; animation: f5 11s infinite alternate ease-in-out; }
+        .b-6 { width: 70%; height: 170%; bottom: -25%; right: 15%; animation: f6 7s infinite alternate ease-in-out; }
+        @keyframes f1 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(20%, 10%) scale(1.1); } }
+        @keyframes f2 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-20%, 15%) scale(1.05); } }
+        @keyframes f3 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(15%, -20%) scale(1.15); } }
+        @keyframes f4 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-15%, -10%) scale(1.1); } }
+        @keyframes f5 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-10%, 20%) scale(1.2); } }
+        @keyframes f6 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(20%, -15%) scale(1.05); } }
+
+        .glass-frost { position: absolute; inset: 0; border-radius: 23px; backdrop-filter: blur(25px) saturate(110%); -webkit-backdrop-filter: blur(25px) saturate(110%); z-index: 1; }
+        .party-layer { position: absolute; inset: 0; border-radius: 23px; z-index: 2; opacity: 0; background: linear-gradient(90deg, rgba(212,175,55,0.8), rgba(255,255,255,0.4), rgba(212,175,55,0.8)); background-size: 200% 100%; transition: opacity 0.8s ease; backdrop-filter: blur(5px); }
+        .is-partying .party-layer { opacity: 1; animation: elegantParty 2s linear infinite; }
+        @keyframes elegantParty { 0% { background-position: 200% center; } 100% { background-position: 0% center; } }
+        .party-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9) translateZ(0); z-index: 30; opacity: 0; pointer-events: none; width: 100%; text-align: center; font-size: clamp(16px, 4vw, 20px); font-weight: 900; color: #FFF; text-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 20px rgba(212,175,55,0.8); transition: all 0.5s var(--ease-bounce); }
+        .is-partying .party-text { opacity: 1; transform: translate(-50%, -50%) scale(1) translateZ(0); }
+
+        .perimeter-svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; transform: scaleX(-1) translateZ(0); }
+        .track-bg { fill: none; stroke: var(--track-color); stroke-width: 4; rx: 22px; }
+        .track-progress { fill: none; stroke: var(--progress-color); stroke-width: 4; stroke-linecap: round; rx: 22px; stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset var(--fibo-time) var(--ease-bounce); will-change: stroke-dashoffset; }
+
+        .node-layer { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
+        .node-wrapper { position: absolute; width: 28px; height: 28px; transition: all var(--fibo-time) var(--ease-bounce); will-change: left, top, transform; }
+
+        .node-circle { width: 100%; height: 100%; border-radius: 50%; background: #0F172A; border: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; color: #ffffff; transition: all var(--fibo-time) var(--ease-bounce); position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .node-circle svg { width: 18px; height: 18px; position: relative; z-index: 1; transform: translateZ(0); }
+        .node-wrapper.is-active { transform: translate3d(var(--tx, 50%), var(--ty, -50%), 0) scale(1.3); z-index: 30; }
+        .node-wrapper.is-active .node-circle { border-color: var(--progress-color); color: var(--progress-color); background: #0F172A; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+        .node-wrapper.is-completed { transform: translate3d(var(--tx, 50%), var(--ty, -50%), 0) scale(0.9); }
+        .node-wrapper.is-completed .node-circle { border-color: rgba(16, 185, 129, 0.5); color: rgba(255, 255, 255, 0.8); }
+        .node-wrapper.is-completed .node-circle::after { content: ''; position: absolute; inset: 0; background: rgba(16, 185, 129, 0.3); backdrop-filter: blur(2px); z-index: 5; }
+        .node-4.is-active, .node-4.is-completed { --tx: -50%; --ty: -50%; }
+        .node-5.is-active, .node-6.is-active, .node-7.is-active, .node-5.is-completed, .node-6.is-completed, .node-7.is-completed { --tx: -50%; --ty: 50%; }
+
+        .capsule-content { position: absolute; inset: 0; z-index: 25; display: flex; justify-content: space-between; align-items: center; padding: 0 clamp(16px, 4vw, 36px); pointer-events: none; transition: opacity 0.3s; }
+        .is-partying .capsule-content { opacity: 0 !important; }
+
+        .timer-box { position: relative; font-family: 'Share Tech Mono', monospace; font-size: clamp(24px, 6vw, 34px); letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); transition: color 0.5s ease; direction: ltr; display: flex; align-items: center; justify-content: flex-start; min-width: 100px; }
+        .timer-danger { color: #FF3B30 !important; -webkit-text-stroke: 1.2px #FFFFFF; text-shadow: 0 4px 15px rgba(0,0,0,0.6); z-index: 10; }
+        .phantom-echo { position: absolute; inset: 0; pointer-events: none; opacity: 0; z-index: -1; color: #FFB3B3; -webkit-text-stroke: 1.2px #FFB3B3; display: flex; align-items: center; justify-content: flex-start; will-change: transform, opacity; }
+        .timer-danger .phantom-echo { display: block; animation: coreClone 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+        @keyframes coreClone { 0% { transform: translateZ(0) scale(1); opacity: 0.6; color: #FFB3B3; -webkit-text-stroke: 1.2px #FFB3B3; filter: blur(0px) drop-shadow(0 0 5px rgba(255, 59, 48, 0.4)); } 100% { transform: translateZ(0) scale(1.618) scaleY(1); opacity: 0; filter: blur(2px); } }
+        .subject-box { font-size: clamp(16px, 4.5vw, 22px); font-weight: 900; text-shadow: 0 2px 10px rgba(0,0,0,0.5); color: #FFFFFF; }
+
+        #arena-main {
+            position: fixed; z-index: 10; overflow-y: auto; overflow-x: hidden;
+            background: transparent !important; transition: all 480ms var(--ease-silk);
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        *::-webkit-scrollbar { display: none !important; }
+
+        .silk { transition: all 480ms var(--ease-silk); will-change: transform, opacity, background-color, border-color, padding; }
+        .squish { transition: transform 280ms var(--ease-silk), box-shadow 280ms var(--ease-silk); will-change: transform; transform: translateZ(0); }
+        .squish:active { transform: scale(0.96) translateZ(0); }
+
+        /* ICON SVGS CSS */
+        .icon-card-svg { width: 100%; height: 100%; overflow: visible; stroke-linecap: round; stroke-linejoin: round; }
+        g, path, rect, circle, line, text { transform-box: fill-box; transform-origin: center; will-change: transform, opacity, stroke, fill, filter; }
+
+        /* --- 1. True/False --- */
+        .tf-check-bg { fill: rgba(16, 185, 129, 0.1); stroke: rgba(16, 185, 129, 0.3); stroke-width: 2; }
+        .tf-cross-bg { fill: rgba(239, 68, 68, 0.1); stroke: rgba(239, 68, 68, 0.3); stroke-width: 2; }
+        .tf-check-mark { stroke: var(--icon-success); stroke-width: 3.5; fill: none; }
+        .tf-cross-mark { stroke: var(--icon-danger); stroke-width: 3.5; fill: none; }
+        .is-animating .tf-g-check { animation: tfPopCheck var(--anim-time) var(--ease-bounce) forwards; }
+        .is-animating .tf-g-cross { animation: tfPopCross var(--anim-time) var(--ease-bounce) forwards; }
+        @keyframes tfPopCheck {
+            0%, 100% { transform: scale(1) translateX(0); opacity: 1; filter: none; }
+            20%, 40% { transform: scale(1.2) translateX(8px); opacity: 1; filter: drop-shadow(0 0 10px rgba(16,185,129,0.4)); z-index: 10; }
+            60%, 80% { transform: scale(0.8) translateX(-10px); opacity: 0.3; filter: none; }
+        }
+        @keyframes tfPopCross {
+            0%, 100% { transform: scale(1) translateX(0); opacity: 1; filter: none; }
+            20%, 40% { transform: scale(0.8) translateX(10px); opacity: 0.3; filter: none; }
+            60%, 80% { transform: scale(1.2) translateX(-8px); opacity: 1; filter: drop-shadow(0 0 10px rgba(239,68,68,0.4)); z-index: 10; }
+        }
+
+        /* --- 2. Multiple Choice --- */
+        .mc-ring { stroke: var(--icon-base); stroke-width: 2.5; fill: var(--icon-fill); }
+        .mc-dot { fill: var(--text-accent); transform: scale(0); opacity: 0; }
+        .is-animating .mc-1 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 0ms forwards; }
+        .is-animating .mc-2 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 150ms forwards; }
+        .is-animating .mc-3 .mc-dot { animation: mcFill 300ms var(--ease-bounce) 300ms forwards; }
+        .is-animating .mc-4 { animation: mcHaptic 600ms var(--ease-bounce) 450ms forwards; }
+        .is-animating .mc-4 .mc-dot { animation: mcFillHold 600ms var(--ease-bounce) 450ms forwards; }
+        .is-animating .mc-4 .mc-ring { animation: mcRingGlow 600ms var(--ease-bounce) 450ms forwards; }
+        @keyframes mcFill { 0%, 100% { transform: scale(0); opacity: 0; } 50% { transform: scale(1); opacity: 1; } }
+        @keyframes mcFillHold { 0%, 100% { transform: scale(0); opacity: 0; } 20%, 80% { transform: scale(1); opacity: 1; } }
+        @keyframes mcHaptic { 0%, 100% { transform: scale(1); } 20% { transform: scale(0.8); } 40%, 80% { transform: scale(1.1); } }
+        @keyframes mcRingGlow { 40%, 80% { stroke: var(--text-accent); filter: drop-shadow(0 0 8px rgba(212,175,55,0.4)); } }
+
+        /* --- 3. Order Steps --- */
+        .or-pill { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2; rx: 10; }
+        .or-num { fill: var(--text-primary); font-family: 'Almarai', sans-serif; font-weight: 900; font-size: 14px; }
+        .is-animating .or-row-1 { animation: orSlideDown var(--anim-time) var(--ease-apple) forwards; }
+        .is-animating .or-row-2 { animation: orSlideUp var(--anim-time) var(--ease-apple) forwards; }
+        .is-animating .or-row-1 .or-pill, .is-animating .or-row-2 .or-pill { animation: orGlow var(--anim-time) var(--ease-apple) forwards; }
+        @keyframes orSlideDown { 0%, 100% { transform: translateY(0); } 40%, 70% { transform: translateY(28px); } }
+        @keyframes orSlideUp { 0%, 100% { transform: translateY(0); } 40%, 70% { transform: translateY(-28px); } }
+        @keyframes orGlow { 40%, 70% { stroke: var(--text-accent); fill: rgba(212,175,55,0.15); } }
+
+        /* --- 4. Fill in the Blank --- */
+        .fb-text-line { stroke: var(--icon-base); stroke-width: 3; stroke-linecap: round; }
+        .fb-blank { fill: rgba(0,0,0,0.05); stroke: var(--icon-base); stroke-width: 2; stroke-dasharray: 4 4; rx: 8; }
+        .fb-word { fill: var(--text-accent); rx: 6; opacity: 0.8; transform: translateY(25px); }
+        .is-animating .fb-word { animation: fbSnap var(--anim-time) var(--ease-bounce) forwards; }
+        .is-animating .fb-blank { animation: fbAbsorb var(--anim-time) var(--ease-bounce) forwards; }
+        @keyframes fbSnap {
+            0%, 100% { transform: translateY(25px) scale(0.9); opacity: 0.8; }
+            30%, 70% { transform: translateY(0) scale(1); opacity: 1; filter: drop-shadow(0 0 10px rgba(212,175,55,0.5)); }
+        }
+        @keyframes fbAbsorb {
+            30%, 70% { stroke: var(--text-accent); stroke-dasharray: 0; transform: scaleX(1.1); fill: rgba(212,175,55,0.1); }
+        }
+
+        /* --- 5. Matching --- */
+        .ma-card { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2; rx: 6; }
+        .is-animating .ma-r1, .is-animating .ma-l2 { animation: maPair1 var(--anim-time) var(--ease-bounce) forwards; }
+        .is-animating .ma-r3, .is-animating .ma-l1 { animation: maPair2 var(--anim-time) var(--ease-bounce) 200ms forwards; }
+        @keyframes maPair1 {
+            20%, 60% { transform: scale(1.15); stroke: #3B82F6; fill: rgba(59,130,246,0.2); filter: drop-shadow(0 0 8px rgba(59,130,246,0.4)); z-index: 10; }
+        }
+        @keyframes maPair2 {
+            20%, 60% { transform: scale(1.15); stroke: var(--text-accent); fill: rgba(212,175,55,0.2); filter: drop-shadow(0 0 8px rgba(212,175,55,0.4)); z-index: 10; }
+        }
+
+        /* --- 6. Branching --- */
+        .br-node { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2.5; rx: 8; }
+        .br-line { stroke: var(--icon-base); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+        .br-hidden { stroke-dasharray: 50; stroke-dashoffset: 50; opacity: 0; }
+        .br-scale { transform: scale(0); opacity: 0; }
+        .is-animating .br-main { animation: brGlow var(--anim-time) var(--ease-apple) forwards; }
+        .is-animating .br-path { animation: brDraw 800ms var(--ease-apple) 100ms forwards; }
+        .is-animating .br-n1 { animation: brPop 800ms var(--ease-bounce) 200ms forwards; }
+        .is-animating .br-n2 { animation: brPop 800ms var(--ease-bounce) 300ms forwards; }
+        .is-animating .br-n3 { animation: brPop 800ms var(--ease-bounce) 400ms forwards; }
+        .is-animating .br-n2-glow { animation: brGlow 800ms var(--ease-apple) 400ms forwards; }
+        @keyframes brGlow { 20%, 80% { stroke: var(--text-accent); fill: rgba(212,175,55,0.2); filter: drop-shadow(0 0 8px rgba(212,175,55,0.3)); } }
+        @keyframes brDraw { 30%, 70% { stroke-dashoffset: 0; opacity: 1; stroke: var(--text-accent); } }
+        @keyframes brPop { 20%, 80% { transform: scale(1); opacity: 1; } }
+
+        /* --- 7. Image Targets --- */
+        .im-frame { fill: var(--icon-fill); stroke: var(--icon-base); stroke-width: 2.5; rx: 10; }
+        .im-sun { fill: var(--text-accent); opacity: 0.9; }
+        .im-mount { stroke: var(--icon-base); stroke-width: 2.5; fill: none; stroke-linejoin: round; }
+        .im-target { stroke: var(--icon-danger); stroke-width: 3; stroke-linecap: round; transform: scale(0); opacity: 0; }
+        .is-animating .im-t1 { animation: imAim 600ms var(--ease-bounce) 50ms forwards; }
+        .is-animating .im-t2 { animation: imAim 600ms var(--ease-bounce) 200ms forwards; }
+        .is-animating .im-t3 { animation: imAim 600ms var(--ease-bounce) 350ms forwards; }
+        .is-animating .im-t4 { animation: imAim 600ms var(--ease-bounce) 500ms forwards; }
+        @keyframes imAim {
+            0%, 100% { transform: scale(0) rotate(-45deg); opacity: 0; }
+            30%, 70% { transform: scale(1) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 6px rgba(239,68,68,0.5)); }
+        }
+
+        /* ICONS BURST */
+        .large-burst-overlay { position: fixed; top: 110px; left: 0; right: 0; height: 120px; display: flex; align-items: center; justify-content: center; z-index: 100; pointer-events: none; opacity: 0; transition: opacity 0.4s ease; background: transparent; }
+        .large-burst-overlay.active { opacity: 1; }
+        .large-burst-box { width: 110px; height: 110px; background: var(--bg-card); border-radius: 30px; padding: 20px; border: 1px solid var(--border-color); box-shadow: 0 25px 60px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.05); transform: scale(0.4) translateY(-30px); transition: transform 0.7s var(--ease-bounce); }
+        .large-burst-overlay.active .large-burst-box { transform: scale(1) translateY(0); }
+
+        /* FOOTER & NAVIGATION */
+        .footer-hub { position: fixed; bottom: 0; left: 0; right: 0; height: calc(var(--ftr) + var(--safe-b)); padding: 0 10px 0 clamp(89px, 13vw, 144px); background: white; border-top: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 50; }
+        .is-desktop-long .footer-hub { background: transparent !important; border: none !important; pointer-events: none; height: auto; }
+        .is-desktop-long .long-mode-btns { position: fixed; bottom: 24px; right: 84px; display: flex; gap: 12px; pointer-events: auto; z-index: 60; }
+
+        .side-nav-btn { position: fixed; left: 0; top: 0; bottom: 0; width: clamp(44px, 4vw, 52px); background-color: #0f172a; display: none; align-items: center; justify-content: center; z-index: 60; border-radius: 0 14px 14px 0; transition: background-color 280ms var(--ease-silk); border: none; cursor: pointer; }
+        .is-desktop-long .side-nav-btn { display: flex; }
+        .side-nav-btn:active { transform: scaleX(0.93); background-color: #D4AF37; }
+
+        .exit-btn {
+            position: fixed;
+            bottom: max(15px, env(safe-area-inset-bottom));
+            right: 20px;
+            width: 48px; height: 48px;
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            color: #EF4444; cursor: pointer;
+            transition: all 0.2s var(--ease-bounce); z-index: 70;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            left: auto !important;
+        }
+        .exit-btn:active { transform: scale(0.9); background: rgba(239, 68, 68, 0.25); border-color: #EF4444; }
+
+        /* Identity Bubble */
+        .identity-bubble { position: fixed; bottom: calc(var(--ftr) + var(--safe-b) + 15px); left: 50%; transform: translateX(-50%) scale(0.8); opacity: 0; background: #0f172a; color: white; padding: 10px 18px; border-radius: 18px; display: flex; align-items: center; gap: 10px; z-index: 100; pointer-events: none; transition: all 0.4s var(--ease-bounce); box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
+        .identity-bubble.active { opacity: 1; transform: translateX(-50%) scale(1); }
+        .is-desktop-long .identity-bubble { bottom: 30px; left: calc(clamp(44px, 4vw, 52px) + 20px); transform: scale(0.8); }
+        .is-desktop-long .identity-bubble.active { transform: scale(1); }
+        .bubble-icon { width: 22px; height: 22px; color: var(--progress-color); }
+        .bubble-icon svg { width: 100%; height: 100%; }
+
+        /* QUESTION COMPONENTS */
+        .fluid-blank { display: inline-flex; align-items: center; justify-content: center; position: relative; height: 38px; border-bottom: 3px solid #D4AF37; background: rgba(212, 175, 55, 0.06); border-radius: 6px 6px 0 0; font-weight: 900; color: #007AFF; cursor: pointer; padding: 2px 12px; white-space: nowrap; vertical-align: middle; margin: 0 3px; min-width: 68px; transition: min-width 420ms cubic-bezier(0.34, 1.2, 0.64, 1); overflow: hidden; }
+        .fluid-blank.active-target { border-color: #007AFF; background: rgba(0, 122, 255, 0.1); box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.12); }
+        .blank-word { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateY(6px); transition: opacity 280ms var(--ease-silk) 160ms, transform 280ms var(--ease-silk) 160ms; }
+        .blank-word.visible { opacity: 1; transform: translateY(0); }
+        .map-pin { position: absolute; transform: translate(-50%, -50%); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.4); cursor: pointer; z-index: 10; color: white; border: 2px solid white; transition: all 280ms var(--ease-silk); }
+        .map-pin::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.6); animation: pulse-pin 2.5s infinite var(--ease-silk); }
+        @keyframes pulse-pin { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.8); opacity: 0; } }
+        .art-frame-container { background: white; padding: 5px; border-radius: 10px; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.2); display: inline-block; vertical-align: middle; transition: all 600ms var(--ease-silk); will-change: transform; max-width: 95%; }
+        .art-frame-inner { position: relative; overflow: hidden; border-radius: 6px; line-height: 0; }
+        .art-frame-inner img { display: block; width: auto; height: auto; border-radius: inherit; }
+        #blank-ruler { position: fixed; top: -9999px; left: -9999px; visibility: hidden; font-family: 'Almarai', sans-serif; font-weight: 900; white-space: nowrap; padding: 0 12px; pointer-events: none; }
+        .sortable-ghost { opacity: 0 !important; }
+        .sortable-drag { opacity: 1 !important; background: white !important; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .sortable-fallback { opacity: 1 !important; background: white !important; box-shadow: 0 15px 35px rgba(15, 23, 42, 0.15) !important; z-index: 9999 !important; }
+
+        .step-drag-handle { cursor: grab; }
+        .step-drag-handle:active { cursor: grabbing; }
+
+        /* Tutorial Pulse */
+        @keyframes pulse-accent {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+        }
+        .tutorial-pulse { animation: pulse-accent 1.5s infinite; }
+    </style>
+</head>
+<body x-data="qimamEngine()" :class="isLongQuestionDesktop ? 'is-desktop-long' : ''" @resize.window="windowWidth = window.innerWidth" x-cloak>
+
+    <div id="blank-ruler"></div>
+
+    <!-- ICONS BURST -->
+    <div class="large-burst-overlay" :class="showLargeAnim ? 'active' : ''">
+        <div class="large-burst-box" :class="animTrigger ? 'is-animating' : ''" x-html="currentSectionIcon"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="header-section">
+        <div class="glass-capsule gpu-accelerate" :class="isPartying ? 'is-partying' : ''">
+            <div class="liquid-layer gpu-accelerate">
+                <div class="blob b-1" :style="`background-color: ${colors.c1}`"></div>
+                <div class="blob b-2" :style="`background-color: ${colors.c2}`"></div>
+                <div class="blob b-3" :style="`background-color: ${colors.c3}`"></div>
+                <div class="blob b-4" :style="`background-color: ${colors.c4}`"></div>
+                <div class="blob b-5" :style="`background-color: ${colors.c5}`"></div>
+                <div class="blob b-6" :style="`background-color: ${colors.c6}`"></div>
+            </div>
+            <div class="glass-frost"></div>
+            <div class="party-layer"></div>
+            <div class="party-text gpu-accelerate">اقتربت من القمة! واصل التحدي</div>
+
+            <svg class="perimeter-svg gpu-accelerate" preserveAspectRatio="none">
+                <rect class="track-bg" x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" pathLength="100"></rect>
+                <rect class="track-progress" x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" pathLength="100" :style="`stroke-dashoffset: ${100 - progress}`"></rect>
+            </svg>
+
+            <div class="node-layer" id="node-layer-container">
+                <template x-for="(sec, idx) in sections" :key="sec.id">
+                    <div class="node-wrapper gpu-accelerate"
+                         :class="[ currentSecIdx === idx ? 'is-active' : '', currentSecIdx > idx ? 'is-completed' : '' ]"
+                         :style="getNodePos(idx)">
+                        <div class="node-circle gpu-accelerate" x-html="sec.iconSvg"></div>
+                    </div>
+                </template>
+            </div>
+
+            <div class="capsule-content gpu-accelerate">
+                <div class="timer-box gpu-accelerate" :class="timeState === 'danger' ? 'timer-danger' : 'text-white'">
+                    <span x-text="timerDisplay"></span>
+                    <div class="phantom-echo" x-show="timeState === 'danger'"><span x-text="timerDisplay"></span></div>
+                </div>
+                <div class="subject-box gpu-accelerate" x-text="subjectName"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ARENA -->
+    <main id="arena-main" class="no-scrollbar silk"
+          :style="activePinModal
+            ? 'position:fixed; top:0; bottom:0; left:0; right:0; z-index:100; background:white;'
+            : (isLongQuestionDesktop
+                ? 'position:fixed; top:calc(var(--hdr) + 20px); bottom:20px; left:calc(clamp(44px, 4vw, 52px) + 20px); right:20px;'
+                : 'position:fixed; top:var(--hdr); bottom:calc(var(--ftr) + var(--safe-b) + 12px); left:0; right:0;')">
+
+        <template x-if="currentType === 'tf'">
+            <div class="flex flex-col px-5 py-6 max-w-4xl mx-auto w-full min-h-full">
+                <div class="my-auto w-full flex flex-col pb-8">
+                    <div class="flex-1 flex items-center justify-center py-6 text-center"><h2 class="text-2xl md:text-3xl font-black leading-relaxed text-qNavy">لغة CSS هي المسؤولة عن إضافة التفاعلية والمنطق البرمجي لصفحات الويب.</h2></div>
+                    <div class="grid grid-cols-2 gap-3 w-full shrink-0 mt-8">
+                        <button @click="tfAnswer=true;haptic(15)" class="squish silk h-[88px] rounded-3xl border-2 flex items-center justify-center gap-3" :class="tfAnswer===true?'bg-qNavy border-qNavy text-white shadow-xl':'bg-white border-slate-200 text-slate-500 hover:border-slate-300'"><span class="material-symbols-rounded text-3xl">check_circle</span><span class="font-black text-xl">صــح</span></button>
+                        <button @click="tfAnswer=false;haptic(15)" class="squish silk h-[88px] rounded-3xl border-2 flex items-center justify-center gap-3" :class="tfAnswer===false?'bg-qNavy border-qNavy text-white shadow-xl':'bg-white border-slate-200 text-slate-500 hover:border-slate-300'"><span class="material-symbols-rounded text-3xl">cancel</span><span class="font-black text-xl">خـطـأ</span></button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template x-if="currentType === 'mcq'">
+            <div class="flex flex-col px-5 lg:px-20 py-10 max-w-4xl mx-auto w-full justify-center min-h-full pb-4">
+                <div class="flex-1 flex items-center justify-center py-6 text-center"><h2 class="text-2xl md:text-3xl font-black leading-relaxed text-qNavy">أي من الدوال التالية تُستخدم في JavaScript لإرسال إشعارات اهتزاز للهاتف؟</h2></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full shrink-0 mt-8">
+                    <template x-for="(opt, index) in mcqOptions" :key="index">
+                        <button @click="mcqAnswer=index;haptic(15)" class="squish silk w-full px-5 py-4 rounded-2xl text-right font-black text-base border-2 flex items-center justify-between" :class="mcqAnswer===index?'bg-qNavy border-qNavy text-white shadow-lg':'bg-white border-slate-200 text-slate-600 hover:border-slate-300'"><span x-text="opt"></span><span class="material-symbols-rounded text-lg opacity-60" x-show="mcqAnswer===index">check_circle</span></button>
+                    </template>
+                </div>
+            </div>
+        </template>
+
+        <template x-if="currentType === 'order'">
+            <div class="flex flex-col px-2 md:px-8 py-4 max-w-5xl mx-auto w-full min-h-full pb-10">
+                <div class="mb-6 text-center"><h2 class="text-xl md:text-2xl font-black text-qNavy">رتب أطوار الانقسام المتساوي في الخلية:</h2></div>
+                <div id="order-list" class="flex flex-col gap-3">
+                    <template x-for="(it, i) in orderItems" :key="it.id">
+                        <div class="bg-white border-2 border-slate-200 shadow-sm rounded-2xl p-4 flex items-center gap-3">
+                            <div class="flex flex-col gap-1 shrink-0">
+                                <button @click="moveOrderItem(i, -1)" class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-qNavy hover:bg-slate-100 transition" :class="i===0?'opacity-30 pointer-events-none':''"><span class="material-symbols-rounded text-lg">expand_less</span></button>
+                                <button @click="moveOrderItem(i, 1)" class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-qNavy hover:bg-slate-100 transition" :class="i===orderItems.length-1?'opacity-30 pointer-events-none':''"><span class="material-symbols-rounded text-lg">expand_more</span></button>
+                            </div>
+                            <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 font-black text-sm flex items-center justify-center shrink-0 border border-slate-200" x-text="i+1"></div>
+                            <div class="flex-1 font-bold text-base text-slate-700" x-text="it.text"></div>
+                            <div class="step-drag-handle shrink-0 text-slate-300 hover:text-slate-500 transition-colors p-2 cursor-grab active:cursor-grabbing"><span class="material-symbols-rounded">drag_indicator</span></div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+
+        <template x-if="currentType === 'step'">
+            <div class="flex flex-col px-2 md:px-8 py-4 max-w-5xl mx-auto w-full min-h-full pb-10">
+                <div class="mb-6 text-center"><h2 class="text-xl font-black text-qNavy">رتب الخطوات، ثم أجب على كل خطوة للحل.</h2></div>
+
+                <div x-show="!stepOrderConfirmed" class="p-4 bg-amber-50 border border-amber-200 rounded-2xl mb-4 text-amber-800 text-sm font-bold text-center">
+                    يرجى ترتيب الخطوات أولاً، ثم الضغط على تأكيد الترتيب للبدء في الحل.
+                </div>
+                <div x-show="stepOrderConfirmed" class="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl mb-4 text-emerald-800 text-sm font-bold text-center">
+                    الان انقر السهم لحل كل خطوة
+                </div>
+
+                <div id="step-list" class="flex flex-col gap-4">
+                    <template x-for="(st, i) in stepItems" :key="st.id">
+                        <div class="step-card rounded-2xl overflow-hidden border-2 bg-white shadow-sm cursor-auto"
+                             :style="st.isSolved ? 'border-color:#D4AF37; background-color:rgba(212,175,55,0.02);' : (st.isOpen ? 'border-color:#D4AF37;' : 'border-color:#e2e8f0;')">
+                            <div class="p-4 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl font-black text-sm flex items-center justify-center shrink-0 border"
+                                     :style="st.isSolved?'background:rgba(212,175,55,0.12); border-color:#D4AF37; color:#D4AF37;':'background:#f1f5f9; border-color:#e2e8f0; color:#64748b;'"
+                                     x-text="i+1"></div>
+                                <div class="flex-1 font-bold text-sm md:text-base text-slate-700 truncate" x-text="st.title"></div>
+                                <div class="step-drag-handle shrink-0 p-2 cursor-grab active:cursor-grabbing" :class="!stepOrderConfirmed?'tutorial-pulse text-qGold':'text-slate-300'"><span class="material-symbols-rounded">drag_indicator</span></div>
+
+                                <template x-if="stepOrderConfirmed">
+                                    <div class="flex items-center gap-2">
+                                        <template x-if="st.isSolved">
+                                            <button @click="st.isSolved=false; st.isOpen=true; haptic(10)" class="w-10 h-10 rounded-full flex items-center justify-center bg-amber-50 text-amber-600 border border-amber-100 shrink-0">
+                                                <span class="material-symbols-rounded text-sm">edit</span>
+                                            </button>
+                                        </template>
+                                        <template x-if="!st.isSolved">
+                                            <button @click="stepItems.forEach((s,j)=>{if(i!==j)s.isOpen=false;}); st.isOpen=!st.isOpen; haptic(10)" class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-50 text-slate-400 border border-slate-200 shrink-0" :class="!st.isSolved?'tutorial-pulse text-qNavy':''">
+                                                <span class="material-symbols-rounded" style="transition:transform 300ms;" :style="`transform:rotate(${st.isOpen?180:0}deg)`">expand_more</span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <div x-show="st.isOpen" x-collapse>
+                                <div class="p-4 pt-0 border-t border-slate-50 bg-slate-50/50">
+                                    <div class="flex flex-col gap-2 my-3">
+                                        <template x-for="(opt, oi) in st.options" :key="oi">
+                                            <button @click="st.tempAnswer=oi; haptic(10)" class="squish w-full p-4 rounded-xl font-bold text-sm text-right border-2 flex items-center justify-between silk"
+                                                    :class="st.tempAnswer===oi ? 'bg-qNavy border-qNavy text-white shadow-md' : 'bg-white border-slate-200 text-slate-600'">
+                                                <span x-text="opt"></span>
+                                                <span class="material-symbols-rounded text-base opacity-60" x-show="st.tempAnswer===oi">check_circle</span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                    <button @click="if(st.tempAnswer!==null){st.isSolved=true; st.isOpen=false; st.confirmedAnswer=st.tempAnswer; haptic(20);}"
+                                            class="squish w-full py-4 rounded-xl font-black text-sm silk"
+                                            :class="st.tempAnswer!==null?'bg-qGold text-qNavy shadow-lg':'bg-slate-200 text-slate-400'">تأكيد الخطوة</button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <button x-show="!stepOrderConfirmed" @click="stepOrderConfirmed = true; haptic(30)" class="w-full py-5 mt-6 bg-qNavy text-white rounded-2xl font-black text-lg shadow-xl silk tutorial-pulse">تأكيد الترتيب والبدء بالحل</button>
+            </div>
+        </template>
+
+        <template x-if="currentType === 'fill'">
+            <div class="flex flex-col px-5 lg:px-20 py-6 max-w-4xl mx-auto w-full min-h-full pb-4">
+                <div class="flex-1 flex items-center justify-center py-6">
+                    <div class="text-xl md:text-3xl font-bold leading-loose text-center text-slate-700 px-2">
+                        لغة <span id="blank-0" @click="setActiveBlank(0);haptic(10)" class="fluid-blank" :class="fillActiveIdx===0?'active-target':''"><span class="blank-word" :class="fillAnswers[0]?'visible':''" x-text="fillAnswers[0]??''"></span></span>
+                        تُستخدم لبناء هيكل صفحات الويب، بينما تُستخدم لغة <span id="blank-1" @click="setActiveBlank(1);haptic(10)" class="fluid-blank" :class="fillActiveIdx===1?'active-target':''"><span class="blank-word" :class="fillAnswers[1]?'visible':''" x-text="fillAnswers[1]??''"></span></span>
+                        لإضافة التنسيقات والألوان.
+                    </div>
+                </div>
+                <div class="shrink-0 pt-8 mt-auto">
+                    <div class="w-full max-w-2xl mx-auto bg-white border border-slate-200 rounded-3xl p-4 shadow-sm">
+                        <div class="flex flex-wrap justify-center gap-3">
+                            <template x-for="word in fillBank" :key="word">
+                                <button @click="fillBlank(word);haptic(15)" class="squish px-6 py-3 bg-white border-2 border-slate-200 rounded-xl font-black text-slate-700 shadow-sm hover:border-blue-400 hover:text-blue-600 silk" :class="fillAnswers.includes(word)?'opacity-0 pointer-events-none scale-90':'opacity-100'"><span x-text="word"></span></button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template x-if="currentType === 'match'">
+            <div class="flex flex-col px-2 md:px-8 py-4 max-w-6xl mx-auto w-full min-h-full pb-10">
+                <div class="mb-8 text-center"><h2 class="text-xl md:text-2xl font-black text-qNavy">زاوج بين المصطلحات ومعانيها:</h2></div>
+                <div class="grid grid-cols-2 gap-4 md:gap-8 w-full">
+                    <div class="grid auto-rows-fr gap-4"><template x-for="item in matchRight" :key="item.id"><button @click="touchNode('right', item.id);haptic(15)" class="squish silk w-full h-full px-4 py-5 rounded-2xl font-bold text-sm md:text-base border-2 flex items-center justify-center text-center shadow-sm" :class="getNodeClass('right', item.id)" :style="getNodeStyle('right', item.id)"><span class="leading-snug" x-text="item.text"></span></button></template></div>
+                    <div class="grid auto-rows-fr gap-4"><template x-for="item in matchLeft" :key="item.id"><button @click="touchNode('left', item.id);haptic(15)" class="squish silk w-full h-full px-4 py-5 rounded-2xl font-bold text-sm md:text-base border-2 flex items-center justify-center text-center shadow-sm" :class="getNodeClass('left', item.id)" :style="getNodeStyle('left', item.id)"><span class="leading-snug" x-text="item.text"></span></button></template></div>
+                </div>
+            </div>
+        </template>
+
+        <template x-if="currentType === 'image'">
+            <div class="flex w-full bg-slate-100 overflow-hidden relative" :class="activePinModal ? 'fixed inset-0 z-[100] flex-col lg:flex-row-reverse bg-white' : 'h-full flex-col lg:flex-row-reverse'">
+                <div class="flex-1 relative flex items-center justify-center p-4 lg:p-10 overflow-auto no-scrollbar">
+                    <div id="img-zoom-layer" class="art-frame-container shadow-2xl" :class="activePinModal ? 'rounded-none p-0 shadow-none' : ''">
+                        <div class="art-frame-inner" :class="activePinModal ? 'rounded-none' : ''">
+                            <div class="relative inline-flex items-center justify-center align-middle">
+                                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80" draggable="false" class="silk pointer-events-none select-none" :style="activePinModal ? (windowWidth < 1024 ? 'height:25dvh; width:auto; max-width:none;' : 'height:92vh; width:auto;') : 'max-height: calc(100dvh - var(--hdr) - var(--ftr) - 60px); max-width: 100%; width:auto; height:auto;'">
+                                <div class="absolute inset-0 pointer-events-none"><template x-for="pin in imgPins" :key="pin.id"><div @click.stop="openPin(pin);haptic(20)" class="map-pin border-2 silk pointer-events-auto" :style="`left:${pin.x}%; top:${pin.y}%; background-color:${pin.solved?'#10B981':pin.color}; border-color:white;` "><span class="material-symbols-rounded text-[18px]" x-text="pin.solved ? 'check' : 'location_on'"></span></div></template></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white silk flex flex-col relative" :style="activePinModal ? (windowWidth < 1024 ? 'height:75dvh; width:100%;' : 'width:420px; height:100%; border-right:2px solid #e2e8f0;') : 'display:none; lg:display:flex; lg:width:400px;'">
+                    <div x-show="activePinModal" class="flex-1 flex flex-col overflow-hidden">
+                        <div class="p-5 border-b flex items-center justify-between bg-slate-50">
+                            <div class="flex items-center gap-2">
+                                <span class="w-8 h-8 rounded-lg bg-qNavy text-white flex items-center justify-center font-bold" x-text="activePinModal?.id"></span>
+                                <span class="font-black text-qNavy">تفاصيل المكون</span>
+                            </div>
+                            <button @click="closePin()" class="w-10 h-10 rounded-full bg-white border text-rose-500 silk"><span class="material-symbols-rounded">close</span></button>
+                        </div>
+                        <div class="flex-1 overflow-y-auto p-6 no-scrollbar pb-32">
+                            <h3 class="text-xl font-black text-qNavy mb-6 leading-relaxed" x-text="activePinModal?.question"></h3>
+
+                            <template x-if="activePinModal?.type==='mcq'">
+                                <div class="grid gap-3">
+                                    <template x-for="(opt,oi) in (activePinModal?.options ?? [])" :key="oi">
+                                        <button @click="activePinModal.tempAnswer=oi; haptic(10)" class="p-5 rounded-2xl text-right font-bold border-2 transition-all" :class="activePinModal.tempAnswer===oi ? 'border-qNavy bg-qNavy text-white shadow-md' : 'border-slate-100 bg-slate-50'"><span x-text="opt"></span></button>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <template x-if="activePinModal?.type==='tf'">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <button @click="activePinModal.tempAnswer=true; haptic(10)" class="h-32 rounded-3xl border-2 flex flex-col items-center justify-center gap-2 silk" :class="activePinModal.tempAnswer===true?'bg-emerald-500 border-emerald-500 text-white shadow-lg':'bg-slate-50 border-slate-100 text-slate-400'">
+                                        <span class="material-symbols-rounded text-4xl">check_circle</span>
+                                        <span class="font-black">صحيح</span>
+                                    </button>
+                                    <button @click="activePinModal.tempAnswer=false; haptic(10)" class="h-32 rounded-3xl border-2 flex flex-col items-center justify-center gap-2 silk" :class="activePinModal.tempAnswer===false?'bg-rose-500 border-rose-500 text-white shadow-lg':'bg-slate-50 border-slate-100 text-slate-400'">
+                                        <span class="material-symbols-rounded text-4xl">cancel</span>
+                                        <span class="font-black">خاطئ</span>
+                                    </button>
+                                </div>
+                            </template>
+
+                            <template x-if="activePinModal?.type==='fill'">
+                                <div class="text-center">
+                                    <div class="text-lg font-bold leading-loose text-slate-700 mb-8 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                                        يستخدم هذا المكون لتخزين
+                                        <span id="pin-blank-0" @click="activePinModal.activeF=0; haptic(10)" class="fluid-blank" :class="activePinModal.activeF===0?'active-target':''">
+                                            <span class="blank-word" :class="activePinModal.fillAnswers[0]?'visible':''" x-text="activePinModal.fillAnswers[0]??''"></span>
+                                        </span>
+                                        المؤقتة.
+                                    </div>
+                                    <div class="flex flex-wrap justify-center gap-3">
+                                        <template x-for="word in activePinModal?.bank" :key="word">
+                                            <button @click="if(activePinModal.activeF!==null && !activePinModal.fillAnswers.includes(word)) { activePinModal.fillAnswers[activePinModal.activeF]=word; const b=document.getElementById('pin-blank-'+activePinModal.activeF); if(b) b.style.minWidth= _measureWord(word,b)+'px'; activePinModal.tempAnswer=true; activePinModal.activeF=null; haptic(15); }" class="px-5 py-3 bg-white border-2 border-slate-200 rounded-xl font-black text-slate-700 shadow-sm silk" :class="activePinModal.fillAnswers.includes(word)?'opacity-0 pointer-events-none scale-90':'opacity-100'"><span x-text="word"></span></button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                        <div class="p-5 bg-white border-t mt-auto shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
+                            <button @click="confirmPin(); haptic(30)" :disabled="activePinModal?.tempAnswer===undefined" class="w-full py-5 rounded-2xl font-black text-lg silk shadow-xl" :class="activePinModal?.tempAnswer!==undefined ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-300'">تأكيد الإجابة وحفظ الدبوس</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer-hub silk" x-show="!activePinModal" x-transition>
+        <div class="flex w-full items-center gap-3 h-full px-4" x-show="!isLongQuestionDesktop">
+            <button @click="handleMainAction(); haptic(20)" class="squish silk h-[55px] flex-1 bg-white text-qNavy border border-slate-200 rounded-2xl font-black text-lg shadow-sm" x-text="currentQ === totalQ ? 'تأكيد وتسليم' : 'السؤال التالي'"></button>
+            <button @click="prevQ(); haptic(15)" :disabled="currentQ <= 1" class="squish silk h-[52px] w-[52px] bg-slate-800 text-white rounded-2xl flex items-center justify-center disabled:opacity-20"><span class="material-symbols-rounded">arrow_forward</span></button>
+            <div class="w-[48px] h-[48px] shrink-0"></div>
+        </div>
+        <!-- Desktop Long Layout: Buttons at Bottom Right -->
+        <div class="long-mode-btns" x-show="isLongQuestionDesktop">
+            <button @click="prevQ(); haptic(15)" :disabled="currentQ <= 1" class="squish w-[52px] h-[52px] bg-white border border-slate-200 text-qNavy rounded-2xl flex items-center justify-center disabled:opacity-20 silk shadow-xl"><span class="material-symbols-rounded">arrow_forward</span></button>
+        </div>
+    </footer>
+
+    <!-- Exit Button (Fixed Bottom Left on Mobile, Bottom Right on Desktop/Long) -->
+    <div class="exit-btn silk gpu-accelerate" :style="isLongQuestionDesktop ? 'right: 20px; bottom: 24px;' : 'right: 20px; bottom: 15px;'" @click="confirmExit()">
+        <span class="material-symbols-rounded" style="transform:scaleX(-1)">logout</span>
+    </div>
+
+    <!-- Identity Bubble (Transient) -->
+    <div class="identity-bubble" :class="showBubble ? 'active' : ''">
+        <div class="bubble-icon" x-html="currentSection.iconSvg"></div>
+        <div class="flex flex-col">
+            <span class="text-[10px] font-bold opacity-60 leading-none mb-1" x-text="currentSection.name"></span>
+            <span class="text-sm font-black tracking-widest" x-text="`${currentQ} / ${totalQ}`"></span>
+        </div>
+    </div>
+
+    <!-- Side Nav: Next Action in Long Mode (Moved to Left Side) -->
+    <button @click="handleMainAction(); haptic(20)" class="side-nav-btn silk"><span class="material-symbols-rounded text-white text-2xl">west</span></button>
+
+    <script>
+    const sectionIcons = {
+        tf: `<svg class="icon-card-svg" viewBox="0 0 100 100">
+                <g class="tf-g-check"><circle class="tf-check-bg" cx="32" cy="50" r="20" /><path class="tf-check-mark" d="M 24 52 L 30 58 L 42 42" /></g>
+                <g class="tf-g-cross"><circle class="tf-cross-bg" cx="68" cy="50" r="20" /><path class="tf-cross-mark" d="M 62 44 L 74 56 M 74 44 L 62 56" /></g>
+            </svg>`,
+        mcq: `<svg class="icon-card-svg" viewBox="0 0 100 100">
+                <g class="mc-1"><circle class="mc-ring" cx="30" cy="30" r="14"/><circle class="mc-dot" cx="30" cy="30" r="6"/></g>
+                <g class="mc-2"><circle class="mc-ring" cx="70" cy="30" r="14"/><circle class="mc-dot" cx="70" cy="30" r="6"/></g>
+                <g class="mc-3"><circle class="mc-ring" cx="70" cy="70" r="14"/><circle class="mc-dot" cx="70" cy="70" r="6"/></g>
+                <g class="mc-4"><circle class="mc-ring" cx="30" cy="70" r="14"/><circle class="mc-dot" cx="30" cy="70" r="6"/></g>
+            </svg>`,
+        order: `<svg class="icon-card-svg" viewBox="0 0 100 100">
+                <g class="or-row-1"><rect class="or-pill" x="15" y="18" width="70" height="20" /><text class="or-num" x="25" y="33">1</text><line x1="45" y1="28" x2="75" y2="28" stroke="var(--icon-base)" stroke-width="2" stroke-linecap="round" opacity="0.5"/></g>
+                <g class="or-row-2"><rect class="or-pill" x="15" y="46" width="55" height="20" /><text class="or-num" x="25" y="61">2</text><line x1="45" y1="56" x2="60" y2="56" stroke="var(--icon-base)" stroke-width="2" stroke-linecap="round" opacity="0.5"/></g>
+                <g class="or-row-3"><rect class="or-pill" x="15" y="74" width="40" height="20" /><text class="or-num" x="25" y="89">3</text><line x1="45" y1="84" x2="45" y2="84" stroke="var(--icon-base)" stroke-width="2" stroke-linecap="round" opacity="0.5"/></g>
+            </svg>`,
+        fill: `<svg class="icon-card-svg" viewBox="0 0 100 100">
+                <line class="fb-text-line" x1="10" y1="40" x2="25" y2="40" /><line class="fb-text-line" x1="75" y1="40" x2="90" y2="40" />
+                <rect class="fb-blank" x="30" y="28" width="40" height="24" />
+                <rect class="fb-word" x="34" y="32" width="32" height="16" />
+            </svg>`,
+        match: `<svg class="icon-card-svg" viewBox="0 0 100 100">
+                <rect class="ma-card ma-l1" x="15" y="12" width="28" height="18" /><rect class="ma-card ma-l2" x="15" y="41" width="28" height="18" /><rect class="ma-card ma-l3" x="15" y="70" width="28" height="18" />
+                <rect class="ma-card ma-r1" x="57" y="12" width="28" height="18" /><rect class="ma-card ma-r2" x="57" y="41" width="28" height="18" /><rect class="ma-card ma-r3" x="57" y="70" width="28" height="18" />
+            </svg>`,
+        step: `<svg class="icon-card-svg" viewBox="0 0 100 100">
+                <rect class="br-node br-main" x="30" y="15" width="40" height="18" />
+                <path class="br-line br-hidden br-path" d="M 50 33 L 50 45 M 50 45 L 25 60 M 50 45 L 50 60 M 50 45 L 75 60" />
+                <rect class="br-node br-scale br-n1" x="10" y="60" width="30" height="16" />
+                <rect class="br-node br-scale br-n2 br-n2-glow" x="35" y="60" width="30" height="16" />
+                <rect class="br-node br-scale br-n3" x="60" y="60" width="30" height="16" />
+            </svg>`,
+        image: `<svg class="icon-card-svg" viewBox="0 0 100 100">
+                <rect class="im-frame" x="10" y="15" width="80" height="70" />
+                <circle class="im-sun" cx="30" cy="35" r="8" />
+                <path class="im-mount" d="M 10 85 L 40 45 L 55 65 L 70 50 L 90 85" />
+                <g class="im-target im-t1"><line x1="25" y1="30" x2="35" y2="40"/><line x1="35" y1="30" x2="25" y2="40"/></g>
+                <g class="im-target im-t2"><line x1="65" y1="45" x2="75" y2="55"/><line x1="75" y1="45" x2="65" y2="55"/></g>
+                <g class="im-target im-t3"><line x1="35" y1="65" x2="45" y2="75"/><line x1="45" y1="65" x2="35" y2="75"/></g>
+                <g class="im-target im-t4"><line x1="75" y1="70" x2="85" y2="80"/><line x1="85" y1="70" x2="75" y2="80"/></g>
+            </svg>`
+    };
+
+    const palettes = {
+        safe: { c1: '#0ea5e9', c2: '#D4AF37', c3: '#f43f5e', c4: '#10b981', c5: '#8b5cf6', c6: '#f59e0b' },
+        warning: { c1: '#F2994A', c2: '#F2C94C', c3: '#E65C00', c4: '#F9D423', c5: '#FF9500', c6: '#B83A00' },
+        danger: { c1: '#430000', c2: '#920000', c3: '#E30022', c4: '#FF2D55', c5: '#640000', c6: '#1A0000' }
+    };
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('qimamEngine', () => ({
+            subjectName: 'الرياضيات', totalQ: 25, currentQ: 1, windowWidth: window.innerWidth,
+            timeLeft: 60, timerDisplay: '01:00', colors: palettes.safe, timeState: 'safe',
+            isPartying: false, hasPartied: false, showLargeAnim: false, animTrigger: false, visitedSections: new Set(),
+            sections: [
+                {id:'tf', name:'صح وخطأ', endQ:4, iconSvg: sectionIcons.tf},
+                {id:'mcq', name:'خيارات', endQ:7, iconSvg: sectionIcons.mcq},
+                {id:'order', name:'رتب', endQ:10, iconSvg: sectionIcons.order},
+                {id:'fill', name:'أكمل', endQ:14, iconSvg: sectionIcons.fill},
+                {id:'match', name:'زاوج', endQ:18, iconSvg: sectionIcons.match},
+                {id:'step', name:'متفرع', endQ:21, iconSvg: sectionIcons.step},
+                {id:'image', name:'رسم', endQ:25, iconSvg: sectionIcons.image}
+            ],
+            get currentSecIdx() { return this.sections.findIndex(s => this.currentQ <= s.endQ); },
+            get currentSection() { return this.sections[this.currentSecIdx] || this.sections[0]; },
+            get currentType() { return this.currentSection.id; },
+            get currentSectionIcon() { return this.currentSection.iconSvg; },
+            get progress() {
+                let p = (this.currentQ / this.totalQ) * 100;
+                if(p >= 61.8 && !this.hasPartied) { this.hasPartied = true; this.isPartying = true; if(navigator.vibrate) navigator.vibrate([30, 80, 30]); setTimeout(() => this.isPartying = false, 4000); }
+                return p;
+            },
+            get isLongQuestionDesktop() { return this.windowWidth >= 1024 && ['order', 'step', 'match'].includes(this.currentType); },
+
+            getNodePos(idx) {
+                const sec = this.sections[idx];
+                const p = (sec.endQ / this.totalQ) * 100;
+                // Offset percentage to keep icons inside the track (2px padding)
+                const off = 2;
+                if (p <= 40) return `top: ${off}px; left: ${100 - (p / 40 * 100)}%; transform: translate(-50%, -50%); --tx: -50%; --ty: -50%;`;
+                if (p <= 50) return `top: ${(p - 40) / 10 * 100}%; left: ${off}px; transform: translate(-50%, -50%); --tx: -50%; --ty: -50%;`;
+                if (p <= 90) return `bottom: ${off}px; left: ${(p - 50) / 40 * 100}%; transform: translate(-50%, 50%); --tx: -50%; --ty: 50%;`;
+                return `top: ${100 - (p - 90) / 10 * 100}%; right: ${off}px; transform: translate(50%, -50%); --tx: 50%; --ty: -50%;`;
+            },
+
+            init() {
+                window.qimam = this;
+                this.startTimer(); this.checkNewSection();
+                this.$watch('currentType', (val) => {
+                    this.checkNewSection(); this.activePinModal = null;
+                    if(val==='order') this.$nextTick(()=>this.initOrderSortable());
+                    if(val==='step') this.$nextTick(()=>this.initStepSortable());
+                    if(val==='fill') this.$nextTick(()=>this.fillAnswers.forEach((a,i)=>this._setBlankWidth(i,a)));
+                });
+                if(this.currentType==='order') this.$nextTick(()=>this.initOrderSortable());
+                if(this.currentType==='step') this.$nextTick(()=>this.initStepSortable());
+                if(this.currentType==='fill') this.$nextTick(()=>this.fillAnswers.forEach((a,i)=>this._setBlankWidth(i,a)));
+            },
+            startTimer() {
+                setInterval(() => {
+                    if(this.timeLeft > 0) {
+                        this.timeLeft--; let m=Math.floor(this.timeLeft/60), s=this.timeLeft%60;
+                        this.timerDisplay = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                        let r = this.timeLeft / 60;
+                        if(r <= 0.236) { this.timeState = 'danger'; this.colors = palettes.danger; }
+                        else if(r <= 0.382) { this.timeState = 'warning'; this.colors = palettes.warning; }
+                        else { this.timeState = 'safe'; this.colors = palettes.safe; }
+                    }
+                }, 1000);
+            },
+            showBubble: false, bubbleTimer: null,
+            triggerBubble() {
+                this.showBubble = true;
+                if(this.bubbleTimer) clearTimeout(this.bubbleTimer);
+                this.bubbleTimer = setTimeout(() => { this.showBubble = false; }, 2000);
+            },
+            checkNewSection() {
+                this.triggerBubble();
+                if(!this.visitedSections.has(this.currentType)) {
+                    this.visitedSections.add(this.currentType);
+                    // 1. Wait for progress track to reach node (approx 600ms)
+                    setTimeout(() => {
+                        this.showLargeAnim = true;
+                        this.animTrigger = false;
+                        // 2. Static pop-up stabilizes (300ms)
+                        setTimeout(() => {
+                            this.animTrigger = true;
+                            // 3. Animation runs (1100ms)
+                            setTimeout(() => {
+                                // 4. Wait (200ms) then hide
+                                setTimeout(() => {
+                                    this.showLargeAnim = false;
+                                    this.animTrigger = false;
+                                }, 200);
+                            }, 1100);
+                        }, 300);
+                    }, 600);
+                }
+            },
+            nextQ() { if(this.currentQ < this.totalQ) { this.currentQ++; this.haptic(15); this.triggerBubble(); } },
+            prevQ() { if(this.currentQ > 1) { this.currentQ--; this.haptic(10); } },
+            handleMainAction() { this.nextQ(); },
+            confirmExit() { if(confirm('هل تريد الخروج؟')) alert('تم الخروج'); },
+            haptic(ms) { if(navigator.vibrate) navigator.vibrate(ms); },
+
+            tfAnswer: null, mcqOptions:['navigator.vibrate()','window.shake()','device.haptic()','document.vibrate()'], mcqAnswer:null,
+            orderItems: [
+                {id:1,text:'الطور التمهيدي (Prophase)'},
+                {id:2,text:'الطور الاستوائي (Metaphase)'},
+                {id:3,text:'الطور الانفصالي (Anaphase)'},
+                {id:4,text:'الطور النهائي (Telophase)'},
+            ],
+            moveOrderItem(idx, dir) {
+                const target = idx + dir;
+                if(target >= 0 && target < this.orderItems.length) {
+                    const items = [...this.orderItems];
+                    const el = items.splice(idx, 1)[0];
+                    items.splice(target, 0, el);
+                    this.orderItems = items;
+                    this.haptic(10);
+                }
+            },
+            initOrderSortable() {
+                const c = document.getElementById('order-list'); if(!c) return;
+                Sortable.create(c, {
+                    animation:150, handle:'.step-drag-handle', forceFallback:true, fallbackClass:"sortable-fallback", fallbackOnBody:true, swapThreshold:0.65,
+                    onEnd:(e)=>{
+                        this.haptic(15);
+                        const items = [...this.orderItems];
+                        if (e.oldIndex === undefined || e.newIndex === undefined) return;
+                        const el = items.splice(e.oldIndex, 1)[0];
+                        if (el) items.splice(e.newIndex, 0, el);
+                        this.orderItems = items;
+                    }
+                });
+            },
+            stepItems: [
+                {id:1,title:'احسب طاقة الوضع',isOpen:false,isSolved:false,tempAnswer:null,confirmedAnswer:null,options:['1000 جول','2000 جول','500 جول']},
+                {id:2,title:'استنتج السرعة',isOpen:false,isSolved:false,tempAnswer:null,confirmedAnswer:null,options:['10 م/ث','20 م/ث','5 م/ث']},
+                {id:3,title:'احسب الزمن اللازم',isOpen:false,isSolved:false,tempAnswer:null,confirmedAnswer:null,options:['3 ثوانٍ','5 ثوانٍ','8 ثوانٍ']}
+            ],
+            stepOrderConfirmed: false,
+            initStepSortable() {
+                const c = document.getElementById('step-list'); if(!c) return;
+                Sortable.create(c, {
+                    animation:150, handle:'.step-drag-handle', forceFallback:true, fallbackClass:"sortable-fallback", fallbackOnBody:true,
+                    onEnd:(e)=>{
+                        this.haptic(15);
+                        const items = [...this.stepItems];
+                        if (e.oldIndex === undefined || e.newIndex === undefined) return;
+                        const el = items.splice(e.oldIndex, 1)[0];
+                        if (el) items.splice(e.newIndex, 0, el);
+                        this.stepItems = items;
+                    }
+                });
+            },
+            fillBank: ['HTML','JavaScript','CSS','Python'], fillAnswers: [null, null], fillActiveIdx: 0,
+            _measureWord(word, ref) { const r=document.getElementById('blank-ruler'); if(!r||!word) return 68; if(ref) r.style.fontSize = window.getComputedStyle(ref.parentElement).fontSize; r.innerText=word; return Math.max(r.offsetWidth+24, 68); },
+            _setBlankWidth(i, w) { const b=document.getElementById(`blank-${i}`); if(b) b.style.minWidth = this._measureWord(w, b)+'px'; },
+            setActiveBlank(i) { if(this.fillAnswers[i]) { this.fillAnswers[i]=null; this._setBlankWidth(i,null); } this.fillActiveIdx=i; },
+            fillBlank(w) { if(this.fillActiveIdx!==null && !this.fillAnswers.includes(w)) { this.fillAnswers[this.fillActiveIdx]=w; this._setBlankWidth(this.fillActiveIdx, w); this.fillActiveIdx = this.fillAnswers.findIndex(a=>a===null); if(this.fillActiveIdx===-1) this.fillActiveIdx=null; this.haptic(10); } },
+            colorPool: ['#3B82F6','#8B5CF6','#F59E0B','#06B6D4','#EC4899','#6366F1','#14B8A6','#F97316','#D946EF','#0EA5E9','#A855F7','#0284C7','#C026D3','#D97706','#2563EB','#9333EA','#0D9488','#EA580C','#EAB308','#4F46E5'],
+            matchRight:[{id:'r1',text:'HTML'},{id:'r2',text:'CSS'},{id:'r3',text:'JavaScript'},{id:'r4',text:'Python'}], matchLeft:[{id:'l1',text:'الهيكل الأساسي'},{id:'l2',text:'التنسيق والألوان'},{id:'l3',text:'المنطق والتفاعل'},{id:'l4',text:'تحليل البيانات'}], connections:[], pendingRight:null, pendingLeft:null,
+            getRandomSafeColor() { let h; do{h=Math.floor(Math.random()*360);} while((h>=340||h<=20)||(h>=90&&h<=150)); return `hsl(${h},80%,55%)`; },
+            touchNode(s,id) {
+                const ci=this.connections.findIndex(c=>c.rightId===id||c.leftId===id); if(ci!==-1){const c=this.connections.splice(ci,1)[0]; this.colorPool.push(c.color); this.pendingRight=this.pendingLeft=null; return;}
+                if(s==='right'){this.pendingRight=this.pendingRight===id?null:id; if(this.pendingRight&&this.pendingLeft)this.makeMatch();}
+                else{this.pendingLeft=this.pendingLeft===id?null:id; if(this.pendingLeft&&this.pendingRight)this.makeMatch();}
+            },
+            makeMatch(){
+                let col; if(this.colorPool.length>0){const ri=Math.floor(Math.random()*this.colorPool.length); col=this.colorPool.splice(ri,1)[0];}
+                else col=this.getRandomSafeColor();
+                this.connections.push({rightId:this.pendingRight, leftId:this.pendingLeft, color:col});
+                this.pendingRight=this.pendingLeft=null; this.haptic(15);
+            },
+            getNodeStyle(s,id) { const cn=this.connections.find(c=>c[s+'Id']===id); return cn ? `background:${cn.color}; border-color:${cn.color}; color:white;` : ''; },
+            getNodeClass(s,id) { return (s==='right'?this.pendingRight:this.pendingLeft)===id ? 'border-qNavy bg-slate-100 shadow-md' : 'border-slate-200 bg-white'; },
+            activePinModal:null,
+            imgPins:[
+                {id:1,x:22,y:48,type:'mcq',color:'#1e293b',question:'ما هو دور وحدة المعالجة (CPU) في اللوحة؟',options:['تخزين البيانات','معالجة العمليات','توليد الطاقة'],solved:false,answer:null},
+                {id:2,x:70,y:30,type:'tf', color:'#ef4444',question:'هذا المنفذ يستخدم لتوصيل الشاشة (HDMI) فقط.',solved:false,answer:null},
+                {id:3,x:50,y:72,type:'fill',color:'#3b82f6',question:'يستخدم هذا المكون لتخزين البيانات في',bank:['الذاكرة','الكاش','المعالج'],fillAnswers:[null],solved:false,answer:null}
+            ],
+            openPin(pin) {
+                this.activePinModal = {
+                    ...pin,
+                    tempAnswer: pin.answer !== null ? pin.answer : undefined,
+                    fillAnswers: pin.type === 'fill' ? [...(pin.fillAnswers || [null])] : [],
+                    activeF: pin.type === 'fill' ? 0 : null
+                };
+                this.$nextTick(() => {
+                    const layer = document.getElementById('img-zoom-layer');
+                    if (layer) {
+                        layer.style.transition = 'none';
+                        layer.style.transformOrigin = `${pin.x}% ${pin.y}%`;
+                        void layer.offsetHeight;
+                        requestAnimationFrame(() => {
+                            layer.style.transition = 'transform 600ms cubic-bezier(0.22, 1, 0.36, 1)';
+                            layer.style.transform = `scale(${window.innerWidth < 1024 ? 3.0 : 2.6})`;
+                        });
+                    }
+                });
+            },
+            closePin() {
+                const layer = document.getElementById('img-zoom-layer');
+                if (layer) {
+                    layer.style.transition = 'transform 600ms cubic-bezier(0.22, 1, 0.36, 1)';
+                    layer.style.transform = 'scale(1)';
+                }
+                this.activePinModal = null;
+            },
+            confirmPin() {
+                const i=this.imgPins.findIndex(px=>px.id===this.activePinModal.id);
+                this.imgPins[i].solved=true;
+                this.imgPins[i].answer=this.activePinModal.tempAnswer;
+                this.haptic(20); this.closePin();
+            }
+        }));
+    });
+    </script>
+</body>
+</html>
