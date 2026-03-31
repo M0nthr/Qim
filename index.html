@@ -52,7 +52,7 @@
         }
 
         body {
-            background-color: #0A142B; color: #0f172a; font-family: 'Almarai', sans-serif;
+            background-color: #0F1115; color: #ffffff; font-family: 'Almarai', sans-serif;
             display: flex; flex-direction: column; min-height: 100vh; margin: 0; overflow: hidden;
             user-select: none; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased;
             padding-top: max(20px, env(safe-area-inset-top));
@@ -103,18 +103,9 @@
         .track-progress { fill: none; stroke: var(--progress-color); stroke-width: 4; stroke-linecap: round; rx: 22px; stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset var(--fibo-time) var(--ease-bounce); will-change: stroke-dashoffset; }
 
         .node-layer { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
-        .node-wrapper { position: absolute; width: 32px; height: 32px; transform: translate3d(50%, -50%, 0); transition: all var(--fibo-time) var(--ease-bounce); will-change: transform; }
-        /* Precision Sync for 25Q Perimeter (344px: 100w, 72h). Start Top-Right CCW.
-           Q4(16%): T-48px. Q7(28%): T-96px. Q10(40%): L-38px. Q14(56%): B-20px. Q18(72%): B-75px. Q21(84%): R-17px. Q25(100%): T-0px. */
-        .node-1 { top: 0; right: 48%; }
-        .node-2 { top: 0; right: 96%; }
-        .node-3 { top: 38px; left: 0; transform: translate3d(-50%, -50%, 0); }
-        .node-4 { bottom: 0; left: 20%; transform: translate3d(-50%, 50%, 0); }
-        .node-5 { bottom: 0; left: 75%; transform: translate3d(-50%, 50%, 0); }
-        .node-6 { bottom: 17px; right: 0; transform: translate3d(50%, 50%, 0); }
-        .node-7 { top: 0; right: 0; }
+        .node-wrapper { position: absolute; width: 28px; height: 28px; transition: all var(--fibo-time) var(--ease-bounce); will-change: left, top, transform; }
 
-        .node-circle { width: 100%; height: 100%; border-radius: 50%; background: #0A142B; border: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; color: #64748B; transition: all var(--fibo-time) var(--ease-bounce); position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .node-circle { width: 100%; height: 100%; border-radius: 50%; background: #0F172A; border: 2px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; color: #ffffff; transition: all var(--fibo-time) var(--ease-bounce); position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .node-circle svg { width: 18px; height: 18px; position: relative; z-index: 1; transform: translateZ(0); }
         .node-wrapper.is-active { transform: translate3d(var(--tx, 50%), var(--ty, -50%), 0) scale(1.3); z-index: 30; }
         .node-wrapper.is-active .node-circle { border-color: var(--progress-color); color: var(--progress-color); background: #0F172A; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
@@ -255,7 +246,7 @@
         /* FOOTER & NAVIGATION */
         .footer-hub { position: fixed; bottom: 0; left: 0; right: 0; height: calc(var(--ftr) + var(--safe-b)); padding: 0 10px 0 clamp(89px, 13vw, 144px); background: white; border-top: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 50; }
         .is-desktop-long .footer-hub { background: transparent !important; border: none !important; pointer-events: none; height: auto; }
-        .is-desktop-long .long-mode-btns { position: fixed; bottom: 24px; right: 24px; display: flex; gap: 12px; pointer-events: auto; z-index: 60; }
+        .is-desktop-long .long-mode-btns { position: fixed; bottom: 24px; right: 84px; display: flex; gap: 12px; pointer-events: auto; z-index: 60; }
 
         .side-nav-btn { position: fixed; left: 0; top: 0; bottom: 0; width: clamp(44px, 4vw, 52px); background-color: #0f172a; display: none; align-items: center; justify-content: center; z-index: 60; border-radius: 0 14px 14px 0; transition: background-color 280ms var(--ease-silk); border: none; cursor: pointer; }
         .is-desktop-long .side-nav-btn { display: flex; }
@@ -264,16 +255,16 @@
         .exit-btn {
             position: fixed;
             bottom: max(15px, env(safe-area-inset-bottom));
-            left: 20px;
+            right: 20px;
             width: 48px; height: 48px;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: 16px;
             display: flex; align-items: center; justify-content: center;
-            color: rgba(255, 255, 255, 0.9); cursor: pointer;
+            color: #EF4444; cursor: pointer;
             transition: all 0.2s var(--ease-bounce); z-index: 70;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            left: auto !important;
         }
         .exit-btn:active { transform: scale(0.9); background: rgba(239, 68, 68, 0.25); border-color: #EF4444; }
 
@@ -341,9 +332,11 @@
                 <rect class="track-progress" x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" pathLength="100" :style="`stroke-dashoffset: ${100 - progress}`"></rect>
             </svg>
 
-            <div class="node-layer">
+            <div class="node-layer" id="node-layer-container">
                 <template x-for="(sec, idx) in sections" :key="sec.id">
-                    <div class="node-wrapper gpu-accelerate" :class="[ 'node-' + (idx + 1), currentSecIdx === idx ? 'is-active' : '', currentSecIdx > idx ? 'is-completed' : '' ]">
+                    <div class="node-wrapper gpu-accelerate"
+                         :class="[ currentSecIdx === idx ? 'is-active' : '', currentSecIdx > idx ? 'is-completed' : '' ]"
+                         :style="getNodePos(idx)">
                         <div class="node-circle gpu-accelerate" x-html="sec.iconSvg"></div>
                     </div>
                 </template>
@@ -393,14 +386,81 @@
         <template x-if="currentType === 'order'">
             <div class="flex flex-col px-2 md:px-8 py-4 max-w-5xl mx-auto w-full min-h-full pb-10">
                 <div class="mb-6 text-center"><h2 class="text-xl md:text-2xl font-black text-qNavy">رتب أطوار الانقسام المتساوي في الخلية:</h2></div>
-                <div id="order-list" class="flex flex-col gap-3"></div>
+                <div id="order-list" class="flex flex-col gap-3">
+                    <template x-for="(it, i) in orderItems" :key="it.id">
+                        <div class="bg-white border-2 border-slate-200 shadow-sm rounded-2xl p-4 flex items-center gap-3">
+                            <div class="flex flex-col gap-1 shrink-0">
+                                <button @click="moveOrderItem(i, -1)" class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-qNavy hover:bg-slate-100 transition" :class="i===0?'opacity-30 pointer-events-none':''"><span class="material-symbols-rounded text-lg">expand_less</span></button>
+                                <button @click="moveOrderItem(i, 1)" class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-qNavy hover:bg-slate-100 transition" :class="i===orderItems.length-1?'opacity-30 pointer-events-none':''"><span class="material-symbols-rounded text-lg">expand_more</span></button>
+                            </div>
+                            <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 font-black text-sm flex items-center justify-center shrink-0 border border-slate-200" x-text="i+1"></div>
+                            <div class="flex-1 font-bold text-base text-slate-700" x-text="it.text"></div>
+                            <div class="step-drag-handle shrink-0 text-slate-300 hover:text-slate-500 transition-colors p-2 cursor-grab active:cursor-grabbing"><span class="material-symbols-rounded">drag_indicator</span></div>
+                        </div>
+                    </template>
+                </div>
             </div>
         </template>
 
         <template x-if="currentType === 'step'">
             <div class="flex flex-col px-2 md:px-8 py-4 max-w-5xl mx-auto w-full min-h-full pb-10">
                 <div class="mb-6 text-center"><h2 class="text-xl font-black text-qNavy">رتب الخطوات، ثم أجب على كل خطوة للحل.</h2></div>
-                <div id="step-list" class="flex flex-col gap-4"></div>
+
+                <div x-show="!stepOrderConfirmed" class="p-4 bg-amber-50 border border-amber-200 rounded-2xl mb-4 text-amber-800 text-sm font-bold text-center">
+                    يرجى ترتيب الخطوات أولاً، ثم الضغط على تأكيد الترتيب للبدء في الحل.
+                </div>
+                <div x-show="stepOrderConfirmed" class="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl mb-4 text-emerald-800 text-sm font-bold text-center">
+                    الان انقر السهم لحل كل خطوة
+                </div>
+
+                <div id="step-list" class="flex flex-col gap-4">
+                    <template x-for="(st, i) in stepItems" :key="st.id">
+                        <div class="step-card rounded-2xl overflow-hidden border-2 bg-white shadow-sm cursor-auto"
+                             :style="st.isSolved ? 'border-color:#D4AF37; background-color:rgba(212,175,55,0.02);' : (st.isOpen ? 'border-color:#D4AF37;' : 'border-color:#e2e8f0;')">
+                            <div class="p-4 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl font-black text-sm flex items-center justify-center shrink-0 border"
+                                     :style="st.isSolved?'background:rgba(212,175,55,0.12); border-color:#D4AF37; color:#D4AF37;':'background:#f1f5f9; border-color:#e2e8f0; color:#64748b;'"
+                                     x-text="i+1"></div>
+                                <div class="flex-1 font-bold text-sm md:text-base text-slate-700 truncate" x-text="st.title"></div>
+                                <div class="step-drag-handle shrink-0 p-2 cursor-grab active:cursor-grabbing" :class="!stepOrderConfirmed?'tutorial-pulse text-qGold':'text-slate-300'"><span class="material-symbols-rounded">drag_indicator</span></div>
+
+                                <template x-if="stepOrderConfirmed">
+                                    <div class="flex items-center gap-2">
+                                        <template x-if="st.isSolved">
+                                            <button @click="st.isSolved=false; st.isOpen=true; haptic(10)" class="w-10 h-10 rounded-full flex items-center justify-center bg-amber-50 text-amber-600 border border-amber-100 shrink-0">
+                                                <span class="material-symbols-rounded text-sm">edit</span>
+                                            </button>
+                                        </template>
+                                        <template x-if="!st.isSolved">
+                                            <button @click="stepItems.forEach((s,j)=>{if(i!==j)s.isOpen=false;}); st.isOpen=!st.isOpen; haptic(10)" class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-50 text-slate-400 border border-slate-200 shrink-0" :class="!st.isSolved?'tutorial-pulse text-qNavy':''">
+                                                <span class="material-symbols-rounded" style="transition:transform 300ms;" :style="`transform:rotate(${st.isOpen?180:0}deg)`">expand_more</span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <div x-show="st.isOpen" x-collapse>
+                                <div class="p-4 pt-0 border-t border-slate-50 bg-slate-50/50">
+                                    <div class="flex flex-col gap-2 my-3">
+                                        <template x-for="(opt, oi) in st.options" :key="oi">
+                                            <button @click="st.tempAnswer=oi; haptic(10)" class="squish w-full p-4 rounded-xl font-bold text-sm text-right border-2 flex items-center justify-between silk"
+                                                    :class="st.tempAnswer===oi ? 'bg-qNavy border-qNavy text-white shadow-md' : 'bg-white border-slate-200 text-slate-600'">
+                                                <span x-text="opt"></span>
+                                                <span class="material-symbols-rounded text-base opacity-60" x-show="st.tempAnswer===oi">check_circle</span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                    <button @click="if(st.tempAnswer!==null){st.isSolved=true; st.isOpen=false; st.confirmedAnswer=st.tempAnswer; haptic(20);}"
+                                            class="squish w-full py-4 rounded-xl font-black text-sm silk"
+                                            :class="st.tempAnswer!==null?'bg-qGold text-qNavy shadow-lg':'bg-slate-200 text-slate-400'">تأكيد الخطوة</button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <button x-show="!stepOrderConfirmed" @click="stepOrderConfirmed = true; haptic(30)" class="w-full py-5 mt-6 bg-qNavy text-white rounded-2xl font-black text-lg shadow-xl silk tutorial-pulse">تأكيد الترتيب والبدء بالحل</button>
             </div>
         </template>
 
@@ -508,10 +568,10 @@
 
     <!-- FOOTER -->
     <footer class="footer-hub silk" x-show="!activePinModal" x-transition>
-        <!-- Mobile/Standard Layout -->
-        <div class="flex w-full items-center justify-end gap-3 h-full" x-show="!isLongQuestionDesktop">
-            <button @click="prevQ(); haptic(15)" :disabled="currentQ <= 1" class="squish silk h-[52px] w-[52px] bg-slate-100 text-qNavy rounded-2xl flex items-center justify-center disabled:opacity-20"><span class="material-symbols-rounded">arrow_forward</span></button>
-            <button @click="handleMainAction(); haptic(20)" class="squish silk h-[55px] flex-1 bg-qNavy text-white rounded-2xl font-black text-lg shadow-lg" x-text="currentQ === totalQ ? 'تأكيد وتسليم' : 'السؤال التالي'"></button>
+        <div class="flex w-full items-center gap-3 h-full px-4" x-show="!isLongQuestionDesktop">
+            <button @click="handleMainAction(); haptic(20)" class="squish silk h-[55px] flex-1 bg-white text-qNavy border border-slate-200 rounded-2xl font-black text-lg shadow-sm" x-text="currentQ === totalQ ? 'تأكيد وتسليم' : 'السؤال التالي'"></button>
+            <button @click="prevQ(); haptic(15)" :disabled="currentQ <= 1" class="squish silk h-[52px] w-[52px] bg-slate-800 text-white rounded-2xl flex items-center justify-center disabled:opacity-20"><span class="material-symbols-rounded">arrow_forward</span></button>
+            <div class="w-[48px] h-[48px] shrink-0"></div>
         </div>
         <!-- Desktop Long Layout: Buttons at Bottom Right -->
         <div class="long-mode-btns" x-show="isLongQuestionDesktop">
@@ -519,8 +579,8 @@
         </div>
     </footer>
 
-    <!-- Exit Button (Fixed Bottom Left) -->
-    <div class="exit-btn silk gpu-accelerate" @click="confirmExit()">
+    <!-- Exit Button (Fixed Bottom Left on Mobile, Bottom Right on Desktop/Long) -->
+    <div class="exit-btn silk gpu-accelerate" :style="isLongQuestionDesktop ? 'right: 20px; bottom: 24px;' : 'right: 20px; bottom: 15px;'" @click="confirmExit()">
         <span class="material-symbols-rounded" style="transform:scaleX(-1)">logout</span>
     </div>
 
@@ -533,7 +593,7 @@
         </div>
     </div>
 
-    <!-- Side Nav: Next Action in Long Mode -->
+    <!-- Side Nav: Next Action in Long Mode (Moved to Left Side) -->
     <button @click="handleMainAction(); haptic(20)" class="side-nav-btn silk"><span class="material-symbols-rounded text-white text-2xl">west</span></button>
 
     <script>
@@ -581,7 +641,7 @@
     };
 
     const palettes = {
-        safe: { c1: '#005C97', c2: '#363795', c3: '#004FF9', c4: '#00B4DB', c5: '#0A84FF', c6: '#1C0D54' },
+        safe: { c1: '#0ea5e9', c2: '#D4AF37', c3: '#f43f5e', c4: '#10b981', c5: '#8b5cf6', c6: '#f59e0b' },
         warning: { c1: '#F2994A', c2: '#F2C94C', c3: '#E65C00', c4: '#F9D423', c5: '#FF9500', c6: '#B83A00' },
         danger: { c1: '#430000', c2: '#920000', c3: '#E30022', c4: '#FF2D55', c5: '#640000', c6: '#1A0000' }
     };
@@ -609,19 +669,30 @@
                 if(p >= 61.8 && !this.hasPartied) { this.hasPartied = true; this.isPartying = true; if(navigator.vibrate) navigator.vibrate([30, 80, 30]); setTimeout(() => this.isPartying = false, 4000); }
                 return p;
             },
-            get isLongQuestionDesktop() { return this.windowWidth >= 1024 && ['order','step','match'].includes(this.currentType); },
+            get isLongQuestionDesktop() { return this.windowWidth >= 1024 && ['order', 'step', 'match'].includes(this.currentType); },
+
+            getNodePos(idx) {
+                const sec = this.sections[idx];
+                const p = (sec.endQ / this.totalQ) * 100;
+                // Offset percentage to keep icons inside the track (2px padding)
+                const off = 2;
+                if (p <= 40) return `top: ${off}px; left: ${100 - (p / 40 * 100)}%; transform: translate(-50%, -50%); --tx: -50%; --ty: -50%;`;
+                if (p <= 50) return `top: ${(p - 40) / 10 * 100}%; left: ${off}px; transform: translate(-50%, -50%); --tx: -50%; --ty: -50%;`;
+                if (p <= 90) return `bottom: ${off}px; left: ${(p - 50) / 40 * 100}%; transform: translate(-50%, 50%); --tx: -50%; --ty: 50%;`;
+                return `top: ${100 - (p - 90) / 10 * 100}%; right: ${off}px; transform: translate(50%, -50%); --tx: 50%; --ty: -50%;`;
+            },
 
             init() {
                 window.qimam = this;
                 this.startTimer(); this.checkNewSection();
                 this.$watch('currentType', (val) => {
                     this.checkNewSection(); this.activePinModal = null;
-                    if(val==='order') this.$nextTick(()=>this.renderOrderList());
-                    if(val==='step') this.$nextTick(()=>this.renderStepList());
+                    if(val==='order') this.$nextTick(()=>this.initOrderSortable());
+                    if(val==='step') this.$nextTick(()=>this.initStepSortable());
                     if(val==='fill') this.$nextTick(()=>this.fillAnswers.forEach((a,i)=>this._setBlankWidth(i,a)));
                 });
-                if(this.currentType==='order') this.$nextTick(()=>this.renderOrderList());
-                if(this.currentType==='step') this.$nextTick(()=>this.renderStepList());
+                if(this.currentType==='order') this.$nextTick(()=>this.initOrderSortable());
+                if(this.currentType==='step') this.$nextTick(()=>this.initStepSortable());
                 if(this.currentType==='fill') this.$nextTick(()=>this.fillAnswers.forEach((a,i)=>this._setBlankWidth(i,a)));
             },
             startTimer() {
@@ -678,33 +749,28 @@
                 {id:3,text:'الطور الانفصالي (Anaphase)'},
                 {id:4,text:'الطور النهائي (Telophase)'},
             ],
-            orderSortable: null,
-            renderOrderList() {
-                const c = document.getElementById('order-list'); if(!c) return; c.innerHTML='';
-                this.orderItems.forEach((it, i) => {
-                    const d=document.createElement('div'); d.dataset.id=it.id;
-                    d.className='bg-white border-2 border-slate-200 shadow-sm rounded-2xl p-4 flex items-center gap-3';
-                    d.innerHTML=`
-                        <div class="flex flex-col gap-1 shrink-0">
-                            <button data-action="up" data-idx="${i}" class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-qNavy hover:bg-slate-100 transition ${i===0?'opacity-30 pointer-events-none':''}"><span class="material-symbols-rounded text-lg">expand_less</span></button>
-                            <button data-action="down" data-idx="${i}" class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-qNavy hover:bg-slate-100 transition ${i===this.orderItems.length-1?'opacity-30 pointer-events-none':''}"><span class="material-symbols-rounded text-lg">expand_more</span></button>
-                        </div>
-                        <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 font-black text-sm flex items-center justify-center shrink-0 border border-slate-200">${i+1}</div>
-                        <div class="flex-1 font-bold text-base text-slate-700">${it.text}</div>
-                        <div class="step-drag-handle shrink-0 text-slate-300 hover:text-slate-500 transition-colors p-2 cursor-grab active:cursor-grabbing"><span class="material-symbols-rounded">drag_indicator</span></div>`;
-                    d.querySelectorAll('button[data-action]').forEach(btn => {
-                        btn.onclick=(e)=>{
-                            e.stopPropagation(); const action=btn.dataset.action; const idx=parseInt(btn.dataset.idx);
-                            if(action==='up'&&idx>0){const el=this.orderItems.splice(idx,1)[0];this.orderItems.splice(idx-1,0,el);this.haptic(10);this.renderOrderList();}
-                            else if(action==='down'&&idx<this.orderItems.length-1){const el=this.orderItems.splice(idx,1)[0];this.orderItems.splice(idx+1,0,el);this.haptic(10);this.renderOrderList();}
-                        };
-                    });
-                    c.appendChild(d);
-                });
-                if(this.orderSortable) this.orderSortable.destroy();
-                this.orderSortable = Sortable.create(c, {
+            moveOrderItem(idx, dir) {
+                const target = idx + dir;
+                if(target >= 0 && target < this.orderItems.length) {
+                    const items = [...this.orderItems];
+                    const el = items.splice(idx, 1)[0];
+                    items.splice(target, 0, el);
+                    this.orderItems = items;
+                    this.haptic(10);
+                }
+            },
+            initOrderSortable() {
+                const c = document.getElementById('order-list'); if(!c) return;
+                Sortable.create(c, {
                     animation:150, handle:'.step-drag-handle', forceFallback:true, fallbackClass:"sortable-fallback", fallbackOnBody:true, swapThreshold:0.65,
-                    onEnd:(e)=>{this.haptic(15); const el=this.orderItems.splice(e.oldIndex, 1)[0]; this.orderItems.splice(e.newIndex, 0, el); this.renderOrderList();}
+                    onEnd:(e)=>{
+                        this.haptic(15);
+                        const items = [...this.orderItems];
+                        if (e.oldIndex === undefined || e.newIndex === undefined) return;
+                        const el = items.splice(e.oldIndex, 1)[0];
+                        if (el) items.splice(e.newIndex, 0, el);
+                        this.orderItems = items;
+                    }
                 });
             },
             stepItems: [
@@ -712,80 +778,20 @@
                 {id:2,title:'استنتج السرعة',isOpen:false,isSolved:false,tempAnswer:null,confirmedAnswer:null,options:['10 م/ث','20 م/ث','5 م/ث']},
                 {id:3,title:'احسب الزمن اللازم',isOpen:false,isSolved:false,tempAnswer:null,confirmedAnswer:null,options:['3 ثوانٍ','5 ثوانٍ','8 ثوانٍ']}
             ],
-            stepSortable: null,
             stepOrderConfirmed: false,
-            renderStepList() {
-                const c = document.getElementById('step-list'); if(!c) return; c.innerHTML='';
-
-                // Show Confirmation Button if not confirmed yet
-                const info = document.createElement('div');
-                if(!this.stepOrderConfirmed) {
-                    info.className = 'p-4 bg-amber-50 border border-amber-200 rounded-2xl mb-4 text-amber-800 text-sm font-bold text-center';
-                    info.innerHTML = 'يرجى ترتيب الخطوات أولاً، ثم الضغط على تأكيد الترتيب للبدء في الحل.';
-                } else {
-                    info.className = 'p-4 bg-emerald-50 border border-emerald-200 rounded-2xl mb-4 text-emerald-800 text-sm font-bold text-center';
-                    info.innerHTML = 'الان انقر السهم لحل كل خطوة';
-                }
-                c.appendChild(info);
-
-                this.stepItems.forEach((st, i) => {
-                    const d=document.createElement('div'); d.dataset.id=st.id;
-                    d.className='step-card rounded-2xl overflow-hidden border-2 bg-white shadow-sm cursor-auto';
-                    if(st.isSolved){ d.style.borderColor='#D4AF37'; d.style.backgroundColor='rgba(212,175,55,0.02)'; }
-                    else if(st.isOpen){ d.style.borderColor='#D4AF37'; }
-                    else { d.style.borderColor='#e2e8f0'; }
-                    const hd=document.createElement('div'); hd.className='p-4 flex items-center gap-3';
-                    const num=document.createElement('div'); num.className='w-8 h-8 rounded-xl font-black text-sm flex items-center justify-center shrink-0 border';
-                    num.style.cssText=st.isSolved?'background:rgba(212,175,55,0.12); border-color:#D4AF37; color:#D4AF37;':'background:#f1f5f9; border-color:#e2e8f0; color:#64748b;';
-                    num.textContent=i+1;
-                    const ttl=document.createElement('div'); ttl.className='flex-1 font-bold text-sm md:text-base text-slate-700 truncate';
-                    ttl.textContent=st.title;
-                    const dh=document.createElement('div'); dh.className=`step-drag-handle shrink-0 p-2 cursor-grab active:cursor-grabbing ${!this.stepOrderConfirmed?'tutorial-pulse text-qGold':'text-slate-300'}`;
-                    dh.innerHTML='<span class="material-symbols-rounded">drag_indicator</span>';
-                    hd.append(num, ttl, dh);
-                    if(this.stepOrderConfirmed) {
-                        if(st.isSolved){
-                            const eb=document.createElement('button'); eb.className='w-10 h-10 rounded-full flex items-center justify-center bg-amber-50 text-amber-600 border border-amber-100 shrink-0';
-                            eb.innerHTML='<span class="material-symbols-rounded text-sm">edit</span>';
-                            eb.onclick=(e)=>{e.stopPropagation(); st.isSolved=false; st.isOpen=true; this.renderStepList();}; hd.appendChild(eb);
-                        } else {
-                            const tb=document.createElement('button'); tb.className=`w-10 h-10 rounded-full flex items-center justify-center bg-slate-50 text-slate-400 border border-slate-200 shrink-0 ${!st.isSolved?'tutorial-pulse text-qNavy':''}`;
-                            tb.innerHTML=`<span class="material-symbols-rounded" style="transition:transform 300ms; transform:rotate(${st.isOpen?180:0}deg)">expand_more</span>`;
-                            tb.onclick=(e)=>{e.stopPropagation(); this.stepItems.forEach((s,j)=>{if(i!==j)s.isOpen=false;}); st.isOpen=!st.isOpen; this.renderStepList();}; hd.appendChild(tb);
-                        }
-                    }
-                    d.appendChild(hd);
-                    if(st.isOpen){
-                        const bd=document.createElement('div'); bd.className='p-4 pt-0 border-t border-slate-50 bg-slate-50/50';
-                        const opts=document.createElement('div'); opts.className='flex flex-col gap-2 my-3';
-                        st.options.forEach((opt, oi)=>{
-                            const b=document.createElement('button'); const sel=st.tempAnswer===oi;
-                            b.className='squish w-full p-4 rounded-xl font-bold text-sm text-right border-2 flex items-center justify-between bg-white silk';
-                            b.style.cssText=sel?'background:#0f172a; border-color:#0f172a; color:white;':'border-color:#e2e8f0; color:#475569;';
-                            b.innerHTML=`<span>${opt}</span>${sel?'<span class="material-symbols-rounded text-base opacity-60">check_circle</span>':''}`;
-                            b.onclick=()=>{st.tempAnswer=oi; this.haptic(10); this.renderStepList();}; opts.appendChild(b);
-                        });
-                        const cb=document.createElement('button'); const can=st.tempAnswer!==null;
-                        cb.className=`squish w-full py-4 rounded-xl font-black text-sm silk ${can?'bg-qGold text-qNavy shadow-lg':'bg-slate-200 text-slate-400'}`;
-                        cb.textContent='تأكيد الخطوة';
-                        cb.onclick=()=>{if(can){st.isSolved=true; st.isOpen=false; st.confirmedAnswer=st.tempAnswer; this.haptic(20); this.renderStepList();}};
-                        bd.append(opts, cb); d.appendChild(bd);
-                    }
-                    c.appendChild(d);
-                });
-                if(this.stepSortable) this.stepSortable.destroy();
-                this.stepSortable = Sortable.create(c, {
+            initStepSortable() {
+                const c = document.getElementById('step-list'); if(!c) return;
+                Sortable.create(c, {
                     animation:150, handle:'.step-drag-handle', forceFallback:true, fallbackClass:"sortable-fallback", fallbackOnBody:true,
-                    onEnd:(e)=>{this.haptic(15); const el=this.stepItems.splice(e.oldIndex, 1)[0]; this.stepItems.splice(e.newIndex, 0, el); this.renderStepList();}
+                    onEnd:(e)=>{
+                        this.haptic(15);
+                        const items = [...this.stepItems];
+                        if (e.oldIndex === undefined || e.newIndex === undefined) return;
+                        const el = items.splice(e.oldIndex, 1)[0];
+                        if (el) items.splice(e.newIndex, 0, el);
+                        this.stepItems = items;
+                    }
                 });
-
-                if(!this.stepOrderConfirmed) {
-                    const conf = document.createElement('button');
-                    conf.className = 'w-full py-5 mt-6 bg-qNavy text-white rounded-2xl font-black text-lg shadow-xl silk tutorial-pulse';
-                    conf.textContent = 'تأكيد الترتيب والبدء بالحل';
-                    conf.onclick = () => { this.stepOrderConfirmed = true; this.haptic(30); this.renderStepList(); };
-                    c.appendChild(conf);
-                }
             },
             fillBank: ['HTML','JavaScript','CSS','Python'], fillAnswers: [null, null], fillActiveIdx: 0,
             _measureWord(word, ref) { const r=document.getElementById('blank-ruler'); if(!r||!word) return 68; if(ref) r.style.fontSize = window.getComputedStyle(ref.parentElement).fontSize; r.innerText=word; return Math.max(r.offsetWidth+24, 68); },
